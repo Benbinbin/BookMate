@@ -5,25 +5,34 @@
 ```mermaid
 graph LR
   root(数据库) === notes[(notes)]
-  root === book[(book)]
+  root === books[(books)]
+  
+  books --- book1(book1)
+  books --- book2(book2)
+  books --- book3(book3)
+  
+  notes --- note1(note1)
+  notes --- note2(note2)
+  notes --- note3(note3)
+  
+  note1 --- link[[双向链接]]
+  note1 --- noteContent[[内容]]
+  note1 --- noteCreatedDate[[创建日期]]
 
-  notes --- link[[双向链接]]
-  notes --- noteContent[[内容]]
-  notes --- noteCreatedDate[[创建日期]]
-
-  book ---  metadata[[书籍元数据]]
+  book1 ---  metadata[[书籍元数据]]
   style metadata fill: #A7F3D0
-  book ---  quote[[书摘]]
-  book ---  summary[[总结]]
+  book1 ---  quote[[书摘]]
+  book1 ---  summary[[总结]]
 
   quote -.- quoteContent([内容])
   quote -.- comment([批注])
   quote -.- quoteCreatedDate([创建日期])
 ```
+
 ```mermaid
 graph TD
   metadata(书籍元数据) -.- isbn([ISBN])
-  style metadata fill: #A7F3D0
+  metadata -.- title([书名])
   metadata -.- date([出版日期])
   metadata -.- author([作者])
   metadata -.- translator([译者])
@@ -35,4 +44,5 @@ graph TD
   metadata -.- source([文件源])
   metadata -.- shop([购买链接])
   metadata -.- bookCreatedData([创建日期])
+  style metadata fill: #A7F3D0
 ```
