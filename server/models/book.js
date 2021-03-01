@@ -1,52 +1,37 @@
 const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema({
-  isbn: {
-    type: String,
+  metadata: {
+    isbn: Number,
+    titles: {
+      type: Array,
+      required: true
+    },
+    date: Date,
+    authors: Array,
+    translators: Array,
+    press: String,
+    covers: Array,
+    pagination: Number,
+    description: String,
+    review: String,
+    tags: Array,
+    stars: Number,
+    sources: Array,
+    links: Array,
+    createdDate: {
+      type: Date,
+      default: Date.now
+    },
+    catalog: Object
   },
-  titles: {
-    type: Array,
-    required: true
-  },
-  date: {
-    type: Date,
-  },
-  authors: {
-    type: Array,
-  },
-  translators: {
-    type: Array,
-  },
-  covers: {
-    type: Array,
-  },
-  description: {
-    type: String,
-  },
-  review: {
-    type: String,
-  },
-  tags: {
-    type: Array,
-  },
-  stars: {
-    type: Number,
-  },
-  sources: {
-    type: Array,
-  },
-  links: {
-    type: Array,
-  },
-  createdDate: {
-    type: Date,
-  },
-  quotes: {
-    type: Array,
-  },
-  summaries: {
-    type: Array
-  }
+  quotes: [{
+    body: Object,
+    comment: Object
+  }],
+  summaries: [{
+    content: Object
+  }],
 });
 
-module.exports = mongoose.model('Book', bookSchema)
+module.exports = mongoose.model('Book', bookSchema);
