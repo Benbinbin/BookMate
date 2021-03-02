@@ -11,7 +11,9 @@
     ],
     "translators": [],
     "covers": ["见面如来.jpg"],
-    "tags": [],
+    "tags": [
+      "reading"
+    ],
     "sources": [],
     "links": [],
     "press": "理想国|天地出版社",
@@ -97,7 +99,9 @@
       "孙仲旭"
     ],
     "covers": ["岛上书店.png"],
-    "tags": [],
+    "tags": [
+      "reading"
+    ],
     "sources": [],
     "links": [],
     "press": "江苏凤凰文艺出版社",
@@ -139,7 +143,9 @@
     ],
     "covers": ["硅谷钢铁侠.png"],
     "tags": [
-      "reading"
+      "reading",
+      "later",
+      "love"
     ],
     "sources": [],
     "links": [],
@@ -276,7 +282,7 @@
     ],
     "covers": ["第三次浪潮.png"],
     "tags": [
-      "reading",
+      "later",
       "tech"
     ],
     "sources": [],
@@ -322,6 +328,7 @@
     ],
     "covers": ["黑客与画家.png"],
     "tags": [
+      "love",
       "reading",
       "tech"
     ],
@@ -370,7 +377,7 @@
     ],
     "covers": ["与众不同的设计思考术Thinking.png"],
     "tags": [
-      "reading",
+      "later",
       "art"
     ],
     "sources": [],
@@ -416,7 +423,7 @@
     ],
     "covers": ["平面设计中的网格系统.png"],
     "tags": [
-      "reading",
+      "later",
       "art"
     ],
     "sources": [],
@@ -507,7 +514,7 @@
     ],
     "covers": ["设计元素.png"],
     "tags": [
-      "reading",
+      "later",
       "art"
     ],
     "sources": [],

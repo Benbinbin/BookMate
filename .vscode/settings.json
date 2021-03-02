@@ -3,6 +3,9 @@
         "source.fixAll.eslint": true
     },
     "cSpell.words": [
-        "bookmate"
+        "booklist",
+        "bookmate",
+        "bookslist",
+        "set"
     ]
 }

@@ -1,7 +1,7 @@
 <template>
-  <div class="home flex h-screen">
-    <aside class="col-span-2 flex flex-col bg-gray-100 max-h-full">
-      <div class="profile h-24 lg:h-32 flex justify-center items-center">
+  <div class="home flex h-screen w-screen">
+    <aside class="flex flex-col bg-gray-100 max-h-full min-w-max">
+      <div class="profile h-20 lg:h-24 flex justify-center items-center">
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
         <p class="text-3xl ml-2">{{ user }}</p>
       </div>
@@ -34,11 +34,11 @@
         </button>
       </div>
     </aside>
-    <div class="flex-grow border-2 border-yellow-400">
+    <div class="flex-grow max-w-full">
       <nav
-        class="profile h-24 lg:h-32 px-8 border-b-2 flex items-center justify-between"
+        class="profile h-20 lg:h-24 px-8 flex items-center justify-between"
       >
-        <h1 class="text-5xl lg:text-6xl font-medium">{{ activeTab.name }}</h1>
+        <h1 class="text-5xl">{{ activeTab.name }}</h1>
         <div class="flex items-center">
           <form action="" class="search flex items-center">
             <input
@@ -66,7 +66,7 @@
           </button>
         </div>
       </nav>
-      <main class="px-8 py-14">
+      <main class="px-8 py-14 border-t-2 max-w-full">
         <keep-alive>
           <component :is="activeTab.component"></component>
         </keep-alive>
@@ -77,18 +77,24 @@
 
 <script>
 import Bookshelf from '@/components/Bookshelf.vue';
+import NotesList from '@/components/NotesList.vue';
+import Mindmap from '@/components/Mindmap.vue';
+import DataAnalysis from '@/components/DataAnalysis.vue';
 
 export default {
   name: 'Home',
   components: {
     Bookshelf,
+    NotesList,
+    Mindmap,
+    DataAnalysis,
   },
   data() {
     return {
       avatar: require('@/assets/profile.png'),
       user: 'User',
       activeTab: {
-        icon: 'liberray',
+        icon: 'library',
         name: '书库',
         component: 'Bookshelf',
       },
@@ -117,8 +123,8 @@ export default {
     };
   },
   methods: {
-    asideButtonColor(btn) {
-      return btn === this.activeTab
+    asideButtonColor(item) {
+      return item.component === this.activeTab.component
         ? 'bg-white'
         : 'bg-gray-200 text-opacity-50';
     },
