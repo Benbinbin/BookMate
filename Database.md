@@ -6,15 +6,15 @@
 graph LR
   root[(BookMate)] === note[note]
   root === book[book]
-  
+
   book --- book1(book1)
   book --- book2(book2)
   book --- book3(book3)
-  
+
   note --- note1(note1)
   note --- note2(note2)
   note --- note3(note3)
-  
+
   note1 --- link[[双向链接]]
   note1 --- noteContent[[内容]]
   note1 --- noteCreatedDate[[创建日期]]
@@ -40,6 +40,8 @@ graph TD
   metadata -.- pagination([页数])
   metadata -.- description([描述])
   metadata -.- review([书评])
+  metadata -.- defaultCollections([默认文件夹])
+  metadata -.- collections([文件夹])
   metadata -.- tags([标签])
   metadata -.- stars([评分])
   metadata -.- sources([文件源])

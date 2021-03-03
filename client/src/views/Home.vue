@@ -1,6 +1,6 @@
 <template>
   <div class="home flex h-screen w-screen">
-    <aside class="flex flex-col bg-gray-100 max-h-full min-w-max">
+    <aside class="flex flex-col bg-gray-100 min-w-max">
       <div class="profile h-20 lg:h-24 flex justify-center items-center">
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
         <p class="text-3xl ml-2">{{ user }}</p>
@@ -16,7 +16,7 @@
           @click="changeTab(item)"
         >
           <img
-            :src="require(`../assets/icons/${item.icon}.svg`)"
+            :src="require(`@/assets/icons/${item.icon}.svg`)"
             :alt="item.name"
             class="w-8 h-8"
             :class="{ 'opacity-50': item.icon !== activeTab.icon }"
@@ -34,9 +34,9 @@
         </button>
       </div>
     </aside>
-    <div class="flex-grow max-w-full">
+    <div class="flex-grow min-w-0 flex flex-col">
       <nav
-        class="profile h-20 lg:h-24 px-8 flex items-center justify-between"
+        class="flex-shrink-0 profile w-full h-20 lg:h-24 px-8 flex items-center justify-between"
       >
         <h1 class="text-5xl">{{ activeTab.name }}</h1>
         <div class="flex items-center">
@@ -66,9 +66,9 @@
           </button>
         </div>
       </nav>
-      <main class="px-8 py-14 border-t-2 max-w-full">
+      <main class="px-8 border-t-2 overflow-y-auto" ref="main">
         <keep-alive>
-          <component :is="activeTab.component"></component>
+          <component :is="activeTab.component" @backToTop="backToTopHandler"></component>
         </keep-alive>
       </main>
     </div>
@@ -91,6 +91,7 @@ export default {
   },
   data() {
     return {
+      width: 0,
       avatar: require('@/assets/profile.png'),
       user: 'User',
       activeTab: {
@@ -132,6 +133,9 @@ export default {
       this.activeTab = btn;
     },
     addBook() {},
+    backToTopHandler() {
+      this.$refs.main.scrollTop = 0;
+    },
   },
   created() {
     this.avatar = require('@/assets/avatar.png');
