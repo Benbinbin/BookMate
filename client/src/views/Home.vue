@@ -11,7 +11,7 @@
         <button
           v-for="item of asideButtons"
           :key="item.icon"
-          class="flex items-center px-4 py-3 rounded-lg w-full text-gray-800 focus:outline-none"
+          class="flex items-center px-4 py-3 rounded-lg w-full text-gray-600 focus:outline-none hover:opacity-100"
           :class="asideButtonColor(item)"
           @click="changeTab(item)"
         >
@@ -188,7 +188,7 @@ export default {
     asideButtonColor(item) {
       return item.component === this.activeTab.component
         ? 'bg-white'
-        : 'bg-gray-200 text-opacity-50';
+        : 'bg-gray-200 opacity-60';
     },
     changeTab(btn) {
       this.activeTab = btn;
