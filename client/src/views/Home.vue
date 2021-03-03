@@ -24,14 +24,54 @@
           <p class="ml-4 xl:text-lg font-bold">{{ item.name }}</p>
         </button>
       </div>
-      <div class="add h-20 flex items-center px-4 xl:px-14">
+      <div class="add h-20 relative flex items-center px-4 xl:px-14">
         <button
+          v-show="!showAddModal"
           class="flex items-center justify-center px-4 py-3 rounded-lg w-full text-gray-800 focus:outline-none bg-gray-200 opacity-60 hover:opacity-100"
-          @click="addBook"
+          @click="showAddModal = true"
         >
           <img src="@/assets/icons/add.svg" alt="add" class="w-8 h-8" />
-          <p class="ml-4 xl:text-lg font-bold">添加书籍</p>
+          <p class="font-bold">添加书籍</p>
+          <img
+            src="@/assets/icons/close-circle.svg"
+            alt="close"
+            class="w-8 h-8"
+            v-show="showAddModal"
+          />
         </button>
+        <button
+          v-show="showAddModal"
+          class="w-full flex items-center justify-center focus:outline-none"
+          @click="showAddModal = false"
+        >
+          <img
+            src="@/assets/icons/close-circle.svg"
+            alt="close"
+            class="w-8 h-8"
+          />
+        </button>
+        <div
+          class="modal-container absolute inset-x-0 bottom-16 z-10 mx-2"
+          v-show="showAddModal"
+        >
+          <div
+            class="modal flex flex-col rounded-xl border-2 border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md"
+          >
+            <button
+              v-for="item of addModalList"
+              :key="item.val"
+              class="px-2 py-4 flex justify-center items-center font-bold focus:outline-none opacity-40 hover:opacity-80"
+              @click="changeSelected(item.val)"
+            >
+              <img
+                :src="require(`@/assets/icons/${item.icon}.svg`)"
+                :alt="item.icon"
+                class="w-6"
+              />
+              <span class="ml-2">{{ item.name }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </aside>
     <div class="flex-grow min-w-0 flex flex-col">
@@ -68,7 +108,10 @@
       </nav>
       <main class="px-8 border-t-2 overflow-y-auto" ref="main">
         <keep-alive>
-          <component :is="activeTab.component" @backToTop="backToTopHandler"></component>
+          <component
+            :is="activeTab.component"
+            @backToTop="backToTopHandler"
+          ></component>
         </keep-alive>
       </main>
     </div>
@@ -121,6 +164,24 @@ export default {
           component: 'DataAnalysis',
         },
       ],
+      showAddModal: false,
+      addModalList: [
+        {
+          icon: 'scan',
+          name: '扫描条形码',
+          val: 'scan',
+        },
+        {
+          icon: 'search',
+          name: '搜索 ISBN',
+          val: 'search',
+        },
+        {
+          icon: 'edit',
+          name: '自定义输入',
+          val: 'input',
+        },
+      ],
     };
   },
   methods: {
@@ -132,7 +193,6 @@ export default {
     changeTab(btn) {
       this.activeTab = btn;
     },
-    addBook() {},
     backToTopHandler() {
       this.$refs.main.scrollTop = 0;
     },
@@ -143,3 +203,16 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.modal {
+  button:first-child {
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+  }
+  button:last-child {
+    border-bottom-right-radius: 0.75rem;
+    border-bottom-left-radius: 0.75rem;
+  }
+}
+</style>

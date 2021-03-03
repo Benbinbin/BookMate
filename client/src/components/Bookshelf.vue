@@ -5,8 +5,8 @@
         <h2 class="text-xl leading-5 font-bold">{{ currentList.name }}</h2>
         <button
           class="ml-2 focus:outline-none"
-          @click="showModal = true"
-          v-show="!showModal"
+          @click="showMoreModal = true"
+          v-show="!showMoreModal"
         >
           <img
             src="@/assets/icons/down.svg"
@@ -16,8 +16,8 @@
         </button>
         <button
           class="ml-2 focus:outline-none"
-          @click="showModal = false"
-          v-show="showModal"
+          @click="showMoreModal = false"
+          v-show="showMoreModal"
         >
           <img
             src="@/assets/icons/close-circle.svg"
@@ -25,12 +25,12 @@
             class="w-6 h-6"
           />
         </button>
-        <div class="modal-container" v-show="showModal">
+        <div class="modal-container absolute top-8 left-12 z-10" v-show="showMoreModal">
           <div
-            class="modal absolute top-8 left-12 z-10 flex flex-col rounded-xl border-2 border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md"
+            class="modal flex flex-col rounded-xl border-2 border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md"
           >
             <button
-              v-for="item of modalList"
+              v-for="item of moreModalList"
               :key="item.val"
               class="py-2 flex justify-center items-center w-24 font-bold focus:outline-none hover:opacity-80"
               :class="{
@@ -41,7 +41,7 @@
             >
               <img
                 :src="require(`@/assets/icons/${item.icon}.svg`)"
-                alt="reading books"
+                :alt="item.icon"
                 class="w-6"
               />
               <span class="ml-2">{{ item.name }}</span>
@@ -117,8 +117,8 @@ export default {
   data() {
     return {
       selected: 'readingBooks',
-      showModal: false,
-      modalList: [
+      showMoreModal: false,
+      moreModalList: [
         {
           icon: 'reading',
           name: '在读',
@@ -160,7 +160,7 @@ export default {
   methods: {
     changeSelected(val) {
       this.selected = val;
-      this.showModal = false;
+      this.showMoreModal = false;
     },
   },
   created() {
