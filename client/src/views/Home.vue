@@ -1,17 +1,19 @@
 <template>
-  <div class="home flex h-screen w-screen">
+  <div class="home-container flex h-screen w-screen">
     <aside class="flex flex-col bg-gray-100 min-w-max">
-      <div class="profile h-20 lg:h-24 flex justify-center items-center">
+      <div
+        class="profile flex-shrink-0 border-b-2 h-20 lg:h-24 flex justify-center items-center"
+      >
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
         <p class="text-3xl ml-2">{{ user }}</p>
       </div>
       <div
-        class="category flex-grow border-t-2 border-b-2 px-4 xl:px-14 py-14 space-y-6 overflow-x-auto"
+        class="category flex-grow px-4 xl:px-14 py-14 space-y-6 overflow-y-auto"
       >
         <button
           v-for="item of asideButtons"
           :key="item.icon"
-          class="flex items-center px-4 py-3 rounded-lg w-full text-gray-600 focus:outline-none hover:opacity-100"
+          class="flex items-center px-4 py-3 rounded-lg w-full text-gray-600 hover:opacity-100"
           :class="asideButtonColor(item)"
           @click="changeTab(item)"
         >
@@ -24,10 +26,12 @@
           <p class="ml-4 xl:text-lg font-bold">{{ item.name }}</p>
         </button>
       </div>
-      <div class="add h-20 relative flex items-center px-4 xl:px-14">
+      <div
+        class="add flex-shrink-0 border-t-2 h-20 relative flex items-center px-4 xl:px-14"
+      >
         <button
           v-show="!showAddModal"
-          class="flex items-center justify-center px-4 py-3 rounded-lg w-full text-gray-800 focus:outline-none bg-gray-200 opacity-60 hover:opacity-100"
+          class="flex items-center justify-center px-4 py-3 rounded-lg w-full text-gray-800 bg-gray-200 opacity-60 hover:opacity-100"
           @click="showAddModal = true"
         >
           <img src="@/assets/icons/add.svg" alt="add" class="w-8 h-8" />
@@ -41,7 +45,7 @@
         </button>
         <button
           v-show="showAddModal"
-          class="w-full flex items-center justify-center focus:outline-none"
+          class="w-full flex items-center justify-center"
           @click="showAddModal = false"
         >
           <img
@@ -60,7 +64,7 @@
             <button
               v-for="item of addModalList"
               :key="item.val"
-              class="px-2 py-4 flex justify-center items-center font-bold focus:outline-none opacity-40 hover:opacity-80"
+              class="px-2 py-4 flex justify-center items-center font-bold opacity-40 hover:opacity-80"
               @click="changeSelected(item.val)"
             >
               <img
@@ -76,19 +80,19 @@
     </aside>
     <div class="flex-grow min-w-0 flex flex-col">
       <nav
-        class="flex-shrink-0 profile w-full h-20 lg:h-24 px-8 flex items-center justify-between"
+        class="flex-shrink-0 border-b-2 profile w-full h-20 lg:h-24 px-8 flex items-center justify-between"
       >
         <h1 class="text-5xl">{{ activeTab.name }}</h1>
         <div class="flex items-center">
           <form action="" class="search flex items-center">
             <input
               type="search"
-              class="bg-gray-200 rounded-l-lg border-0 h-12 pl-4 focus:outline-none"
+              class="bg-gray-200 rounded-l-lg border-0 h-12 pl-4"
               placeholder="输入关键字进行搜索"
             />
             <button
               type="submit"
-              class="bg-gray-200 rounded-r-lg border-0 h-12 pr-2 focus:outline-none"
+              class="bg-gray-200 rounded-r-lg border-0 h-12 pr-2"
             >
               <img
                 src="@/assets/icons/search.svg"
@@ -97,7 +101,7 @@
               />
             </button>
           </form>
-          <button class="ml-4 focus:outline-none">
+          <button class="ml-4">
             <img
               src="@/assets/icons/filter.svg"
               alt="filter button"
@@ -106,7 +110,7 @@
           </button>
         </div>
       </nav>
-      <main class="px-8 border-t-2 overflow-y-auto" ref="main">
+      <main class="px-8 overflow-y-auto" ref="main">
         <keep-alive>
           <component
             :is="activeTab.component"

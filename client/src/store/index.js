@@ -52,16 +52,33 @@ export default new Vuex.Store({
     SET_BOOKSLIST(state, payload) {
       state.booksList = payload;
     },
+    SET_BOOK(state, payload) {
+      state.book = payload;
+    },
   },
   actions: {
-    get_books(context) {
+    getBooksList(context) {
       Vue.axios.get('mooc.json')
-        .then((response) => {
-          console.log(response.data);
-          context.commit('SET_BOOKSLIST', response.data);
+        .then((res) => {
+          console.log(res.data);
+          context.commit('SET_BOOKSLIST', res.data);
         })
         .catch((error) => {
           console.log(error);
+        });
+    },
+    getBook(context, payload) {
+      Vue.axios.get('mooc.json')
+        .then((res) => {
+          const result = res.data.find((item) => {
+            if (item.metadata.isbn) {
+              return item.metadata.isbn === payload.isbn;
+            }
+            return false;
+          });
+          if (result) {
+            context.commit('SET_BOOK', result);
+          }
         });
     },
   },

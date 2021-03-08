@@ -1,10 +1,10 @@
 <template>
-  <div class="bookshelf" ref="bookshelf">
+  <div class="bookshelf">
     <section class="selected" :class="currentList">
       <div class="mt-14 mb-6 flex items-center relative">
         <h2 class="text-xl leading-5 font-bold">{{ currentList.name }}</h2>
         <button
-          class="ml-2 focus:outline-none"
+          class="ml-2"
           @click="showMoreModal = true"
           v-show="!showMoreModal"
         >
@@ -15,7 +15,7 @@
           />
         </button>
         <button
-          class="ml-2 focus:outline-none"
+          class="ml-2"
           @click="showMoreModal = false"
           v-show="showMoreModal"
         >
@@ -25,14 +25,17 @@
             class="w-6 h-6"
           />
         </button>
-        <div class="modal-container absolute top-8 left-12 z-10" v-show="showMoreModal">
+        <div
+          class="modal-container absolute top-8 left-12 z-20"
+          v-show="showMoreModal"
+        >
           <div
             class="modal flex flex-col rounded-xl border-2 border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md"
           >
             <button
               v-for="item of moreModalList"
               :key="item.val"
-              class="py-2 flex justify-center items-center w-24 font-bold focus:outline-none hover:opacity-80"
+              class="py-2 flex justify-center items-center w-24 font-bold hover:opacity-80"
               :class="{
                 'bg-white': item.val === selected,
                 'opacity-40': item.val !== selected,
@@ -49,14 +52,17 @@
           </div>
         </div>
       </div>
-      <ul class="flex flex-nowrap w-full space-x-8 overflow-x-auto">
+      <ul
+        class="selected-list flex flex-nowrap w-full py-4 space-x-8 overflow-x-auto"
+        :class="{ dragging: dragging }"
+      >
         <li
           v-for="book of currentList.data"
           :key="book._id.$oid"
           class="book flex-shrink-0 relative w-32 flex flex-col justify-start items-center"
         >
           <div
-            class="cover w-28 h-32 bg-center bg-no-repeat bg-contain"
+            class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
               backgroundImage: `url(covers/${book.metadata.covers[0]})`,
             }"
@@ -64,6 +70,10 @@
           <p class="mt-8 text-center font-bold">
             {{ book.metadata.titles[0] }}
           </p>
+          <router-link
+            :to="`/note/${book.metadata.isbn}`"
+            class="absolute inset-0 z-10"
+          ></router-link>
         </li>
       </ul>
     </section>
@@ -78,7 +88,7 @@
           class="book w-32 relative flex flex-col justify-start items-center"
         >
           <div
-            class="cover w-28 h-32 bg-center bg-no-repeat bg-contain"
+            class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
               backgroundImage: `url(covers/${book.metadata.covers[0]})`,
             }"
@@ -86,16 +96,17 @@
           <p class="mt-8 text-center font-bold">
             {{ book.metadata.titles[0] }}
           </p>
+          <router-link
+            :to="`/note/${book.metadata.isbn}`"
+            class="absolute inset-0 z-10"
+          ></router-link>
         </li>
       </ul>
     </section>
-    <footer class="mt-24 h-20 items-center">
-      <hr class="mx-40" />
+    <footer class="my-24 items-center">
+      <hr class="mx-auto w-1/2" />
       <div class="h-full flex justify-center items-center">
-        <button
-          @click="$emit('backToTop')"
-          class="text-blue-400 focus:outline-none"
-        >
+        <button @click="$emit('backToTop')" class="text-blue-400 font-bold my-4">
           返回顶部
         </button>
       </div>
@@ -140,6 +151,8 @@ export default {
           val: 'cartBooks',
         },
       ],
+      dragging: false,
+      originX: 0,
     };
   },
   computed: {
@@ -164,14 +177,31 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('get_books');
+    this.$store.dispatch('getBooksList');
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .selected {
-  min-height: 16rem;
+  min-height: 18rem;
+}
+
+.selected-list {
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0);
+  }
+  &:hover::-webkit-scrollbar {
+    height: 12px;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+  }
+}
+
+.dragging {
+  cursor: grab;
+  user-select: none;
 }
 
 .book {
@@ -186,6 +216,11 @@ export default {
     background: #ececec;
     border-radius: 5px;
     z-index: -1;
+  }
+  &:hover {
+    .cover {
+      transform: translateY(-5px);
+    }
   }
 }
 
