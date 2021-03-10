@@ -49,15 +49,18 @@
         id="introduction"
         class="border-2 border-gray-200 flex flex-col"
       >
-        <nav class="h-16 border-b-2 border-gray-200">
+        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-200">
           <div class="default w-full h-full flex items-center justify-center">
             <h2 class="text-xl font-bold">简介</h2>
           </div>
         </nav>
-        <book-info :book="book"></book-info>
+        <book-info :book="book" class="flex-grow"></book-info>
       </div>
-      <div id="notes-container" class="border-2 border-gray-200 flex-grow">
-        <nav class="h-16 border-b-2 border-gray-20">
+      <div
+        id="notes-container"
+        class="border-2 border-gray-200 flex-grow flex flex-col"
+      >
+        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
           <div class="default w-full h-full flex items-center justify-center">
             <h2 class="text-xl font-bold">笔记</h2>
           </div>
@@ -66,13 +69,14 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
         id="quotes-container"
-        class="border-2 border-gray-200 flex-grow"
+        class="border-2 border-gray-200 flex-grow flex flex-col"
       >
-        <nav class="h-16 border-b-2 border-gray-20">
+        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
           <div class="default w-full h-full flex items-center justify-center">
             <h2 class="text-xl font-bold">书摘</h2>
           </div>
         </nav>
+        <quotes-list :book="book" class="flex-grow"></quotes-list>
       </div>
     </div>
   </div>
@@ -82,10 +86,12 @@
 import { mapState } from 'vuex';
 import Split from 'split.js';
 import BookInfo from '../components/BookInfo.vue';
+import QuotesList from '../components/QuotesList.vue';
 
 export default {
   components: {
     BookInfo,
+    QuotesList,
   },
   data() {
     return {
@@ -108,7 +114,6 @@ export default {
           active: false,
         },
       ],
-
     };
   },
   computed: {

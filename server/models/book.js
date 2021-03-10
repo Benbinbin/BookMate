@@ -26,11 +26,34 @@ const bookSchema = new mongoose.Schema({
     catalog: Object
   },
   quotes: [{
-    body: Object,
-    comment: Object
+    chapter: String,
+    type: {
+      type: String,
+      default: 'annotation'
+    },
+    location: Number,
+    content: Object,
+    comment: Object,
+    createdDate: {
+      type: Date,
+      default: Date.now
+    },
+    updatedDate: {
+      type: Date,
+      default: Date.now
+    }
   }],
   summaries: [{
-    content: Object
+    chapter: String,
+    content: Object,
+    createdDate: {
+      type: Date,
+      default: Date.now
+    },
+    updatedDate: {
+      type: Date,
+      default: Date.now
+    }
   }],
 });
 

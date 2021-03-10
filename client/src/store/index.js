@@ -60,7 +60,7 @@ export default new Vuex.Store({
     getBooksList(context) {
       Vue.axios.get('mooc.json')
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data);
           context.commit('SET_BOOKSLIST', res.data);
         })
         .catch((error) => {

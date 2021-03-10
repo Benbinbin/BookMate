@@ -1,5 +1,5 @@
 <template>
-  <div ref="introduction-main" v-if="book" class="px-3 py-6 overflow-y-auto">
+  <div ref="introductionMain" v-if="book" class="introduction-main px-3 py-6 overflow-y-auto">
     <div class="grid grid-cols-2 gap-3">
       <div
         class="cover bg-contain bg-no-repeat bg-top"
@@ -120,9 +120,9 @@
     </ul>
     <footer class="my-12 items-center">
       <hr class="mx-auto w-1/2" />
-      <div class="h-full flex justify-center items-center">
+      <div class="flex justify-center items-center">
         <button
-          @click="backToTopHandler('introduction-main')"
+          @click="backToTopHandler('introductionMain')"
           class="text-blue-400 font-bold my-4"
         >
           返回顶部
@@ -174,6 +174,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.introduction-main {
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0);
+  }
+  &:hover::-webkit-scrollbar {
+    height: 12px;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+  }
+}
+
 .collections {
   &::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0);
