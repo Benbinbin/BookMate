@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="quotesList"
-    v-if="book"
-    class="quotes-list px-3 py-6 overflow-y-auto h-full"
-  >
+  <div ref="quotesList" class="quotes-list px-3 py-6 overflow-y-auto h-full">
     <section v-for="item of quotesSorted" :key="item.name">
       <div class="chapter py-3 flex justify-between opacity-50">
         <div class="flex items-center">
@@ -95,7 +91,10 @@
                     :src="require(`@/assets/icons/${quote.type}.svg`)"
                     :alt="`${quote.type} icon`"
                     class="quote-type w-5 h-5"
-                    :class="{ 'hidden opacity-30': quote.type === 'annotation' && !quote.comment }"
+                    :class="{
+                      'hidden opacity-30':
+                        quote.type === 'annotation' && !quote.comment,
+                    }"
                   />
                   <div class="quote-location ml-1.5 hidden opacity-30">
                     <p class="text-xs">章节：{{ quote.chapter || "未分类" }}</p>

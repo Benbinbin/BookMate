@@ -54,7 +54,11 @@
             <h2 class="text-xl font-bold">简介</h2>
           </div>
         </nav>
-        <book-info :book="book" class="flex-grow"></book-info>
+        <book-info
+          v-if="book && book.metadata"
+          :book="book"
+          class="flex-grow"
+        ></book-info>
       </div>
       <div
         id="notes-container"
@@ -76,7 +80,11 @@
             <h2 class="text-xl font-bold">书摘</h2>
           </div>
         </nav>
-        <quotes-list :book="book" class="flex-grow"></quotes-list>
+        <quotes-list
+          v-if="book && book.quotes.length > 1"
+          :book="book"
+          class="flex-grow"
+        ></quotes-list>
       </div>
     </div>
   </div>

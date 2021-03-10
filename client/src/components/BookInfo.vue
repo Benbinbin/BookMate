@@ -1,5 +1,5 @@
 <template>
-  <div ref="introductionMain" v-if="book" class="introduction-main px-3 py-6 overflow-y-auto">
+  <div ref="introductionMain" class="introduction-main px-3 py-6 overflow-y-auto">
     <div class="grid grid-cols-2 gap-3">
       <div
         class="cover bg-contain bg-no-repeat bg-top"
