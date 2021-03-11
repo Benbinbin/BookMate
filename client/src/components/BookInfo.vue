@@ -4,16 +4,16 @@
       <div
         class="cover bg-contain bg-no-repeat bg-top"
         :style="{
-          backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+          backgroundImage: `url(covers/${metadata.covers[0]})`,
         }"
       ></div>
       <div class="space-y-3">
         <div class="space-y-1.5">
           <h2 class="text-2xl font-bold">
-            {{ book.metadata.titles[0] }}
+            {{ metadata.titles[0] }}
           </h2>
           <star-rating
-            :rating="book.metadata.stars"
+            :rating="metadata.stars"
             :star-size="15"
             :show-rating="false"
             :read-only="true"
@@ -23,8 +23,8 @@
           </star-rating>
         </div>
         <div class="space-y-1.5 text-xs">
-          <p>作者：{{ book.metadata.authors.join("、") }}</p>
-          <p>ISBN：{{ book.metadata.isbn }}</p>
+          <p>作者：{{ metadata.authors.join("、") }}</p>
+          <p>ISBN：{{ metadata.isbn }}</p>
         </div>
         <button
           class="flex justify-center items-center py-1 px-2 rounded text-white"
@@ -69,7 +69,7 @@
           />
           <ul class="collections flex-grow flex space-x-1.5 overflow-x-auto">
             <li
-              v-for="item in book.metadata.collections"
+              v-for="item in metadata.collections"
               :key="item"
               class="flex-shrink-0 py-1 px-1.5 bg-blue-300 text-white text-xs rounded overflow-x-auto"
             >
@@ -100,7 +100,7 @@
       />
       <ul class="tags flex-grow flex space-x-1.5 overflow-x-auto">
         <li
-          v-for="item in book.metadata.tags"
+          v-for="item in metadata.tags"
           :key="item"
           class="flex-shrink-0 py-1 px-1.5 bg-gray-200 text-gray-400 text-xs rounded overflow-x-auto"
         >
@@ -109,13 +109,14 @@
       </ul>
     </div>
     <p class="my-8 leading-87" v-show="!showCategory">
-      {{ book.metadata.description }}
+      {{ metadata.description }}
     </p>
     <ul class="category" v-show="showCategory">
       <category-tree
-        v-for="(item, index) of book.metadata.category.children"
+        v-for="(item, index) of metadata.category.children"
         :key="index"
         :item="item"
+        :chapters="chapters"
       ></category-tree>
     </ul>
     <footer class="my-12 items-center">
@@ -137,7 +138,7 @@ import StarRating from 'vue-star-rating';
 import CategoryTree from './CategoryTree.vue';
 
 export default {
-  props: ['book'],
+  props: ['metadata', 'chapters'],
   components: {
     StarRating,
     CategoryTree,

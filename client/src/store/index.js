@@ -18,6 +18,7 @@ export default new Vuex.Store({
   state: {
     booksList: [],
     book: null,
+    currentChapter: '',
   },
   getters: {
     readingBooks(state) {
@@ -55,6 +56,9 @@ export default new Vuex.Store({
     SET_BOOK(state, payload) {
       state.book = payload;
     },
+    SET_CHAPTER(state, payload) {
+      state.currentChapter = payload;
+    },
   },
   actions: {
     getBooksList(context) {
@@ -80,6 +84,9 @@ export default new Vuex.Store({
             context.commit('SET_BOOK', result);
           }
         });
+    },
+    navChapter(context, payload) {
+      context.commit('SET_CHAPTER', payload);
     },
   },
 });

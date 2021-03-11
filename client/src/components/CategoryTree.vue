@@ -19,7 +19,7 @@
         </svg>
       </button>
       <svg
-      v-if="!isParent"
+        v-if="!isParent"
         class="w-6 h-6 flex-shrink-0"
         viewBox="0 0 50 50"
         fill="currentcolor"
@@ -32,9 +32,17 @@
           fill="black"
         />
       </svg>
-      <span class="my-1" :class="{ 'font-bold': isParent }">{{
-        item.name
-      }}</span>
+      <button
+        class="my-1 text-left"
+        :class="{
+          'font-bold': isParent,
+          'text-blue-300': chapters.includes(item.name),
+        }"
+        :disabled="!chapters.includes(item.name)"
+        @click="clickHandler(item.name)"
+      >
+        {{ item.name }}
+      </button>
     </div>
 
     <ul v-show="isSpan" v-if="isParent" class="pl-4">
@@ -42,6 +50,7 @@
         v-for="(child, index) in item.children"
         :key="index"
         :item="child"
+        :chapters="chapters"
       ></tree-item>
     </ul>
   </li>
@@ -52,6 +61,7 @@ export default {
   name: 'tree-item',
   props: {
     item: Object,
+    chapters: Array,
   },
   data() {
     return {
@@ -63,7 +73,11 @@ export default {
       return this.item.children;
     },
   },
-  methods: {},
+  methods: {
+    clickHandler(chapter) {
+      this.$store.dispatch('navChapter', chapter);
+    },
+  },
 };
 </script>
 

@@ -56,7 +56,8 @@
         </nav>
         <book-info
           v-if="book && book.metadata"
-          :book="book"
+          :metadata="book.metadata"
+          :chapters="chaptersWithQuotes"
           class="flex-grow"
         ></book-info>
       </div>
@@ -82,7 +83,8 @@
         </nav>
         <quotes-list
           v-if="book && book.quotes.length > 1"
-          :book="book"
+          :quotes="book.quotes"
+          :chapters="chaptersWithQuotes"
           class="flex-grow"
         ></quotes-list>
       </div>
@@ -95,6 +97,19 @@ import { mapState } from 'vuex';
 import Split from 'split.js';
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
+
+function flatten(root, arr) {
+  if (root && Array.isArray(root)) {
+    root.forEach((item) => {
+      flatten(item, arr);
+    });
+  } else if (root && root.children) {
+    arr.push(root.name);
+    flatten(root.children, arr);
+  } else if (root) {
+    arr.push(root.name);
+  }
+}
 
 export default {
   components: {
@@ -126,8 +141,32 @@ export default {
   },
   computed: {
     ...mapState(['book']),
-  },
+    chaptersWithQuotes() {
+      // chapters set extract from quotes
+      const chaptersArr = [];
+      this.book.quotes.forEach((item) => {
+        if (item.chapter) {
+          chaptersArr.push(item.chapter);
+        }
+      });
+      const chaptersSet = new Set(chaptersArr);
 
+      // flatten chapters from book category
+      const categoryFlatten = [];
+      flatten(this.book.metadata.category, categoryFlatten);
+
+      // chapters with quotes in order
+      const chaptersSorted = [];
+      categoryFlatten.forEach((chapter) => {
+        if (chaptersSet.has(chapter)) {
+          chaptersSorted.push(chapter);
+        }
+      });
+      return chaptersSorted;
+    },
+  },
+  methods: {
+  },
   mounted() {
     Split(['#introduction', '#notes-container', '#quotes-container'], {
       sizes: [20, 50, 30],

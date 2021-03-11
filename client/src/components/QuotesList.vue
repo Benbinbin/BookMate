@@ -1,6 +1,6 @@
 <template>
   <div ref="quotesList" class="quotes-list px-3 py-6 overflow-y-auto h-full">
-    <section v-for="item of quotesSorted" :key="item.name">
+    <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
       <div class="chapter py-3 flex justify-between opacity-50">
         <div class="flex items-center">
           <button>
@@ -147,10 +147,7 @@
     <footer class="my-12 items-center">
       <hr class="mx-auto w-1/2" />
       <div class="flex justify-center items-center">
-        <button
-          @click="backToTopHandler('quotesList')"
-          class="text-blue-400 font-bold my-4"
-        >
+        <button @click="backToTopHandler" class="text-blue-400 font-bold my-4">
           返回顶部
         </button>
       </div>
@@ -160,22 +157,10 @@
 
 <script>
 import { Editor } from 'tiptap';
-
-function flatten(root, arr) {
-  if (root && Array.isArray(root)) {
-    root.forEach((item) => {
-      flatten(item, arr);
-    });
-  } else if (root && root.children) {
-    arr.push(root.name);
-    flatten(root.children, arr);
-  } else if (root) {
-    arr.push(root.name);
-  }
-}
+import { mapState } from 'vuex';
 
 export default {
-  props: ['book'],
+  props: ['quotes', 'chapters'],
   data() {
     return {
       hiddenQuotes: [],
@@ -184,20 +169,11 @@ export default {
     };
   },
   computed: {
+    ...mapState(['currentChapter']),
     quotesSorted() {
-      const chaptersArr = [];
-      this.book.quotes.forEach((item) => {
-        if (item.chapter) {
-          chaptersArr.push(item.chapter);
-        }
-      });
-      const chaptersSet = new Set(chaptersArr);
-
-      const categoryFlatten = [];
-      flatten(this.book.metadata.category, categoryFlatten);
-
-      const quotesSorted = this.chaptersContainer(categoryFlatten, chaptersSet);
-      this.book.quotes.forEach((quote) => {
+      const container = this.chaptersContainer();
+      this.quotes.forEach((quote) => {
+        // use tiptap editor getHTML() render HTML from JSON content
         const quoteTemp = { ...quote };
         this.editor.setContent(quoteTemp.content, true);
         quoteTemp.content = this.temp;
@@ -205,32 +181,36 @@ export default {
           this.editor.setContent(quoteTemp.comment, true);
           quoteTemp.comment = this.temp;
         }
-        const index = quotesSorted.findIndex(
+
+        // sorted quotes into container
+        const index = container.findIndex(
           (item) => item.name === quoteTemp.chapter,
         );
         if (index !== -1) {
-          quotesSorted[index].quotes.push(quoteTemp);
+          container[index].quotes.push(quoteTemp);
         } else {
-          quotesSorted[quotesSorted.length - 1].quotes.push(quoteTemp);
+          container[container.length - 1].quotes.push(quoteTemp);
         }
         this.temp = null;
       });
-      return quotesSorted;
+      return container;
+    },
+  },
+  watch: {
+    currentChapter() {
+      const top = this.$refs[this.currentChapter][0].offsetTop;
+      console.log(top);
+
+      this.$refs.quotesList.scrollTop = top - 6 * 14;
     },
   },
   methods: {
     backToTopHandler(el) {
-      this.$refs[el].scrollTop = 0;
+      this.$refs.quotesList.scrollTop = 0;
     },
-    chaptersContainer(category, chapters) {
-      const chaptersSorted = [];
-      category.forEach((chapter) => {
-        if (chapters.has(chapter)) {
-          chaptersSorted.push(chapter);
-        }
-      });
+    chaptersContainer() {
       const chaptersContainer = [];
-      chaptersSorted.forEach((chapter) => {
+      this.chapters.forEach((chapter) => {
         chaptersContainer.push({
           name: chapter,
           quotes: [],
