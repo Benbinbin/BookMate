@@ -21,7 +21,7 @@
             'bg-gray-200 opacity-60': !item.active,
             'bg-white': item.active,
           }"
-          @click="item.active = !item.active"
+          @click="toggle(item)"
         >
           <img
             :src="require(`@/assets/icons/${item.icon}.svg`)"
@@ -46,7 +46,7 @@
     <div class="split-container flex flex-grow">
       <div
         v-show="menuButtons.find((item) => item.icon === 'info').active"
-        id="introduction"
+        id="split-left"
         class="border-2 border-gray-200 flex flex-col"
       >
         <nav class="flex-shrink-0 h-16 border-b-2 border-gray-200">
@@ -62,7 +62,8 @@
         ></book-info>
       </div>
       <div
-        id="notes-container"
+        v-show="menuButtons.find((item) => item.icon === 'notes').active"
+        id="split-middle"
         class="border-2 border-gray-200 flex-grow flex flex-col"
       >
         <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
@@ -73,7 +74,7 @@
       </div>
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
-        id="quotes-container"
+        id="split-right"
         class="border-2 border-gray-200 flex-grow flex flex-col"
       >
         <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
@@ -125,6 +126,10 @@ export default {
           active: true,
         },
         {
+          icon: 'notes',
+          active: true,
+        },
+        {
           icon: 'quote',
           active: true,
         },
@@ -137,6 +142,10 @@ export default {
           active: false,
         },
       ],
+      spliter: null,
+      containersArr: ['#split-left', '#split-middle', '#split-right'],
+      // containerSizesArr: [20, 50, 30],
+      // containerMinSizesArr: [300, 400, 300],
     };
   },
   computed: {
@@ -166,11 +175,39 @@ export default {
     },
   },
   methods: {
+    toggle(btn) {
+      const arr = ['info', 'notes', 'quote'];
+      const selectorsMap = {
+        info: '#split-left',
+        notes: '#split-middle',
+        quote: '#split-right',
+      };
+
+      if (arr.includes(btn.icon)) {
+        if (this.containersArr.length > 1) this.spliter.destroy(true);
+        this.menuButtons.find((item) => item === btn).active = !btn.active;
+        this.containersArr = [];
+        this.menuButtons.slice(0, 3).forEach((item) => {
+          if (item.active) {
+            this.containersArr.push(selectorsMap[item.icon]);
+          }
+        });
+        console.log(this.containersArr);
+        if (this.containersArr.length > 1) {
+          this.spliter = Split(this.containersArr, {
+            // sizes: this.containerSizesArr,
+            minSize: 300,
+            gutterSize: 5,
+            snapOffset: 0,
+          });
+        }
+      }
+    },
   },
   mounted() {
-    Split(['#introduction', '#notes-container', '#quotes-container'], {
-      sizes: [20, 50, 30],
-      minSize: [300, 400, 300],
+    this.spliter = Split(this.containersArr, {
+      // sizes: this.containerSizesArr,
+      // minSize: this.containerMinSizesArr,
       gutterSize: 5,
       snapOffset: 0,
     });
