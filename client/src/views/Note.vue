@@ -158,20 +158,15 @@ export default {
   computed: {
     ...mapState(['book']),
     chaptersWithSummaries() {
-      const chapterWithSummaries = this.flattenChapters(this.book.summaries);
-      console.log(chapterWithSummaries);
-      return chapterWithSummaries;
+      return this.flattenChapters(this.book.summaries);
     },
     chaptersWithQuotes() {
-      const chaptersWithQuotes = this.flattenChapters(this.book.quotes);
-      console.log(chaptersWithQuotes);
-      return chaptersWithQuotes;
+      return this.flattenChapters(this.book.quotes);
     },
   },
   methods: {
     toggle(btn) {
       // toggle the btn active state
-
       const arr = ['info', 'notes', 'quote'];
       if (arr.includes(btn.icon)) {
         this.toggleSplitContainers(btn);
@@ -187,7 +182,7 @@ export default {
       };
 
       if (this.containersArr.length > 1) {
-        this.spliter.destroy();
+        this.spliter.destroy(true);
       }
 
       this.menuButtons.find((item) => item === btn).active = !btn.active;
@@ -199,6 +194,8 @@ export default {
           this.containersArr.push(selectorsMap[item.icon]);
         }
       });
+
+      console.log(this.containersArr);
 
       if (this.containersArr.length > 1) {
         // set containers size
@@ -218,6 +215,8 @@ export default {
           default:
             break;
         }
+
+        console.log(containersSize);
 
         this.spliter = Split(this.containersArr, {
           sizes: containersSize,
