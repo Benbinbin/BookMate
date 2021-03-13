@@ -47,7 +47,7 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'info').active"
         id="split-left"
-        class="border-2 border-gray-200 flex flex-col"
+        class="border-2 border-gray-200 flex-grow flex flex-col"
       >
         <nav class="flex-shrink-0 h-16 border-b-2 border-gray-200">
           <div class="default w-full h-full flex items-center justify-center">
@@ -57,7 +57,8 @@
         <book-info
           v-if="book && book.metadata"
           :metadata="book.metadata"
-          :chapters="chaptersWithQuotes"
+          :quotes-chapters="chaptersWithQuotes"
+          :summaries-chapters="chaptersWithSummaries"
           class="flex-grow"
         ></book-info>
       </div>
@@ -68,9 +69,15 @@
       >
         <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
           <div class="default w-full h-full flex items-center justify-center">
-            <h2 class="text-xl font-bold">笔记</h2>
+            <h2 class="text-xl font-bold">概述</h2>
           </div>
         </nav>
+        <summaries-list
+          v-if="book && book.summaries.length > 1"
+          :summaries="book.summaries"
+          :summaries-chapters="chaptersWithSummaries"
+          class="flex-grow"
+        ></summaries-list>
       </div>
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
@@ -85,7 +92,7 @@
         <quotes-list
           v-if="book && book.quotes.length > 1"
           :quotes="book.quotes"
-          :chapters="chaptersWithQuotes"
+          :quotes-chapters="chaptersWithQuotes"
           class="flex-grow"
         ></quotes-list>
       </div>
@@ -98,6 +105,7 @@ import { mapState } from 'vuex';
 import Split from 'split.js';
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
+import SummariesList from '../components/SummariesList.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -116,6 +124,7 @@ export default {
   components: {
     BookInfo,
     QuotesList,
+    SummariesList,
   },
   data() {
     return {
@@ -144,16 +153,85 @@ export default {
       ],
       spliter: null,
       containersArr: ['#split-left', '#split-middle', '#split-right'],
-      // containerSizesArr: [20, 50, 30],
-      // containerMinSizesArr: [300, 400, 300],
     };
   },
   computed: {
     ...mapState(['book']),
+    chaptersWithSummaries() {
+      const chapterWithSummaries = this.flattenChapters(this.book.summaries);
+      console.log(chapterWithSummaries);
+      return chapterWithSummaries;
+    },
     chaptersWithQuotes() {
-      // chapters set extract from quotes
+      const chaptersWithQuotes = this.flattenChapters(this.book.quotes);
+      console.log(chaptersWithQuotes);
+      return chaptersWithQuotes;
+    },
+  },
+  methods: {
+    toggle(btn) {
+      // toggle the btn active state
+
+      const arr = ['info', 'notes', 'quote'];
+      if (arr.includes(btn.icon)) {
+        this.toggleSplitContainers(btn);
+      } else {
+        this.menuButtons.find((item) => item === btn).active = !btn.active;
+      }
+    },
+    toggleSplitContainers(btn) {
+      const selectorsMap = {
+        info: '#split-left',
+        notes: '#split-middle',
+        quote: '#split-right',
+      };
+
+      if (this.containersArr.length > 1) {
+        this.spliter.destroy();
+      }
+
+      this.menuButtons.find((item) => item === btn).active = !btn.active;
+
+      // set the split containers
+      this.containersArr = [];
+      this.menuButtons.slice(0, 3).forEach((item) => {
+        if (item.active) {
+          this.containersArr.push(selectorsMap[item.icon]);
+        }
+      });
+
+      if (this.containersArr.length > 1) {
+        // set containers size
+        let containersSize = [];
+
+        switch (this.containersArr.length) {
+          case 2:
+            if (this.containersArr.includes('#split-left')) {
+              containersSize = [30, 70];
+            } else {
+              containersSize = [50, 50];
+            }
+            break;
+          case 3:
+            containersSize = [20, 50, 30];
+            break;
+          default:
+            break;
+        }
+
+        this.spliter = Split(this.containersArr, {
+          sizes: containersSize,
+          minSize: 300,
+          expandToMin: true,
+          gutterSize: 5,
+          snapOffset: 0,
+        });
+      }
+    },
+    flattenChapters(arr) {
+      // chapters set extract from quotes or summaries
       const chaptersArr = [];
-      this.book.quotes.forEach((item) => {
+      arr.forEach((item) => {
         if (item.chapter) {
           chaptersArr.push(item.chapter);
         }
@@ -164,7 +242,7 @@ export default {
       const categoryFlatten = [];
       flatten(this.book.metadata.category, categoryFlatten);
 
-      // chapters with quotes in order
+      // chapters with content in order
       const chaptersSorted = [];
       categoryFlatten.forEach((chapter) => {
         if (chaptersSet.has(chapter)) {
@@ -174,40 +252,11 @@ export default {
       return chaptersSorted;
     },
   },
-  methods: {
-    toggle(btn) {
-      const arr = ['info', 'notes', 'quote'];
-      const selectorsMap = {
-        info: '#split-left',
-        notes: '#split-middle',
-        quote: '#split-right',
-      };
-
-      if (arr.includes(btn.icon)) {
-        if (this.containersArr.length > 1) this.spliter.destroy(true);
-        this.menuButtons.find((item) => item === btn).active = !btn.active;
-        this.containersArr = [];
-        this.menuButtons.slice(0, 3).forEach((item) => {
-          if (item.active) {
-            this.containersArr.push(selectorsMap[item.icon]);
-          }
-        });
-        console.log(this.containersArr);
-        if (this.containersArr.length > 1) {
-          this.spliter = Split(this.containersArr, {
-            // sizes: this.containerSizesArr,
-            minSize: 300,
-            gutterSize: 5,
-            snapOffset: 0,
-          });
-        }
-      }
-    },
-  },
   mounted() {
     this.spliter = Split(this.containersArr, {
-      // sizes: this.containerSizesArr,
-      // minSize: this.containerMinSizesArr,
+      sizes: [20, 50, 30],
+      minSize: 300,
+      expandToMin: true,
       gutterSize: 5,
       snapOffset: 0,
     });
@@ -235,22 +284,7 @@ export default {
   transition: all;
   transition-duration: 200ms;
   &:hover {
-    // transform: scaleX(3);
     background-color: rgba(209, 213, 219, 0.5);
   }
 }
-
-// .gutter-horizontal {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   &::after {
-//     content: "";
-//     display: block;
-//     border-radius: 1rem;
-//     width: 100%;
-//     height: 5rem;
-//     background-color: rgba(209, 213, 219, 1);
-//   }
-// }
 </style>

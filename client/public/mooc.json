@@ -2459,7 +2459,42 @@
         }
       }
     ],
-    "summaries": [],
+    "summaries": [
+      {
+        "chapter": "第一部",
+        "content": {
+          "type": "doc",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "有种人认为好消息只能通过期待中的电话传来，打电话的还得是你已经认识的人，她不想成为那种人。"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "chapter": "《待宰的羔羊》",
+        "content": {
+          "type": "doc",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "很可能已经有人告诉过他， A. J.只浏览电子邮件，从来不接电话。举办过葬礼吗？倒不是说 A. J.知道的话就会参加，他几乎不怎么了解哈维•罗兹。这显而易见。"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
     "__v": 0
   },
   {

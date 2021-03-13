@@ -119,7 +119,7 @@
         v-for="(item, index) of metadata.category.children"
         :key="index"
         :item="item"
-        :chapters="chapters"
+        :chapters="quotesChapters"
       ></category-tree>
     </ul>
     <footer class="my-12 items-center">
@@ -141,7 +141,7 @@ import StarRating from 'vue-star-rating';
 import CategoryTree from './CategoryTree.vue';
 
 export default {
-  props: ['metadata', 'chapters'],
+  props: ['metadata', 'quotesChapters', 'summariesChapters'],
   components: {
     StarRating,
     CategoryTree,

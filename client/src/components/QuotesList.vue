@@ -160,9 +160,10 @@ import { Editor } from 'tiptap';
 import { mapState } from 'vuex';
 
 export default {
-  props: ['quotes', 'chapters'],
+  props: ['quotes', 'quotesChapters'],
   data() {
     return {
+      sortBy: 'chapter',
       hiddenQuotes: [],
       temp: null,
       editor: null,
@@ -171,46 +172,9 @@ export default {
   computed: {
     ...mapState(['currentChapter']),
     quotesSorted() {
-      const container = this.chaptersContainer();
-      this.quotes.forEach((quote) => {
-        // use tiptap editor getHTML() render HTML from JSON content
-        const quoteTemp = { ...quote };
-        this.editor.setContent(quoteTemp.content, true);
-        quoteTemp.content = this.temp;
-        if (quoteTemp.comment) {
-          this.editor.setContent(quoteTemp.comment, true);
-          quoteTemp.comment = this.temp;
-        }
-
-        // sorted quotes into container
-        const index = container.findIndex(
-          (item) => item.name === quoteTemp.chapter,
-        );
-        if (index !== -1) {
-          container[index].quotes.push(quoteTemp);
-        } else {
-          container[container.length - 1].quotes.push(quoteTemp);
-        }
-        this.temp = null;
-      });
-      return container;
-    },
-  },
-  watch: {
-    currentChapter() {
-      const top = this.$refs[this.currentChapter][0].offsetTop;
-      console.log(top);
-
-      this.$refs.quotesList.scrollTop = top - 6 * 14;
-    },
-  },
-  methods: {
-    backToTopHandler(el) {
-      this.$refs.quotesList.scrollTop = 0;
-    },
-    chaptersContainer() {
+      // if (this.sortBy === 'chapter') {
       const chaptersContainer = [];
-      this.chapters.forEach((chapter) => {
+      this.quotesChapters.forEach((chapter) => {
         chaptersContainer.push({
           name: chapter,
           quotes: [],
@@ -220,7 +184,41 @@ export default {
         name: '未分类(NoChapter)',
         quotes: [],
       });
+      this.quotes.forEach((quote) => {
+        // use tiptap editor getHTML() render HTML from JSON content
+        const quoteTemp = { ...quote };
+
+        quoteTemp.content = this.convert(quote.content, true);
+        if (quote.comment) {
+          quoteTemp.comment = this.convert(quote.comment, true);
+        }
+
+        const index = chaptersContainer.findIndex(
+          (item) => item.name === quote.chapter,
+        );
+
+        if (index !== -1) {
+          chaptersContainer[index].quotes.push(quoteTemp);
+        } else {
+          chaptersContainer[chaptersContainer.length - 1].quotes.push(
+            quoteTemp,
+          );
+        }
+      });
       return chaptersContainer;
+      // }
+    },
+  },
+  watch: {
+    currentChapter() {
+      const top = this.$refs[this.currentChapter][0].offsetTop;
+
+      this.$refs.quotesList.scrollTop = top - 6 * 14;
+    },
+  },
+  methods: {
+    backToTopHandler() {
+      this.$refs.quotesList.scrollTop = 0;
     },
     toggleQuotes(val) {
       const index = this.hiddenQuotes.indexOf(val);
@@ -229,6 +227,13 @@ export default {
       } else {
         this.hiddenQuotes.push(val);
       }
+    },
+    convert(content) {
+      // use tiptap editor getHTML() render HTML from JSON content
+      this.editor.setContent(content, true);
+      const tempContent = this.temp;
+      this.temp = null;
+      return tempContent;
     },
   },
   created() {
