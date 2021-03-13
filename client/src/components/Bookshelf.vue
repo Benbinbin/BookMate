@@ -53,7 +53,7 @@
         </div>
       </div>
       <ul
-        class="selected-list flex flex-nowrap w-full py-4 space-x-8 overflow-x-auto"
+        class="selected-list flex flex-nowrap w-full py-4 space-x-8"
         :class="{ dragging: dragging }"
       >
         <li
@@ -188,11 +188,12 @@ export default {
 }
 
 .selected-list {
+  overflow-x: overlay;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0);
   }
   &:hover::-webkit-scrollbar {
-    height: 12px;
+    height: 13px;
   }
   &:hover::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);

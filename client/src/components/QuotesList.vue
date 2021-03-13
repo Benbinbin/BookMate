@@ -1,5 +1,5 @@
 <template>
-  <div ref="quotesList" class="quotes-list px-3 py-6 overflow-y-auto h-full">
+  <div ref="quotesList" class="quotes-list px-3 py-6 h-full">
     <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
       <div class="chapter py-3 flex justify-between opacity-50">
         <div class="flex items-center">
@@ -243,11 +243,9 @@ export default {
 
 <style lang="scss" scoped>
 .quotes-list {
+  overflow-y: overlay;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0);
-  }
-  &:hover::-webkit-scrollbar {
-    height: 12px;
   }
   &:hover::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);

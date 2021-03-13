@@ -1,5 +1,8 @@
 <template>
-  <div ref="introductionMain" class="introduction-main px-3 py-6 overflow-y-auto">
+  <div
+    ref="introductionMain"
+    class="introduction-main px-3 py-6 flex flex-col"
+  >
     <div class="grid grid-cols-2 gap-3">
       <div
         class="cover bg-contain bg-no-repeat bg-top"
@@ -35,7 +38,7 @@
           @click="showCategory = !showCategory"
         >
           <svg
-            class="w-6 h-6"
+            class="w-5 h-5"
             viewBox="0 0 50 50"
             fill="currentColor"
             xmlns="http://www.w3.org/2000/svg"
@@ -61,22 +64,6 @@
           </svg>
           <span class="text-sm font-bold ml-1.5">目录</span>
         </button>
-        <div class="flex items-start space-x-2">
-          <img
-            src="@/assets/icons/folder.svg"
-            alt="folder icon"
-            class="w-6 h-6 opacity-60"
-          />
-          <ul class="collections flex-grow flex space-x-1.5 overflow-x-auto">
-            <li
-              v-for="item in metadata.collections"
-              :key="item"
-              class="flex-shrink-0 py-1 px-1.5 bg-blue-300 text-white text-xs rounded overflow-x-auto"
-            >
-              {{ item }}
-            </li>
-          </ul>
-        </div>
         <div class="space-x-1">
           <button v-for="item of infoButtons" :key="item.icon">
             <img
@@ -92,7 +79,23 @@
         </div>
       </div>
     </div>
-    <div class="flex items-start space-x-2 my-4">
+    <div class="flex items-start space-x-2 my-3">
+      <img
+        src="@/assets/icons/folder.svg"
+        alt="folder icon"
+        class="w-6 h-6 opacity-60"
+      />
+      <ul class="collections flex-grow flex space-x-1.5 overflow-x-auto">
+        <li
+          v-for="item in metadata.collections"
+          :key="item"
+          class="flex-shrink-0 py-1 px-1.5 bg-blue-300 text-white text-xs rounded overflow-x-auto"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
+    <div class="flex items-start space-x-2 mb-3">
       <img
         src="@/assets/icons/tag.svg"
         alt="tag icon"
@@ -175,13 +178,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .introduction-main {
+  overflow-y: overlay;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0);
-  }
-  &:hover::-webkit-scrollbar {
-    height: 12px;
   }
   &:hover::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);
