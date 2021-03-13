@@ -72,12 +72,12 @@
             <h2 class="text-xl font-bold">概述</h2>
           </div>
         </nav>
-        <summaries-list
+        <!-- <summaries-list
           v-if="book && book.summaries.length > 1"
           :summaries="book.summaries"
           :summaries-chapters="chaptersWithSummaries"
           class="flex-grow"
-        ></summaries-list>
+        ></summaries-list> -->
       </div>
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
@@ -105,7 +105,7 @@ import { mapState } from 'vuex';
 import Split from 'split.js';
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
-import SummariesList from '../components/SummariesList.vue';
+// import SummariesList from '../components/SummariesList.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -124,7 +124,7 @@ export default {
   components: {
     BookInfo,
     QuotesList,
-    SummariesList,
+    // SummariesList,
   },
   data() {
     return {
