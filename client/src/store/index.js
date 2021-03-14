@@ -18,7 +18,10 @@ export default new Vuex.Store({
   state: {
     booksList: [],
     book: null,
-    currentChapter: '',
+    summariesListMode: 'default',
+    quotesListMode: 'chapter',
+    currentSummariesChapter: '',
+    currentQuotesChapter: '',
   },
   getters: {
     readingBooks(state) {
@@ -56,8 +59,17 @@ export default new Vuex.Store({
     SET_BOOK(state, payload) {
       state.book = payload;
     },
-    SET_CHAPTER(state, payload) {
-      state.currentChapter = payload;
+    CHANGE_QUOTES_MODE(state, payload) {
+      state.quotesListMode = payload;
+    },
+    CHANGE_SUMMARIES_MODE(state, payload) {
+      state.summariesListMode = payload;
+    },
+    SET_QUOTES_CHAPTER(state, payload) {
+      state.currentQuotesChapter = payload;
+    },
+    SET_SUMMARIES_CHAPTER(state, payload) {
+      state.currentSummariesChapter = payload;
     },
   },
   actions: {
@@ -85,8 +97,17 @@ export default new Vuex.Store({
           }
         });
     },
-    navChapter(context, payload) {
-      context.commit('SET_CHAPTER', payload);
+    changeQuotesMode(context, payload) {
+      context.commit('CHANGE_QUOTES_MODE', payload);
+    },
+    changeSummariesMode(context, payload) {
+      context.commit('CHANGE_SUMMARIES_MODE', payload);
+    },
+    navQuotes(context, payload) {
+      context.commit('SET_QUOTES_CHAPTER', payload);
+    },
+    navSummaries(context, payload) {
+      context.commit('SET_SUMMARIES_CHAPTER', payload);
     },
   },
 });

@@ -119,7 +119,8 @@
         v-for="(item, index) of metadata.category.children"
         :key="index"
         :item="item"
-        :chapters="quotesChapters"
+        :quotes-chapters="quotesChapters"
+        :summaries-chapters="summariesChapters"
       ></category-tree>
     </ul>
     <footer class="my-12 items-center">
