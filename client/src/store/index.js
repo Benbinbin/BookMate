@@ -18,10 +18,12 @@ export default new Vuex.Store({
   state: {
     booksList: [],
     book: null,
-    summariesListMode: 'default',
+    summariesListMode: 'chapter',
     quotesListMode: 'chapter',
     currentSummariesChapter: '',
     currentQuotesChapter: '',
+    editingSummary: null,
+    editingQuote: null,
   },
   getters: {
     readingBooks(state) {
@@ -59,6 +61,9 @@ export default new Vuex.Store({
     SET_BOOK(state, payload) {
       state.book = payload;
     },
+    CLEAR_BOOK(state) {
+      state.book = null;
+    },
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
     },
@@ -70,6 +75,22 @@ export default new Vuex.Store({
     },
     SET_SUMMARIES_CHAPTER(state, payload) {
       state.currentSummariesChapter = payload;
+    },
+    ACTIVE_SUMMARY_EDITING(state, payload) {
+      console.log(payload);
+      state.editingSummary = payload;
+      console.log(state.editingSummary);
+    },
+    CANCEL_SUMMARY_EDITING(state) {
+      state.editingSummary = null;
+    },
+    SAVE_SUMMARY_EDITING(state, payload) {
+      const index = state.book.summaries.findIndex((item) => item.id === state.editingSummary);
+
+      if (index !== -1) {
+        state.book.summaries[index].content = payload;
+        state.editingSummary = null;
+      }
     },
   },
   actions: {
@@ -97,6 +118,9 @@ export default new Vuex.Store({
           }
         });
     },
+    clearBook(context) {
+      context.commit('CLEAR_BOOK');
+    },
     changeQuotesMode(context, payload) {
       context.commit('CHANGE_QUOTES_MODE', payload);
     },
@@ -108,6 +132,15 @@ export default new Vuex.Store({
     },
     navSummaries(context, payload) {
       context.commit('SET_SUMMARIES_CHAPTER', payload);
+    },
+    activeSummaryEditing(context, payload) {
+      context.commit('ACTIVE_SUMMARY_EDITING', payload);
+    },
+    cancelSummaryEditing(context) {
+      context.commit('CANCEL_SUMMARY_EDITING');
+    },
+    saveSummaryEditing(context, payload) {
+      context.commit('SAVE_SUMMARY_EDITING', payload);
     },
   },
 });

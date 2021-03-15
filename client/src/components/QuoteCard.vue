@@ -1,5 +1,5 @@
 <template>
-  <div class="quote-card rounded-lg outline-none" tabindex="0">
+  <div class="quote-card bg-white rounded-lg outline-none" tabindex="0">
     <div
       class="quote-content border"
       :class="{
@@ -58,13 +58,13 @@
             </div>
           </div>
           <div class="btns right hidden items-center space-x-1.5">
-            <button class="opacity-30">
+            <!-- <button class="opacity-30">
               <img
                 src="@/assets/icons/add.svg"
                 alt="add icon"
                 class="w-5 h-5"
               />
-            </button>
+            </button> -->
             <button class="opacity-30">
               <img
                 src="@/assets/icons/edit.svg"
@@ -100,8 +100,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   props: ['quote'],
+  computed: {
+    ...mapState([
+      'editingQuote',
+    ]),
+  },
 };
 </script>
 
@@ -122,7 +129,7 @@ export default {
     z-index: -10;
   }
 
-  &:focus {
+  &:focus-within {
     box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
     .card-header {
       display: flex;

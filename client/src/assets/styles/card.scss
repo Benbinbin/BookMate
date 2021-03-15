@@ -1,0 +1,16 @@
+.card-body,
+.ProseMirror {
+    h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 3.5rem;
+    }
+    p {
+        line-height: 1.8rem;
+    }
+}
+
+.ProseMirror:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}

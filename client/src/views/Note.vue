@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen w-screen flex">
+  <div class="note-container h-screen w-screen flex">
     <aside
       class="w-20 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
     >
@@ -195,8 +195,6 @@ export default {
         }
       });
 
-      console.log(this.containersArr);
-
       if (this.containersArr.length > 1) {
         // set containers size
         let containersSize = [];
@@ -268,6 +266,9 @@ export default {
       isbn,
     });
   },
+  destroyed() {
+    this.$store.dispatch('clearBook');
+  },
 };
 </script>
 
@@ -278,6 +279,12 @@ export default {
 </style>
 
 <style lang="scss">
+@import "../assets/styles/card.scss";
+
+.note-container {
+  background-color: #FCFCFD;
+}
+
 .gutter {
   cursor: ew-resize;
   background-color: rgba(243, 244, 246, 1);
