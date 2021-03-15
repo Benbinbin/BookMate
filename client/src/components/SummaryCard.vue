@@ -151,7 +151,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .editing {
   box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.2);
 }

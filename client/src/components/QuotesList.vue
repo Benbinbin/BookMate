@@ -1,11 +1,44 @@
 <template>
   <div ref="quotesList" class="quotes-list px-3 py-6 h-full">
+    <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+      <div>
+        <button
+          class="p-2 m-2 bg-blue-200"
+          :class="{ 'is-active': isActive.bold() }"
+          @click="commands.bold"
+        >
+          Bold
+        </button>
+        <button
+          class="p-2 m-2 bg-blue-200"
+          :class="{ 'is-active': isActive.italic() }"
+          @click="commands.italic"
+        >
+          Italic
+        </button>
+        <button
+          class="p-2 m-2 bg-blue-200"
+          :class="{ 'is-active': isActive.heading() }"
+          @click="commands.heading"
+        >
+          Heading
+        </button>
+      </div>
+    </editor-menu-bar>
     <div v-if="quotesListMode === 'default'" class="quotes space-y-3">
       <quote-card
-        v-for="(quote, index) of quotesSorted"
+        v-for="(quote, index) of item.quotes"
         :key="index"
         :quote="quote"
-      ></quote-card>
+        @active-editor="activeEditor(quote)"
+        @inactive-editor="inactiveEditor"
+      >
+        <template v-slot:body v-if="editingQuote && quote.id === editingQuote">
+          <div class="card-body mx-8">
+            <editor-content :editor="editor"></editor-content>
+          </div>
+        </template>
+      </quote-card>
     </div>
     <div v-if="quotesListMode === 'chapter'">
       <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
@@ -51,7 +84,18 @@
             v-for="(quote, index) of item.quotes"
             :key="index"
             :quote="quote"
-          ></quote-card>
+            @active-editor="activeEditor(quote)"
+            @inactive-editor="inactiveEditor"
+          >
+            <template
+              v-slot:body
+              v-if="editingQuote && quote.id === editingQuote"
+            >
+              <div class="card-body mx-8">
+                <editor-content :editor="editor"></editor-content>
+              </div>
+            </template>
+          </quote-card>
         </div>
         <hr class="mx-auto my-8 border-gray-300 w-1/2" />
       </section>
@@ -68,7 +112,8 @@
 </template>
 
 <script>
-import { Editor } from 'tiptap';
+import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
+import { Bold, Italic, Heading } from 'tiptap-extensions';
 import { mapState } from 'vuex';
 import QuoteCard from './QuoteCard.vue';
 
@@ -76,16 +121,20 @@ export default {
   props: ['quotes', 'quotesChapters'],
   components: {
     QuoteCard,
+    EditorContent,
+    EditorMenuBar,
   },
   data() {
     return {
       hiddenQuotes: [],
-      temp: null,
+      HTMLtemp: null,
+      JSONtemp: null,
+      convertor: null,
       editor: null,
     };
   },
   computed: {
-    ...mapState(['quotesListMode', 'currentQuotesChapter']),
+    ...mapState(['quotesListMode', 'currentQuotesChapter', 'editingQuote']),
     quotesRendered() {
       const quotesRendered = [];
       this.quotes.forEach((quote) => {
@@ -150,20 +199,40 @@ export default {
     },
     convert(content) {
       // use tiptap editor getHTML() render HTML from JSON content
-      this.editor.setContent(content, true);
-      const tempContent = this.temp;
-      this.temp = null;
+      this.convertor.setContent(content, true);
+      const tempContent = this.HTMLtemp;
+      this.HTMLtemp = null;
       return tempContent;
     },
     changeMode(mode) {
       this.$store.dispatch('changeQuotesMode', mode);
     },
+    activeEditor(quote) {
+      this.editor.setContent(quote.content, true);
+      this.$store.dispatch('activeQuoteEditing', quote.id);
+      this.editor.focus();
+    },
+    inactiveEditor(type) {
+      if (type === 'cancel') {
+        this.$store.dispatch('cancelQuoteEditing');
+        this.JSONtemp = null;
+      } else if (type === 'save') {
+        this.$store.dispatch('saveQuoteEditing', this.JSONtemp);
+        this.JSONtemp = null;
+      }
+    },
   },
   created() {
-    // use tiptap editor getHTML() render HTML from JSON content
-    this.editor = new Editor({
+    this.convertor = new Editor({
+      extensions: [new Heading(), new Bold(), new Italic()],
       onUpdate: ({ getHTML }) => {
-        this.temp = getHTML();
+        this.HTMLtemp = getHTML();
+      },
+    });
+    this.editor = new Editor({
+      extensions: [new Heading(), new Bold(), new Italic()],
+      onUpdate: ({ getJSON }) => {
+        this.JSONtemp = getJSON();
       },
     });
   },

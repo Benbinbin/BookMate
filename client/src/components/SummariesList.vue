@@ -27,11 +27,21 @@
     </editor-menu-bar>
     <div v-if="summariesListMode === 'default'" class="quotes space-y-3">
       <summary-card
-        v-for="(summary, index) of summariesSorted"
+        v-for="(summary, index) of item.summaries"
         :key="index"
         :summary="summary"
-        @set="setEditor"
-      ></summary-card>
+        @active-editor="activeEditor(summary)"
+        @inactive-editor="inactiveEditor"
+      >
+        <template
+          v-slot:body
+          v-if="editingSummary && summary.id === editingSummary"
+        >
+          <div class="card-body mx-8">
+            <editor-content :editor="editor"></editor-content>
+          </div>
+        </template>
+      </summary-card>
     </div>
     <div v-if="summariesListMode === 'chapter'">
       <section

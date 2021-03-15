@@ -76,6 +76,22 @@ export default new Vuex.Store({
     SET_SUMMARIES_CHAPTER(state, payload) {
       state.currentSummariesChapter = payload;
     },
+    ACTIVE_QUOTE_EDITING(state, payload) {
+      // console.log(payload);
+      state.editingQuote = payload;
+      // console.log(state.editingQuote);
+    },
+    CANCEL_QUOTE_EDITING(state) {
+      state.editingQuote = null;
+    },
+    SAVE_QUOTE_EDITING(state, payload) {
+      const index = state.book.quotes.findIndex((item) => item.id === state.editingQuote);
+
+      if (index !== -1) {
+        state.book.quotes[index].content = payload;
+        state.editingQuote = null;
+      }
+    },
     ACTIVE_SUMMARY_EDITING(state, payload) {
       console.log(payload);
       state.editingSummary = payload;
@@ -132,6 +148,15 @@ export default new Vuex.Store({
     },
     navSummaries(context, payload) {
       context.commit('SET_SUMMARIES_CHAPTER', payload);
+    },
+    activeQuoteEditing(context, payload) {
+      context.commit('ACTIVE_QUOTE_EDITING', payload);
+    },
+    cancelQuoteEditing(context) {
+      context.commit('CANCEL_QUOTE_EDITING');
+    },
+    saveQuoteEditing(context, payload) {
+      context.commit('SAVE_QUOTE_EDITING', payload);
     },
     activeSummaryEditing(context, payload) {
       context.commit('ACTIVE_SUMMARY_EDITING', payload);
