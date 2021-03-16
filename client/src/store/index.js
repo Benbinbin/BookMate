@@ -77,9 +77,7 @@ export default new Vuex.Store({
       state.currentSummariesChapter = payload;
     },
     ACTIVE_QUOTE_EDITING(state, payload) {
-      // console.log(payload);
       state.editingQuote = payload;
-      // console.log(state.editingQuote);
     },
     CANCEL_QUOTE_EDITING(state) {
       state.editingQuote = null;
@@ -93,9 +91,7 @@ export default new Vuex.Store({
       }
     },
     ACTIVE_SUMMARY_EDITING(state, payload) {
-      console.log(payload);
       state.editingSummary = payload;
-      console.log(state.editingSummary);
     },
     CANCEL_SUMMARY_EDITING(state) {
       state.editingSummary = null;
@@ -113,7 +109,6 @@ export default new Vuex.Store({
     getBooksList(context) {
       Vue.axios.get('mooc.json')
         .then((res) => {
-          // console.log(res.data);
           context.commit('SET_BOOKSLIST', res.data);
         })
         .catch((error) => {

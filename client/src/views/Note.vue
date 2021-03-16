@@ -65,13 +65,8 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'notes').active"
         id="split-middle"
-        class="border-2 border-gray-200 flex-grow flex flex-col"
+        class="border-2 border-gray-200 flex-grow h-full flex"
       >
-        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
-          <div class="default w-full h-full flex items-center justify-center">
-            <h2 class="text-xl font-bold">概述</h2>
-          </div>
-        </nav>
         <summaries-list
           v-if="book && book.summaries.length > 1"
           :summaries="book.summaries"
@@ -82,18 +77,12 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
         id="split-right"
-        class="border-2 border-gray-200 flex-grow flex flex-col"
+        class="border-2 border-gray-200 flex-grow h-full flex"
       >
-        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-20">
-          <div class="default w-full h-full flex items-center justify-center">
-            <h2 class="text-xl font-bold">书摘</h2>
-          </div>
-        </nav>
         <quotes-list
           v-if="book && book.quotes.length > 1"
           :quotes="book.quotes"
           :quotes-chapters="chaptersWithQuotes"
-          class="flex-grow"
         ></quotes-list>
       </div>
     </div>
@@ -292,6 +281,24 @@ export default {
   transition-duration: 200ms;
   &:hover {
     background-color: rgba(209, 213, 219, 0.5);
+  }
+}
+</style>
+
+<style lang="scss">
+.editor {
+  position: relative;
+  &__floating-menu {
+    position: absolute;
+    z-index: 1;
+    // margin-top: -0.5rem;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    &.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 }
 </style>
