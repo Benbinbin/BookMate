@@ -15,10 +15,13 @@
         <div class="menubar w-full h-full flex items-center justify-between">
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1.5 rounded"
-           :class="{ 'is-active': isActive.paragraph() }"
-          @click="commands.paragraph"
+            :class="{ 'is-active': isActive.paragraph() }"
+            @click="commands.paragraph"
           >
-            <img src="@/assets/icons/editor/paragraph.svg" alt="paragraph icon" />
+            <img
+              src="@/assets/icons/editor/paragraph.svg"
+              alt="paragraph icon"
+            />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
@@ -66,10 +69,7 @@
             :class="{ 'is-active': isActive.code() }"
             @click="commands.code"
           >
-            <img
-              src="@/assets/icons/editor/code.svg"
-              alt="code icon"
-            />
+            <img src="@/assets/icons/editor/code.svg" alt="code icon" />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
@@ -86,20 +86,14 @@
             :class="{ 'is-active': isActive.bold() }"
             @click="commands.bold"
           >
-            <img
-              src="@/assets/icons/editor/bold.svg"
-              alt="bold icon"
-            />
+            <img src="@/assets/icons/editor/bold.svg" alt="bold icon" />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
             :class="{ 'is-active': isActive.italic() }"
             @click="commands.italic"
           >
-            <img
-              src="@/assets/icons/editor/italic.svg"
-              alt="italic icon"
-            />
+            <img src="@/assets/icons/editor/italic.svg" alt="italic icon" />
           </button>
         </div>
       </editor-menu-bar>
@@ -203,6 +197,7 @@
 </template>
 
 <script>
+// editor package
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
 import {
   Bold,
@@ -224,6 +219,9 @@ import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 
 import { mapState } from 'vuex';
+import QuoteBlock from '../assets/plugins/QuoteBlock';
+import QuoteInline from '../assets/plugins/QuoteInline';
+import InsertQuote from '../assets/plugins/InsertQuote';
 import SummaryCard from './SummaryCard.vue';
 
 export default {
@@ -243,6 +241,7 @@ export default {
       'summariesListMode',
       'currentSummariesChapter',
       'editingSummary',
+      'insertQuote',
     ]),
     summariesRendered() {
       const summariesRendered = [];
@@ -289,6 +288,13 @@ export default {
       // const top = this.$refs[this.currentChapter][0].offsetTop;
       // this.$refs.quotesList.scrollTop = top - 6 * 14;
     },
+    insertQuote() {
+      if (this.editingSummary && this.insertQuote) {
+        this.editor.commands.insertHTML(this.insertQuote);
+      }
+      // console.log(this.insertQuote.inlineDom);
+      // this.editor.setContent(this.insertQuote.inlineDom, true);
+    },
   },
   methods: {
     backToTopHandler() {
@@ -330,6 +336,8 @@ export default {
   created() {
     this.convertor = new Editor({
       extensions: [
+        new QuoteBlock(),
+        new QuoteInline(),
         new Bold(),
         new Blockquote(),
         new BulletList(),
@@ -358,6 +366,9 @@ export default {
     });
     this.editor = new Editor({
       extensions: [
+        new QuoteBlock(),
+        new QuoteInline(),
+        new InsertQuote(),
         new Bold(),
         new Blockquote(),
         new BulletList(),

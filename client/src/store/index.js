@@ -24,6 +24,7 @@ export default new Vuex.Store({
     currentQuotesChapter: '',
     editingSummary: null,
     editingQuote: null,
+    insertQuote: null,
   },
   getters: {
     readingBooks(state) {
@@ -104,6 +105,12 @@ export default new Vuex.Store({
         state.editingSummary = null;
       }
     },
+    INSERT_QUOTE(state, payload) {
+      state.insertQuote = payload;
+    },
+    CLEAR_INSERT_QUOTE(state) {
+      state.insertQuote = null;
+    },
   },
   actions: {
     getBooksList(context) {
@@ -161,6 +168,12 @@ export default new Vuex.Store({
     },
     saveSummaryEditing(context, payload) {
       context.commit('SAVE_SUMMARY_EDITING', payload);
+    },
+    insertQuote(context, payload) {
+      context.commit('INSERT_QUOTE', payload);
+    },
+    clearInsertQuote(context) {
+      context.commit('CLEAR_INSERT_QUOTE');
     },
   },
 });

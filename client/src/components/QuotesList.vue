@@ -1,6 +1,6 @@
 <template>
   <div class="flex-grow flex flex-col">
-    <nav class="flex-shrink-0 h-16  px-6 border-b-2 border-gray-20">
+    <nav class="flex-shrink-0 h-16 px-6 border-b-2 border-gray-20">
       <div
         v-if="!editingQuote"
         class="default w-full h-full flex items-center justify-center"
@@ -15,40 +15,34 @@
         <div class="menubar w-full h-full flex items-center justify-between">
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1.5 rounded"
-           :class="{ 'is-active': isActive.paragraph() }"
-          @click="commands.paragraph"
+            :class="{ 'is-active': isActive.paragraph() }"
+            @click="commands.paragraph"
           >
-            <img src="@/assets/icons/editor/paragraph.svg" alt="paragraph icon" />
+            <img
+              src="@/assets/icons/editor/paragraph.svg"
+              alt="paragraph icon"
+            />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
             :class="{ 'is-active': isActive.code() }"
             @click="commands.code"
           >
-            <img
-              src="@/assets/icons/editor/code.svg"
-              alt="code icon"
-            />
+            <img src="@/assets/icons/editor/code.svg" alt="code icon" />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
             :class="{ 'is-active': isActive.bold() }"
             @click="commands.bold"
           >
-            <img
-              src="@/assets/icons/editor/bold.svg"
-              alt="bold icon"
-            />
+            <img src="@/assets/icons/editor/bold.svg" alt="bold icon" />
           </button>
           <button
             class="w-8 h-8 hover:bg-gray-200 p-1 rounded"
             :class="{ 'is-active': isActive.italic() }"
             @click="commands.italic"
           >
-            <img
-              src="@/assets/icons/editor/italic.svg"
-              alt="italic icon"
-            />
+            <img src="@/assets/icons/editor/italic.svg" alt="italic icon" />
           </button>
         </div>
       </editor-menu-bar>
@@ -136,6 +130,13 @@
                       src="@/assets/icons/editor/codeblock.svg"
                       alt="codeblock icon"
                     />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.blockquote() }"
+                    @click="commands.blockquote"
+                  >
+                    <img src="@/assets/icons/quote.svg" alt="codeblock icon" />
                   </button>
                 </div>
               </editor-floating-menu>
@@ -263,6 +264,16 @@
                       >
                         <img
                           src="@/assets/icons/editor/codeblock.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.blockquote() }"
+                        @click="commands.blockquote"
+                      >
+                        <img
+                          src="@/assets/icons/quote.svg"
                           alt="codeblock icon"
                         />
                       </button>

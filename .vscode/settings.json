@@ -6,6 +6,8 @@
         "booklist",
         "bookmate",
         "bookslist",
-        "set"
+        "prosemirror",
+        "set",
+        "tiptap"
     ]
 }

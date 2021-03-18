@@ -15,6 +15,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'max-len': 'off',
     "global-require": 'off',
-    "no-unused-vars": 'off'
+    "no-unused-vars": 'off',
+    "class-methods-use-this": "off",
   },
 };

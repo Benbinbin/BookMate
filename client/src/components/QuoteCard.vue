@@ -1,7 +1,7 @@
 <template>
   <div
     class="quote-card bg-white rounded-lg outline-none"
-    :class="{editing: quote.id === editingQuote}"
+    :class="{ editing: quote.id === editingQuote }"
     tabindex="0"
   >
     <div
@@ -14,10 +14,22 @@
       <div class="card-header-container h-12">
         <div
           v-if="quote.id !== editingQuote"
-          class="card-header pt-3 px-3 hidden justify-between items-start"
+          class="card-header pt-3 px-3 flex justify-between items-start"
         >
-          <div class="left">
-            <button class="opacity-30 hover:opacity-80 flex items-center">
+          <div class="left flex items-center space-x-1.5">
+            <button
+              class="quote-link opacity-30 flex items-center"
+              @click="insertQuote(quote)"
+            >
+              <img
+                src="@/assets/icons/quote.svg"
+                alt="quote icon"
+                class="w-5 h-5"
+              />
+            </button>
+            <button
+              class="notes-link opacity-30 hover:opacity-80 hidden items-center"
+            >
               <img
                 src="@/assets/icons/notes.svg"
                 alt="note icon"
@@ -26,7 +38,7 @@
               <span class="text-sm font-bold">2</span>
             </button>
           </div>
-          <div class="right flex items-center space-x-1.5">
+          <div class="right hidden items-center space-x-1.5">
             <button class="opacity-30 hover:opacity-80">
               <img
                 src="@/assets/icons/flip.svg"
@@ -45,10 +57,10 @@
         </div>
         <div
           v-if="quote.id === editingQuote"
-          class="card-header pt-3 px-3 hidden justify-between items-start"
+          class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <button
-            class="left flex items-center bg-red-300 rounded p-1 text-white opacity-30 hover:opacity-80"
+            class="left flex items-center bg-red-300 rounded p-1 text-white opacity-50 hover:opacity-80"
             @click="$emit('inactive-editor', 'cancel')"
           >
             <svg
@@ -83,7 +95,7 @@
                 d="M32.5562 19.1938C32.9468 19.5845 33.1662 20.1143 33.1662 20.6667C33.1662 21.2191 32.9468 21.7489 32.5562 22.1396L24.2229 30.4729C23.8322 30.8635 23.3024 31.0829 22.75 31.0829C22.1976 31.0829 21.6678 30.8635 21.2771 30.4729L17.1104 26.3063C16.9114 26.1141 16.7527 25.8842 16.6435 25.63C16.5343 25.3759 16.4769 25.1025 16.4745 24.8259C16.4721 24.5492 16.5248 24.2749 16.6295 24.0189C16.7343 23.7628 16.889 23.5302 17.0846 23.3346C17.2802 23.139 17.5128 22.9843 17.7688 22.8796C18.0249 22.7748 18.2992 22.7221 18.5758 22.7245C18.8525 22.7269 19.1258 22.7844 19.38 22.8936C19.6342 23.0027 19.8641 23.1615 20.0562 23.3604L22.75 26.0542L29.6104 19.1938C30.0011 18.8032 30.5309 18.5838 31.0833 18.5838C31.6358 18.5838 32.1656 18.8032 32.5562 19.1938V19.1938Z"
               />
             </svg>
-            <span class="ml-0.5 text-xs">Finish</span>
+            <span class="ml-0.5 text-xs">Save</span>
           </button>
         </div>
       </div>
@@ -110,13 +122,13 @@
             </div>
           </div>
           <div class="btns right hidden items-center space-x-1.5">
-            <!-- <button class="opacity-30">
+            <button class="opacity-30">
               <img
                 src="@/assets/icons/add.svg"
                 alt="add icon"
                 class="w-5 h-5"
               />
-            </button> -->
+            </button>
             <button
               :class="{
                 'opacity-30 hover:opacity-80': !editingQuote,
@@ -163,8 +175,34 @@ import { mapState } from 'vuex';
 
 export default {
   props: ['quote'],
+  data() {
+    return {};
+  },
   computed: {
     ...mapState(['editingQuote']),
+  },
+  methods: {
+    insertQuote(quote) {
+      const chapter = quote.chapter || '';
+      const location = quote.loaction || 0;
+      // block quote content
+      const blockDom = `<blockquote class="block-quote" data-chapter="${chapter}" data-location="${location}" >
+        ${quote.content}
+        <p>章节：${chapter}</p>
+        <p>页数：${location}</p>
+      </blockquote>`;
+
+      // inline quote text content
+      const parser = new DOMParser();
+      const dom = parser.parseFromString(quote.content, 'text/html');
+      const content = dom.body.textContent;
+      const inlineDom = `<span class="inline-quote" data-chapter="${chapter}" data-location="${location}" >${content}</span>`;
+
+      this.$store.dispatch('insertQuote', {
+        blockDom,
+        inlineDom,
+      });
+    },
   },
 };
 </script>
@@ -175,26 +213,34 @@ export default {
 }
 
 .quote-card {
-  position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-image: url("../assets/icons/quote.svg");
-    background-repeat: no-repeat;
-    background-position: 10px 10px;
-    opacity: 0.05;
-    z-index: -10;
+  // position: relative;
+  // &::before {
+  //   content: "";
+  //   position: absolute;
+  //   top: 0px;
+  //   right: 0px;
+  //   bottom: 0px;
+  //   left: 0px;
+  //   background-image: url("../assets/icons/quote.svg");
+  //   background-repeat: no-repeat;
+  //   background-position: 10px 10px;
+  //   opacity: 0.05;
+  //   z-index: -10;
+  // }
+
+  .quote-link:hover {
+    opacity: 80%;
   }
 
   &:focus-within {
     box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
     .card-header {
-      display: flex;
+      .notes-link,
+      .right {
+        display: flex;
+      }
     }
+
     .quote-type,
     .quote-location,
     .btns {

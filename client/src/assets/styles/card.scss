@@ -30,6 +30,10 @@
         font-weight: bold;
     }
 
+    p {
+        line-height: 1.6rem;
+        margin: 0.28rem;
+    }
     ul,
     ol {
         padding-left: 30px;
@@ -68,7 +72,7 @@
     p > code {
         margin: 0 2px;
         padding: 0 5px;
-        white-space: nowrap;
+        // white-space: nowrap;
         border: 1px solid #eaeaea;
         background-color: #f8f8f8;
         border-radius: 3px;
@@ -150,4 +154,18 @@
 .ProseMirror:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
+}
+
+.inline-quote {
+    border-radius: 0.2rem;
+    padding: 0 0.1rem;
+    background: rgba(255, 166, 0, 0.2);
+}
+
+.block-quote {
+    p {
+        border-radius: 0.2rem;
+        padding: 0 0.1rem;
+        background: rgba(255, 0, 13, 0.2);
+    }
 }
