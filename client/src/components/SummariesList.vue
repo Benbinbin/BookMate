@@ -372,10 +372,10 @@ export default {
       },
     });
     this.editor = new Editor({
-      // dropCursor: {
-      //   color: 'orange',
-      //   width: 5,
-      // },
+      dropCursor: {
+        color: 'rgba(252, 211, 77, 50%)',
+        width: 5,
+      },
       extensions: [
         new QuoteBlock(),
         new QuoteInline(),

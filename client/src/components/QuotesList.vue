@@ -143,6 +143,95 @@
               <editor-content :editor="editor"></editor-content>
             </div>
           </template>
+          <template
+            v-slot:comment
+            v-if="editingQuote && quote.id === editingQuote && quote.comment"
+          >
+            <div
+              class="editor quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+            >
+              <editor-floating-menu
+                :editor="commentEditor"
+                v-slot="{ commands, isActive, menu }"
+              >
+                <div
+                  class="editor__floating-menu ml-2 space-x-0.5"
+                  :class="{ 'is-active': menu.isActive }"
+                  :style="`top: ${menu.top}px`"
+                >
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                    @click="commands.heading({ level: 1 })"
+                  >
+                    <img
+                      src="@/assets/icons/editor/h1.svg"
+                      alt="heading 2 icon"
+                    />
+                  </button>
+
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                    @click="commands.heading({ level: 2 })"
+                  >
+                    <img
+                      src="@/assets/icons/editor/h2.svg"
+                      alt="heading 2 icon"
+                    />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                    @click="commands.heading({ level: 3 })"
+                  >
+                    <img
+                      src="@/assets/icons/editor/h3.svg"
+                      alt="heading 3 icon"
+                    />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.bullet_list() }"
+                    @click="commands.bullet_list"
+                  >
+                    <img
+                      src="@/assets/icons/editor/unordered-list.svg"
+                      alt="unordered list icon"
+                    />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.ordered_list() }"
+                    @click="commands.ordered_list"
+                  >
+                    <img
+                      src="@/assets/icons/editor/ordered-list.svg"
+                      alt="ordered list icon"
+                    />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.code_block() }"
+                    @click="commands.code_block"
+                  >
+                    <img
+                      src="@/assets/icons/editor/codeblock.svg"
+                      alt="codeblock icon"
+                    />
+                  </button>
+                  <button
+                    class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{ 'is-active': isActive.blockquote() }"
+                    @click="commands.blockquote"
+                  >
+                    <img src="@/assets/icons/quote.svg" alt="codeblock icon" />
+                  </button>
+                </div>
+              </editor-floating-menu>
+              <editor-content :editor="commentEditor"></editor-content>
+            </div>
+          </template>
         </quote-card>
       </div>
       <div v-if="quotesListMode === 'chapter'">
@@ -282,6 +371,100 @@
                   <editor-content :editor="editor"></editor-content>
                 </div>
               </template>
+              <template
+                v-slot:comment
+                v-if="
+                  editingQuote && quote.id === editingQuote && quote.comment
+                "
+              >
+                <div
+                  class="editor quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+                >
+                  <editor-floating-menu
+                    :editor="commentEditor"
+                    v-slot="{ commands, isActive, menu }"
+                  >
+                    <div
+                      class="editor__floating-menu ml-2 space-x-0.5"
+                      :class="{ 'is-active': menu.isActive }"
+                      :style="`top: ${menu.top}px`"
+                    >
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.heading({ level: 1 }) }"
+                        @click="commands.heading({ level: 1 })"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h1.svg"
+                          alt="heading 2 icon"
+                        />
+                      </button>
+
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.heading({ level: 2 }) }"
+                        @click="commands.heading({ level: 2 })"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h2.svg"
+                          alt="heading 2 icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.heading({ level: 3 }) }"
+                        @click="commands.heading({ level: 3 })"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h3.svg"
+                          alt="heading 3 icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.bullet_list() }"
+                        @click="commands.bullet_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/unordered-list.svg"
+                          alt="unordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.ordered_list() }"
+                        @click="commands.ordered_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/ordered-list.svg"
+                          alt="ordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.code_block() }"
+                        @click="commands.code_block"
+                      >
+                        <img
+                          src="@/assets/icons/editor/codeblock.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                      <button
+                        class="menubar__button w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.blockquote() }"
+                        @click="commands.blockquote"
+                      >
+                        <img
+                          src="@/assets/icons/quote.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                    </div>
+                  </editor-floating-menu>
+                  <editor-content :editor="commentEditor"></editor-content>
+                </div>
+              </template>
             </quote-card>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
@@ -322,6 +505,7 @@ import {
   Heading,
   TodoItem,
   TodoList,
+  Image,
 } from 'tiptap-extensions';
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
@@ -344,8 +528,10 @@ export default {
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
+      commentJSONtemp: null,
       convertor: null,
       editor: null,
+      commentEditor: null,
     };
   },
   computed: {
@@ -424,6 +610,9 @@ export default {
     },
     activeEditor(quote) {
       this.editor.setContent(quote.content, true);
+      if (quote.comment) {
+        this.commentEditor.setContent(quote.comment, true);
+      }
       this.$store.dispatch('activeQuoteEditing', quote.id);
       this.editor.focus();
     },
@@ -431,9 +620,14 @@ export default {
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
         this.JSONtemp = null;
+        this.commentJSONtemp = null;
       } else if (type === 'save') {
-        this.$store.dispatch('saveQuoteEditing', this.JSONtemp);
+        this.$store.dispatch('saveQuoteEditing', {
+          body: this.JSONtemp,
+          comment: this.commentJSONtemp,
+        });
         this.JSONtemp = null;
+        this.commentJSONtemp = null;
       }
     },
   },
@@ -461,12 +655,17 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
+        new Image(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
       },
     });
     this.editor = new Editor({
+      dropCursor: {
+        color: 'rgba(252, 211, 77, 50%)',
+        width: 5,
+      },
       extensions: [
         new Bold(),
         new Blockquote(),
@@ -489,15 +688,50 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
+        new Image(),
       ],
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
+      },
+    });
+    this.commentEditor = new Editor({
+      dropCursor: {
+        color: 'rgba(252, 211, 77, 50%)',
+        width: 5,
+      },
+      extensions: [
+        new Bold(),
+        new Blockquote(),
+        new BulletList(),
+        new Code(),
+        new CodeBlockHighlight({
+          languages: {
+            javascript,
+            css,
+            xml,
+            markdown,
+          },
+        }),
+        new Italic(),
+        new Link(),
+        new ListItem(),
+        new OrderedList(),
+        new Heading({
+          levels: [1, 2, 3, 4, 5, 6],
+        }),
+        new TodoItem(),
+        new TodoList(),
+        new Image(),
+      ],
+      onUpdate: ({ getJSON }) => {
+        this.commentJSONtemp = getJSON();
       },
     });
   },
   beforeDestroy() {
     this.convertor.destroy();
     this.editor.destroy();
+    this.commentEditor.destroy();
   },
 };
 </script>

@@ -57,6 +57,7 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    // book
     SET_BOOKSLIST(state, payload) {
       state.booksList = payload;
     },
@@ -66,6 +67,7 @@ export default new Vuex.Store({
     CLEAR_BOOK(state) {
       state.book = null;
     },
+    // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
     },
@@ -78,6 +80,7 @@ export default new Vuex.Store({
     SET_SUMMARIES_CHAPTER(state, payload) {
       state.currentSummariesChapter = payload;
     },
+    // quote content
     ACTIVE_QUOTE_EDITING(state, payload) {
       state.editingQuote = payload;
     },
@@ -88,10 +91,14 @@ export default new Vuex.Store({
       const index = state.book.quotes.findIndex((item) => item.id === state.editingQuote);
 
       if (index !== -1) {
-        state.book.quotes[index].content = payload;
+        state.book.quotes[index].content = payload.body;
+        if (state.book.quotes[index].comment || payload.comment) {
+          state.book.quotes[index].comment = payload.comment;
+        }
         state.editingQuote = null;
       }
     },
+    // summary content
     ACTIVE_SUMMARY_EDITING(state, payload) {
       state.editingSummary = payload;
     },
@@ -106,6 +113,7 @@ export default new Vuex.Store({
         state.editingSummary = null;
       }
     },
+    // insert quote
     SET_QUOTE(state, payload) {
       state.candidateQuote = payload;
     },
@@ -118,6 +126,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    // book
     getBooksList(context) {
       Vue.axios.get('mooc.json')
         .then((res) => {
@@ -144,6 +153,7 @@ export default new Vuex.Store({
     clearBook(context) {
       context.commit('CLEAR_BOOK');
     },
+    // quote and summary status
     changeQuotesMode(context, payload) {
       context.commit('CHANGE_QUOTES_MODE', payload);
     },
@@ -156,6 +166,7 @@ export default new Vuex.Store({
     navSummaries(context, payload) {
       context.commit('SET_SUMMARIES_CHAPTER', payload);
     },
+    // quote content
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
     },
@@ -165,6 +176,7 @@ export default new Vuex.Store({
     saveQuoteEditing(context, payload) {
       context.commit('SAVE_QUOTE_EDITING', payload);
     },
+    // summary content
     activeSummaryEditing(context, payload) {
       context.commit('ACTIVE_SUMMARY_EDITING', payload);
     },

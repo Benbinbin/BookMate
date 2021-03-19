@@ -163,11 +163,13 @@
       </div>
     </div>
 
-    <div
-      v-if="quote.comment"
-      class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-      v-html="quote.comment"
-    ></div>
+    <slot name="comment">
+      <div
+        v-if="quote.comment"
+        class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+        v-html="quote.comment"
+      ></div>
+    </slot>
   </div>
 </template>
 

@@ -13,9 +13,9 @@ export default class InsertQuote extends Node {
 
   commands() {
     return {
-      insertHTML: (value, pos) => (state, dispatch) => {
+      insertHTML: (value) => (state, dispatch) => {
         const { selection } = state;
-        console.log(selection);
+        // console.log(selection);
         let element = null;
         if (selection.$from.nodeBefore || selection.$to.nodeAfter) {
           element = document.createElement('div');
@@ -29,14 +29,16 @@ export default class InsertQuote extends Node {
           // console.log(element);
         }
         const slice = DOMParser.fromSchema(state.schema).parseSlice(element);
+        const replaceTransaction = state.tr.replaceSelection(slice);
+        dispatch(replaceTransaction);
+        // if (selection.empty) {
+        // const insertTransaction = state.tr.insert(selection.head, slice.content);
 
-        if (selection.empty) {
-          const insertTransaction = state.tr.insert(selection.head, slice.content);
-          dispatch(insertTransaction);
-        } else {
-          const replaceTransaction = state.tr.replaceSelection(slice);
-          dispatch(replaceTransaction);
-        }
+        // dispatch(insertTransaction);
+        // } else {
+        //   const replaceTransaction = state.tr.replaceSelection(slice);
+        //   dispatch(replaceTransaction);
+        // }
       },
     };
   }
