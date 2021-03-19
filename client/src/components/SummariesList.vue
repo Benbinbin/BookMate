@@ -99,7 +99,7 @@
       </editor-menu-bar>
     </nav>
     <div ref="summariesList" class="summaries-list px-6 py-6 h-full">
-      <div v-if="summariesListMode === 'default'" class="quotes space-y-3">
+      <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
           v-for="(summary, index) of item.summaries"
           :key="index"
@@ -212,6 +212,7 @@ import {
   Heading,
   TodoItem,
   TodoList,
+  Image,
 } from 'tiptap-extensions';
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
@@ -241,6 +242,7 @@ export default {
       'summariesListMode',
       'currentSummariesChapter',
       'editingSummary',
+      'candidateQuote',
       'insertQuote',
     ]),
     summariesRendered() {
@@ -289,11 +291,10 @@ export default {
       // this.$refs.quotesList.scrollTop = top - 6 * 14;
     },
     insertQuote() {
-      if (this.editingSummary && this.insertQuote) {
-        this.editor.commands.insertHTML(this.insertQuote);
+      if (this.editingSummary && this.candidateQuote && this.insertQuote) {
+        // console.log('inserting');
+        this.insert();
       }
-      // console.log(this.insertQuote.inlineDom);
-      // this.editor.setContent(this.insertQuote.inlineDom, true);
     },
   },
   methods: {
@@ -332,7 +333,12 @@ export default {
         this.JSONtemp = null;
       }
     },
+    insert(pos) {
+      this.editor.commands.insertHTML(this.candidateQuote, pos);
+      this.$store.dispatch('clearQuote');
+    },
   },
+  mounted() {},
   created() {
     this.convertor = new Editor({
       extensions: [
@@ -359,12 +365,17 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
+        new Image(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
       },
     });
     this.editor = new Editor({
+      // dropCursor: {
+      //   color: 'orange',
+      //   width: 5,
+      // },
       extensions: [
         new QuoteBlock(),
         new QuoteInline(),
@@ -390,9 +401,17 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
+        new Image(),
       ],
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
+      },
+      onDrop: () => {
+        setTimeout(() => {
+          if (this.editingSummary && this.candidateQuote) {
+            this.insert();
+          }
+        }, 0);
       },
     });
   },

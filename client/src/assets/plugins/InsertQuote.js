@@ -13,25 +13,30 @@ export default class InsertQuote extends Node {
 
   commands() {
     return {
-      insertHTML: (value) => (state, dispatch) => {
+      insertHTML: (value, pos) => (state, dispatch) => {
         const { selection } = state;
-        // console.log(selection.$to);
+        console.log(selection);
         let element = null;
-        if (selection.$from.nodeBefore || selection.$from.nodeAfter) {
+        if (selection.$from.nodeBefore || selection.$to.nodeAfter) {
           element = document.createElement('div');
           element.innerHTML = value.inlineDom;
           // element = value.inlineDom;
-          console.log(element);
+          // console.log(element);
         } else {
           element = document.createElement('div');
           element.innerHTML = value.blockDom;
           // element = value.blockDom;
-          console.log(element);
+          // console.log(element);
         }
-
         const slice = DOMParser.fromSchema(state.schema).parseSlice(element);
-        const transaction = state.tr.insert(selection.head, slice.content);
-        dispatch(transaction);
+
+        if (selection.empty) {
+          const insertTransaction = state.tr.insert(selection.head, slice.content);
+          dispatch(insertTransaction);
+        } else {
+          const replaceTransaction = state.tr.replaceSelection(slice);
+          dispatch(replaceTransaction);
+        }
       },
     };
   }

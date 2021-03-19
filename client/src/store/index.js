@@ -24,7 +24,8 @@ export default new Vuex.Store({
     currentQuotesChapter: '',
     editingSummary: null,
     editingQuote: null,
-    insertQuote: null,
+    candidateQuote: null,
+    insertQuote: false,
   },
   getters: {
     readingBooks(state) {
@@ -105,11 +106,15 @@ export default new Vuex.Store({
         state.editingSummary = null;
       }
     },
-    INSERT_QUOTE(state, payload) {
-      state.insertQuote = payload;
+    SET_QUOTE(state, payload) {
+      state.candidateQuote = payload;
+    },
+    INSERT_QUOTE(state) {
+      if (state.candidateQuote) state.insertQuote = true;
     },
     CLEAR_INSERT_QUOTE(state) {
-      state.insertQuote = null;
+      state.insertQuote = false;
+      state.candidateQuote = null;
     },
   },
   actions: {
@@ -169,10 +174,13 @@ export default new Vuex.Store({
     saveSummaryEditing(context, payload) {
       context.commit('SAVE_SUMMARY_EDITING', payload);
     },
-    insertQuote(context, payload) {
-      context.commit('INSERT_QUOTE', payload);
+    setQuote(context, payload) {
+      context.commit('SET_QUOTE', payload);
     },
-    clearInsertQuote(context) {
+    insertQuote(context) {
+      context.commit('INSERT_QUOTE');
+    },
+    clearQuote(context) {
       context.commit('CLEAR_INSERT_QUOTE');
     },
   },

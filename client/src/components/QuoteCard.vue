@@ -20,6 +20,7 @@
             <button
               class="quote-link opacity-30 flex items-center"
               @click="insertQuote(quote)"
+              @drag="setQuote(quote)"
             >
               <img
                 src="@/assets/icons/quote.svg"
@@ -182,7 +183,7 @@ export default {
     ...mapState(['editingQuote']),
   },
   methods: {
-    insertQuote(quote) {
+    setQuote(quote) {
       const chapter = quote.chapter || '';
       const location = quote.loaction || 0;
       // block quote content
@@ -198,10 +199,14 @@ export default {
       const content = dom.body.textContent;
       const inlineDom = `<span class="inline-quote" data-chapter="${chapter}" data-location="${location}" >${content}</span>`;
 
-      this.$store.dispatch('insertQuote', {
+      this.$store.dispatch('setQuote', {
         blockDom,
         inlineDom,
       });
+    },
+    insertQuote(quote) {
+      this.setQuote(quote);
+      this.$store.dispatch('insertQuote');
     },
   },
 };
@@ -213,6 +218,7 @@ export default {
 }
 
 .quote-card {
+  overflow-x: overlay;
   // position: relative;
   // &::before {
   //   content: "";

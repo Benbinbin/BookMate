@@ -156,11 +156,13 @@ export default {
   box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.2);
 }
 
-.summary-card:focus-within {
-  box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
-  .card-header,
-  .card-footer {
-    display: flex;
+.summary-card {
+  &:focus-within {
+    box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
+    .card-header,
+    .card-footer {
+      display: flex;
+    }
   }
 }
 </style>
