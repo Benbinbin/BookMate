@@ -215,7 +215,7 @@
         </div>
       </editor-menu-bar>
     </nav>
-    <div ref="summariesList" class="summaries-list px-6 py-6 h-full">
+    <div ref="summariesList" v-if="summaries.length > 0" class="summaries-list px-6 py-6 h-full">
       <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
           v-for="(summary, index) of item.summaries"

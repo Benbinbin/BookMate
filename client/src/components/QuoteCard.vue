@@ -7,8 +7,8 @@
     <div
       class="quote-content border"
       :class="{
-        'rounded-lg': !quote.comment,
-        'rounded-t-lg': quote.comment,
+        'rounded-lg': !showComment && quote.id !== quoteAddingComment,
+        'rounded-t-lg': showComment || quote.id === quoteAddingComment,
       }"
     >
       <div class="card-header-container h-12">
@@ -54,7 +54,10 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-70 hover:opacity-100">
+            <button
+              class="opacity-70 hover:opacity-100"
+              @click="$store.dispatch('deleteQuote', quote.id)"
+            >
               <img
                 src="@/assets/icons/delete.svg"
                 alt="delete icon"
@@ -121,7 +124,7 @@
               class="quote-type w-5 h-5"
               :class="{
                 'hidden opacity-30':
-                  quote.type === 'annotation' && !quote.comment,
+                  quote.type === 'annotation' && !showComment,
               }"
             />
             <div class="quote-location ml-1.5 hidden opacity-30">
@@ -130,7 +133,15 @@
             </div>
           </div>
           <div class="btns right hidden items-center space-x-1.5">
-            <button class="opacity-30">
+            <button
+              :class="{
+                'opacity-30 hover:opacity-80': !quoteAddingComment,
+                'opacity-10': quoteAddingComment,
+              }"
+              v-if="!showComment"
+              :disabled="quoteAddingComment"
+              @click="addCommentHandler(quote)"
+            >
               <img
                 src="@/assets/icons/add.svg"
                 alt="add icon"
@@ -172,7 +183,7 @@
 
     <slot name="comment">
       <div
-        v-if="quote.comment"
+        v-if="showComment"
         class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
         v-html="quote.comment"
       ></div>
@@ -186,10 +197,18 @@ import { mapState } from 'vuex';
 export default {
   props: ['quote'],
   data() {
-    return {};
+    return {
+      addComment: false,
+    };
   },
   computed: {
-    ...mapState(['editingQuote']),
+    ...mapState(['editingQuote', 'quoteAddingComment']),
+    showComment() {
+      if (this.quote.comment && this.quote.comment !== '<p></p>') {
+        return true;
+      }
+      return false;
+    },
   },
   methods: {
     setQuote(quote) {
@@ -216,6 +235,10 @@ export default {
     insertQuote(quote) {
       this.setQuote(quote);
       this.$store.dispatch('insertQuote');
+    },
+    addCommentHandler(quote) {
+      this.$store.dispatch('activeAddingComment', quote.id);
+      this.$emit('active-editor');
     },
   },
 };

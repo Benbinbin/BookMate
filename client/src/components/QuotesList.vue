@@ -96,7 +96,11 @@
         </div>
       </editor-menu-bar>
     </nav>
-    <div ref="quotesList" class="flex-grow quotes-list px-3 py-6 h-full">
+    <div
+      ref="quotesList"
+      class="flex-grow quotes-list px-3 py-6 h-full"
+      v-if="quotes.length > 0"
+    >
       <div v-if="quotesListMode === 'default'" class="quotes space-y-3">
         <quote-card
           v-for="(quote, index) of item.quotes"
@@ -263,7 +267,12 @@
           </template>
           <template
             v-slot:comment
-            v-if="editingQuote && quote.id === editingQuote && quote.comment"
+            v-if="
+              (quote.id === editingQuote &&
+                quote.comment &&
+                quote.comment !== '<p></p>') ||
+              quote.id === quoteAddingComment
+            "
           >
             <div
               class="editor quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
@@ -632,7 +641,10 @@
               <template
                 v-slot:comment
                 v-if="
-                  editingQuote && quote.id === editingQuote && quote.comment
+                  (quote.id === editingQuote &&
+                    quote.comment &&
+                    quote.comment !== '<p></p>') ||
+                  quote.id === quoteAddingComment
                 "
               >
                 <div
@@ -864,10 +876,16 @@ export default {
       commentEditor: null,
       showEditorHeadingsModal: false,
       showcommentEditorHeadingsModal: false,
+      addingComment: false,
     };
   },
   computed: {
-    ...mapState(['quotesListMode', 'currentQuotesChapter', 'editingQuote']),
+    ...mapState([
+      'quotesListMode',
+      'currentQuotesChapter',
+      'editingQuote',
+      'quoteAddingComment',
+    ]),
     quotesRendered() {
       const quotesRendered = [];
       this.quotes.forEach((quote) => {
@@ -917,6 +935,11 @@ export default {
         this.$refs.quotesList.scrollTop = top - 6 * 14;
       }
     },
+    quoteAddingComment() {
+      if (this.quoteAddingComment) {
+        this.commentEditor.focus();
+      }
+    },
   },
   methods: {
     backToTopHandler() {
@@ -946,11 +969,17 @@ export default {
         this.commentEditor.setContent(quote.comment, true);
       }
       this.$store.dispatch('activeQuoteEditing', quote.id);
-      this.editor.focus();
+      if (this.quoteAddingComment) {
+        this.commentEditor.focus();
+      } else {
+        this.editor.focus();
+      }
     },
     inactiveEditor(type) {
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
+        this.editor.clearContent();
+        this.commentEditor.clearContent();
         this.JSONtemp = null;
         this.commentJSONtemp = null;
       } else if (type === 'save') {
@@ -958,6 +987,8 @@ export default {
           body: this.JSONtemp,
           comment: this.commentJSONtemp,
         });
+        this.editor.clearContent();
+        this.commentEditor.clearContent();
         this.JSONtemp = null;
         this.commentJSONtemp = null;
       }

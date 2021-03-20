@@ -13,6 +13,7 @@ export default new Vuex.Store({
     currentQuotesChapter: '',
     editingSummary: null,
     editingQuote: null,
+    quoteAddingComment: null,
     candidateQuote: null,
     insertQuote: false,
   },
@@ -49,6 +50,7 @@ export default new Vuex.Store({
     },
     CANCEL_QUOTE_EDITING(state) {
       state.editingQuote = null;
+      state.quoteAddingComment = null;
     },
     SAVE_QUOTE_EDITING(state, payload) {
       const index = state.book.quotes.findIndex((item) => item.id === state.editingQuote);
@@ -59,7 +61,18 @@ export default new Vuex.Store({
           state.book.quotes[index].comment = payload.comment;
         }
         state.editingQuote = null;
+        state.quoteAddingComment = null;
       }
+    },
+    DELETE_QUOTE(state, payload) {
+      const index = state.book.quotes.findIndex((item) => item.id === payload);
+
+      if (index !== -1) {
+        state.book.quotes.splice(index, 1);
+      }
+    },
+    ACTIVE_ADDING_COMMENT(state, payload) {
+      state.quoteAddingComment = payload;
     },
     // summary content
     ACTIVE_SUMMARY_EDITING(state, payload) {
@@ -76,7 +89,14 @@ export default new Vuex.Store({
         state.editingSummary = null;
       }
     },
-    // insert quote
+    DELETE_SUMMARY(state, payload) {
+      const index = state.book.summaries.findIndex((item) => item.id === payload);
+
+      if (index !== -1) {
+        state.book.summaries.splice(index, 1);
+      }
+    },
+    // insert quote to summary
     SET_QUOTE(state, payload) {
       state.candidateQuote = payload;
     },
@@ -139,6 +159,12 @@ export default new Vuex.Store({
     saveQuoteEditing(context, payload) {
       context.commit('SAVE_QUOTE_EDITING', payload);
     },
+    deleteQuote(context, payload) {
+      context.commit('DELETE_QUOTE', payload);
+    },
+    activeAddingComment(context, payload) {
+      context.commit('ACTIVE_ADDING_COMMENT', payload);
+    },
     // summary content
     activeSummaryEditing(context, payload) {
       context.commit('ACTIVE_SUMMARY_EDITING', payload);
@@ -149,6 +175,10 @@ export default new Vuex.Store({
     saveSummaryEditing(context, payload) {
       context.commit('SAVE_SUMMARY_EDITING', payload);
     },
+    deleteSummary(context, payload) {
+      context.commit('DELETE_SUMMARY', payload);
+    },
+    // insert quote into summary
     setQuote(context, payload) {
       context.commit('SET_QUOTE', payload);
     },

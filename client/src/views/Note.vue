@@ -68,7 +68,7 @@
         class="border-2 border-gray-200 flex-grow h-full flex"
       >
         <summaries-list
-          v-if="book && book.summaries.length > 1"
+          v-if="book"
           :summaries="book.summaries"
           :summaries-chapters="chaptersWithSummaries"
           class="flex-grow"
@@ -80,7 +80,7 @@
         class="border-2 border-gray-200 flex-grow h-full flex"
       >
         <quotes-list
-          v-if="book && book.quotes.length > 1"
+          v-if="book"
           :quotes="book.quotes"
           :quotes-chapters="chaptersWithQuotes"
         ></quotes-list>

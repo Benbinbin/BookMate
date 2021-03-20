@@ -91,7 +91,7 @@
               class="w-5 h-5"
             />
           </button>
-          <button class="opacity-70 hover:opacity-100">
+          <button class="opacity-70 hover:opacity-100" @click="$store.dispatch('deleteSummary', summary.id)">
             <img
               src="@/assets/icons/delete.svg"
               alt="delete icon"
