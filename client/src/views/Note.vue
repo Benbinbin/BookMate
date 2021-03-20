@@ -286,19 +286,5 @@ export default {
 </style>
 
 <style lang="scss">
-.editor {
-  position: relative;
-  &__floating-menu {
-    position: absolute;
-    z-index: 1;
-    // margin-top: -0.5rem;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s, visibility 0.2s;
-    &.is-active {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
-}
+
 </style>

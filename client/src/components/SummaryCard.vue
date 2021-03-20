@@ -91,6 +91,13 @@
               class="w-5 h-5"
             />
           </button>
+          <button class="opacity-70 hover:opacity-100">
+            <img
+              src="@/assets/icons/delete.svg"
+              alt="delete icon"
+              class="w-5 h-5"
+            />
+          </button>
         </div>
       </div>
       <div

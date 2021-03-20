@@ -106,7 +106,10 @@
     <footer class="my-24 items-center">
       <hr class="mx-auto w-1/2" />
       <div class="h-full flex justify-center items-center">
-        <button @click="$emit('backToTop')" class="text-blue-400 font-bold my-4">
+        <button
+          @click="$emit('backToTop')"
+          class="text-blue-400 font-bold my-4"
+        >
           返回顶部
         </button>
       </div>
@@ -115,7 +118,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 const filterMap = {
   readingBooks: '在读',
@@ -123,6 +126,17 @@ const filterMap = {
   loveBooks: '喜欢',
   cartBooks: '待购',
 };
+
+function filterBooks(collectionType, key, source) {
+  if (!source.length) return [];
+  const arr = [];
+  source.forEach((item) => {
+    if (item.metadata[collectionType].includes(key)) {
+      arr.push(item);
+    }
+  });
+  return arr;
+}
 
 export default {
   data() {
@@ -156,18 +170,39 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
-      'readingBooks',
-      'laterReadingBooks',
-      'loveBooks',
-      'cartBooks',
-      'collectionsBooks',
-    ]),
+    ...mapState(['booksList']),
     currentList() {
       return {
         name: filterMap[this.selected],
         data: this[this.selected],
       };
+    },
+    readingBooks() {
+      return filterBooks('defaultCollections', 'reading', this.booksList);
+    },
+    laterReadingBooks() {
+      return filterBooks('defaultCollections', 'later', this.booksList);
+    },
+    loveBooks() {
+      return filterBooks('defaultCollections', 'love', this.booksList);
+    },
+    cartBooks(stae) {
+      return filterBooks('defaultCollections', 'cart', this.booksList);
+    },
+    collectionsBooks() {
+      let arr = [];
+      this.booksList.forEach((item) => {
+        arr = arr.concat(item.metadata.collections);
+      });
+      const collections = new Set(arr);
+      const collectionsBooks = [];
+      collections.forEach((val) => {
+        collectionsBooks.push({
+          name: val,
+          data: filterBooks('collections', val, this.booksList),
+        });
+      });
+      return collectionsBooks;
     },
   },
   methods: {
