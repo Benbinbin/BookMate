@@ -333,8 +333,8 @@ export default {
         this.JSONtemp = null;
       }
     },
-    insert(pos) {
-      this.editor.commands.insertHTML(this.candidateQuote, pos);
+    insert() {
+      this.editor.commands.insertHTML(this.candidateQuote);
       this.$store.dispatch('clearQuote');
     },
   },
@@ -406,12 +406,18 @@ export default {
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
       },
-      onDrop: () => {
-        setTimeout(() => {
-          if (this.editingSummary && this.candidateQuote) {
-            this.insert();
-          }
-        }, 0);
+      onDrop: (view, event, slice) => {
+        console.log(slice);
+        if (
+          slice.size === 1
+          && slice.content.content[0].attrs.alt === 'quote icon'
+        ) {
+          setTimeout(() => {
+            if (this.editingSummary && this.candidateQuote) {
+              this.insert();
+            }
+          }, 0);
+        }
       },
     });
   },

@@ -14,8 +14,9 @@ export default class InsertQuote extends Node {
   commands() {
     return {
       insertHTML: (value) => (state, dispatch) => {
+        console.log('inserting');
         const { selection } = state;
-        // console.log(selection);
+        console.log(selection);
         let element = null;
         if (selection.$from.nodeBefore || selection.$to.nodeAfter) {
           element = document.createElement('div');
