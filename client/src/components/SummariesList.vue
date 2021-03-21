@@ -343,7 +343,7 @@ import InsertQuote from '../assets/plugins/InsertQuote';
 import SummaryCard from './SummaryCard.vue';
 
 export default {
-  props: ['summaries', 'summariesChapters'],
+  props: ['category', 'summaries', 'summariesChapters'],
   components: { SummaryCard, EditorContent, EditorMenuBar },
   data() {
     return {

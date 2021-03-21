@@ -266,6 +266,42 @@
             </div>
           </template>
           <template
+            v-slot:location
+            v-if="editingQuote && quote.id === editingQuote"
+          >
+            <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
+              <div class="flex items-center">
+                <label class="flex-shrink-0 opacity-30" for="quote-chapter"
+                  >章节：</label
+                >
+                <treeselect
+                  class="w-4/5 z-10"
+                  v-model="quoteChapter"
+                  placeholder="请选择章节"
+                  :multiple="false"
+                  :options="category"
+                  :normalizer="categoryNormalizer"
+                  :searchable="true"
+                  :flatten-search-results="true"
+                  :close-on-select="true"
+                  :default-expand-level="1"
+                />
+              </div>
+              <div class="flex items-center">
+                <label class="flex-shrink-0 opacity-30" for="quote-location">
+                  页码：</label
+                >
+                <input
+                  class="w-4/5"
+                  id="quote-location"
+                  type="number"
+                  v-model="quoteLocation"
+                  placeholder="请输入页码"
+                />
+              </div>
+            </div>
+          </template>
+          <template
             v-slot:comment
             v-if="
               (quote.id === editingQuote &&
@@ -639,6 +675,45 @@
                 </div>
               </template>
               <template
+                v-slot:location
+                v-if="editingQuote && quote.id === editingQuote"
+              >
+                <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
+                  <div class="flex items-center">
+                    <label class="flex-shrink-0 opacity-30" for="quote-chapter"
+                      >章节：</label
+                    >
+                    <treeselect
+                      class="w-4/5 z-10"
+                      v-model="quoteChapter"
+                      placeholder="请选择章节"
+                      :multiple="false"
+                      :options="category"
+                      :normalizer="categoryNormalizer"
+                      :searchable="true"
+                      :flatten-search-results="true"
+                      :close-on-select="true"
+                      :default-expand-level="1"
+                    />
+                  </div>
+                  <div class="flex items-center">
+                    <label
+                      class="flex-shrink-0 opacity-30"
+                      for="quote-location"
+                    >
+                      页码：</label
+                    >
+                    <input
+                      class="w-4/5"
+                      id="quote-location"
+                      type="number"
+                      v-model="quoteLocation"
+                      placeholder="请输入页码"
+                    />
+                  </div>
+                </div>
+              </template>
+              <template
                 v-slot:comment
                 v-if="
                   (quote.id === editingQuote &&
@@ -854,16 +929,20 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { mapState } from 'vuex';
 import QuoteCard from './QuoteCard.vue';
 
 export default {
-  props: ['quotes', 'quotesChapters'],
+  props: ['category', 'quotes', 'quotesChapters'],
   components: {
     QuoteCard,
     EditorContent,
     EditorMenuBar,
     EditorFloatingMenu,
+    Treeselect,
   },
   data() {
     return {
@@ -871,12 +950,13 @@ export default {
       HTMLtemp: null,
       JSONtemp: null,
       commentJSONtemp: null,
+      quoteChapter: null,
+      quoteLocation: 0,
       convertor: null,
       editor: null,
       commentEditor: null,
       showEditorHeadingsModal: false,
       showcommentEditorHeadingsModal: false,
-      addingComment: false,
     };
   },
   computed: {
@@ -930,7 +1010,10 @@ export default {
   },
   watch: {
     currentQuotesChapter() {
-      if (this.quotesListMode === 'chapter' && this.currentQuotesChapter !== null) {
+      if (
+        this.quotesListMode === 'chapter'
+        && this.currentQuotesChapter !== null
+      ) {
         const top = this.$refs[this.currentQuotesChapter][0].offsetTop;
         this.$refs.quotesList.scrollTop = top - 6 * 14;
       }
@@ -942,6 +1025,13 @@ export default {
     },
   },
   methods: {
+    categoryNormalizer(node) {
+      return {
+        id: node.name,
+        label: node.name,
+        children: node.children,
+      };
+    },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;
     },
@@ -968,6 +1058,8 @@ export default {
       if (quote.comment) {
         this.commentEditor.setContent(quote.comment, true);
       }
+      if (quote.chapter) this.quoteChapter = quote.chapter;
+      if (quote.location) this.quoteLocation = quote.location;
       this.$store.dispatch('activeQuoteEditing', quote.id);
       if (this.quoteAddingComment) {
         this.commentEditor.focus();
@@ -982,8 +1074,12 @@ export default {
         this.commentEditor.clearContent();
         this.JSONtemp = null;
         this.commentJSONtemp = null;
+        this.quoteChapter = null;
+        this.quoteLocation = 0;
       } else if (type === 'save') {
         this.$store.dispatch('saveQuoteEditing', {
+          chapter: this.quoteChapter,
+          location: this.quoteLocation,
           body: this.JSONtemp,
           comment: this.commentJSONtemp,
         });
@@ -991,6 +1087,8 @@ export default {
         this.commentEditor.clearContent();
         this.JSONtemp = null;
         this.commentJSONtemp = null;
+        this.quoteChapter = null;
+        this.quoteLocation = 0;
       }
     },
     markHeading(headerLevel) {
@@ -1137,6 +1235,15 @@ export default {
       opacity: 1;
       visibility: visible;
     }
+  }
+}
+
+#quote-location {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 0 0 10px;
+  &:focus {
+    outline: none;
   }
 }
 </style>

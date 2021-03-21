@@ -66,6 +66,10 @@ export default new Vuex.Store({
         if (state.book.quotes[index].comment || payload.comment) {
           state.book.quotes[index].comment = payload.comment;
         }
+        if (state.book.quotes[index].chapter || payload.chapter) {
+          state.book.quotes[index].chapter = payload.chapter;
+        }
+        state.book.quotes[index].location = payload.location;
         state.editingQuote = null;
         state.quoteAddingComment = null;
       }

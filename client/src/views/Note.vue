@@ -69,6 +69,7 @@
       >
         <summaries-list
           v-if="book"
+          :category="book.metadata.category.children"
           :summaries="book.summaries"
           :summaries-chapters="chaptersWithSummaries"
           class="flex-grow"
@@ -81,6 +82,7 @@
       >
         <quotes-list
           v-if="book"
+          :category="book.metadata.category.children"
           :quotes="book.quotes"
           :quotes-chapters="chaptersWithQuotes"
         ></quotes-list>
@@ -271,7 +273,7 @@ export default {
 @import "../assets/styles/card.scss";
 
 .note-container {
-  background-color: #FCFCFD;
+  background-color: #fcfcfd;
 }
 
 .gutter {
@@ -286,5 +288,12 @@ export default {
 </style>
 
 <style lang="scss">
-
+.vue-treeselect__control {
+  height: 100%;
+  .vue-treeselect__placeholder,
+  .vue-treeselect__single-value {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+}
 </style>

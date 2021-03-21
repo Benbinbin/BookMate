@@ -113,7 +113,7 @@
       <slot name="body">
         <div class="card-body mx-8" v-html="quote.content"></div>
       </slot>
-      <div class="card-footer-container h-14 flex items-end">
+      <div class="card-footer-container h-16 flex items-end">
         <div
           class="card-footer pb-3 px-3 flex justify-between items-end flex-grow"
         >
@@ -127,12 +127,22 @@
                   quote.type === 'annotation' && !showComment,
               }"
             />
-            <div class="quote-location ml-1.5 hidden opacity-30">
-              <p class="text-xs">章节：{{ quote.chapter || "未分类" }}</p>
-              <p class="text-xs">页数：{{ quote.location || "未知" }}</p>
-            </div>
+            <slot name="location">
+              <div
+                class="quote-location ml-1.5 text-xs hidden flex-col space-y-1 opacity-30 "
+              >
+                <p>章节：{{ quote.chapter || "未分类" }}</p>
+                <p>页码：{{ quote.location || "未知" }}</p>
+              </div>
+            </slot>
           </div>
-          <div class="btns right hidden items-center space-x-1.5">
+          <div
+            class="btns right flex-shrink-0 items-center space-x-1.5"
+            :class="{
+              hidden: quote.id !== editingQuote,
+              flex: quote.id === editingQuote,
+            }"
+          >
             <button
               :class="{
                 'opacity-30 hover:opacity-80': !quoteAddingComment,
@@ -218,7 +228,7 @@ export default {
       const blockDom = `<blockquote class="block-quote" data-chapter="${chapter}" data-location="${location}" >
         ${quote.content}
         <p>章节：${chapter}</p>
-        <p>页数：${location}</p>
+        <p>页码：${location}</p>
       </blockquote>`;
 
       // inline quote text content
@@ -252,7 +262,7 @@ export default {
 }
 
 .quote-card {
-  overflow-x: overlay;
+  // overflow-x: overlay;
   // position: relative;
   // &::before {
   //   content: "";
@@ -281,10 +291,13 @@ export default {
       }
     }
 
-    .quote-type,
+    .quote-type {
+      display: block;
+    }
+
     .quote-location,
     .btns {
-      display: block;
+      display: flex;
     }
   }
 }
