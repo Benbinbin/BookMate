@@ -234,7 +234,9 @@ export default {
     },
     insertQuote(quote) {
       this.setQuote(quote);
-      this.$store.dispatch('insertQuote');
+      this.$store.dispatch('insertQuote').then(() => {
+        this.$store.dispatch('clearQuote');
+      });
     },
     addCommentHandler(quote) {
       this.$store.dispatch('activeAddingComment', quote.id);

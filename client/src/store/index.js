@@ -40,9 +40,15 @@ export default new Vuex.Store({
     },
     SET_QUOTES_CHAPTER(state, payload) {
       state.currentQuotesChapter = payload;
+      setTimeout(() => {
+        state.currentQuotesChapter = null;
+      }, 10);
     },
     SET_SUMMARIES_CHAPTER(state, payload) {
       state.currentSummariesChapter = payload;
+      setTimeout(() => {
+        state.currentSummariesChapter = null;
+      }, 10);
     },
     // quote content
     ACTIVE_QUOTE_EDITING(state, payload) {
@@ -104,6 +110,7 @@ export default new Vuex.Store({
       if (state.candidateQuote) state.insertQuote = true;
     },
     CLEAR_INSERT_QUOTE(state) {
+      console.log('clearing quote');
       state.insertQuote = false;
       state.candidateQuote = null;
     },
@@ -146,9 +153,15 @@ export default new Vuex.Store({
     navQuotes(context, payload) {
       context.commit('SET_QUOTES_CHAPTER', payload);
     },
+    clearNavQuotes(context) {
+      context.commit('CLEAR_QUOTES_CHAPTER');
+    },
     navSummaries(context, payload) {
       context.commit('SET_SUMMARIES_CHAPTER', payload);
     },
+    // clearNavSummaries(context) {
+    //   context.commit('CLEAR_SUMMARIES_CHAPTER')
+    // },
     // quote content
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
@@ -183,7 +196,10 @@ export default new Vuex.Store({
       context.commit('SET_QUOTE', payload);
     },
     insertQuote(context) {
-      context.commit('INSERT_QUOTE');
+      return new Promise((resolve, reject) => {
+        context.commit('INSERT_QUOTE');
+        resolve('inserted');
+      });
     },
     clearQuote(context) {
       context.commit('CLEAR_INSERT_QUOTE');

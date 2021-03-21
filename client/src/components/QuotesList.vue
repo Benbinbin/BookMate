@@ -930,7 +930,7 @@ export default {
   },
   watch: {
     currentQuotesChapter() {
-      if (this.quotesListMode === 'chapter') {
+      if (this.quotesListMode === 'chapter' && this.currentQuotesChapter !== null) {
         const top = this.$refs[this.currentQuotesChapter][0].offsetTop;
         this.$refs.quotesList.scrollTop = top - 6 * 14;
       }

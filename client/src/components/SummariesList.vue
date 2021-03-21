@@ -405,8 +405,10 @@ export default {
   },
   watch: {
     currentSummariesChapter() {
-      // const top = this.$refs[this.currentChapter][0].offsetTop;
-      // this.$refs.quotesList.scrollTop = top - 6 * 14;
+      if (this.summariesListMode === 'chapter' && this.currentSummariesChapter !== null) {
+        const top = this.$refs[this.currentSummariesChapter][0].offsetTop;
+        this.$refs.summariesList.scrollTop = top - 6 * 14;
+      }
     },
     insertQuote() {
       if (this.editingSummary && this.candidateQuote && this.insertQuote) {
