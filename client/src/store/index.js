@@ -66,9 +66,7 @@ export default new Vuex.Store({
         if (state.book.quotes[index].comment || payload.comment) {
           state.book.quotes[index].comment = payload.comment;
         }
-        if (state.book.quotes[index].chapter || payload.chapter) {
-          state.book.quotes[index].chapter = payload.chapter;
-        }
+        state.book.quotes[index].chapter = payload.chapter;
         state.book.quotes[index].location = payload.location;
         state.editingQuote = null;
         state.quoteAddingComment = null;
@@ -95,7 +93,8 @@ export default new Vuex.Store({
       const index = state.book.summaries.findIndex((item) => item.id === state.editingSummary);
 
       if (index !== -1) {
-        state.book.summaries[index].content = payload;
+        state.book.summaries[index].content = payload.content;
+        state.book.summaries[index].chapter = payload.chapter;
         state.editingSummary = null;
       }
     },

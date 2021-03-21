@@ -58,7 +58,9 @@
               class="modal-container absolute top-9 inset-x-0 z-20"
               v-show="showHeadingsModal"
             >
-              <div class="modal flex flex-col space-y-1 rounded bg-gray-100 shadow-md">
+              <div
+                class="modal flex flex-col space-y-1 rounded bg-gray-100 shadow-md"
+              >
                 <button
                   class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
                   :class="{ 'is-active': isActive.heading({ level: 1 }) }"
@@ -215,7 +217,11 @@
         </div>
       </editor-menu-bar>
     </nav>
-    <div ref="summariesList" v-if="summaries.length > 0" class="summaries-list px-6 py-6 h-full">
+    <div
+      ref="summariesList"
+      v-if="summaries.length > 0"
+      class="summaries-list px-6 py-6 h-full"
+    >
       <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
           v-for="(summary, index) of item.summaries"
@@ -230,6 +236,28 @@
           >
             <div class="card-body mx-8">
               <editor-content :editor="editor"></editor-content>
+            </div>
+          </template>
+          <template
+            v-slot:location
+            v-if="editingSummary && summary.id === editingSummary"
+          >
+            <div class="summary-location text-xs flex items-center">
+              <label class="flex-shrink-0 opacity-30" for="summary-chapter"
+                >章节：</label
+              >
+              <treeselect
+                class="w-4/5 z-10"
+                v-model="summaryChapter"
+                placeholder="请选择章节"
+                :multiple="false"
+                :options="category"
+                :normalizer="categoryNormalizer"
+                :searchable="true"
+                :flatten-search-results="true"
+                :close-on-select="true"
+                :default-expand-level="1"
+              />
             </div>
           </template>
         </summary-card>
@@ -293,6 +321,28 @@
                   <editor-content :editor="editor"></editor-content>
                 </div>
               </template>
+              <template
+                v-slot:location
+                v-if="editingSummary && summary.id === editingSummary"
+              >
+                <div class="summary-location text-xs flex items-center">
+                  <label class="flex-shrink-0 opacity-30" for="summary-chapter"
+                    >章节：</label
+                  >
+                  <treeselect
+                    class="w-4/5 z-10"
+                    v-model="summaryChapter"
+                    placeholder="请选择章节"
+                    :multiple="false"
+                    :options="category"
+                    :normalizer="categoryNormalizer"
+                    :searchable="true"
+                    :flatten-search-results="true"
+                    :close-on-select="true"
+                    :default-expand-level="1"
+                  />
+                </div>
+              </template>
             </summary-card>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
@@ -336,6 +386,9 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { mapState } from 'vuex';
 import QuoteBlock from '../assets/plugins/QuoteBlock';
 import QuoteInline from '../assets/plugins/QuoteInline';
@@ -344,12 +397,18 @@ import SummaryCard from './SummaryCard.vue';
 
 export default {
   props: ['category', 'summaries', 'summariesChapters'],
-  components: { SummaryCard, EditorContent, EditorMenuBar },
+  components: {
+    SummaryCard,
+    EditorContent,
+    EditorMenuBar,
+    Treeselect,
+  },
   data() {
     return {
       hiddenSummaries: [],
       HTMLtemp: null,
       JSONtemp: null,
+      summaryChapter: null,
       convertor: null,
       editor: null,
       showHeadingsModal: false,
@@ -405,7 +464,10 @@ export default {
   },
   watch: {
     currentSummariesChapter() {
-      if (this.summariesListMode === 'chapter' && this.currentSummariesChapter !== null) {
+      if (
+        this.summariesListMode === 'chapter'
+        && this.currentSummariesChapter !== null
+      ) {
         const top = this.$refs[this.currentSummariesChapter][0].offsetTop;
         this.$refs.summariesList.scrollTop = top - 6 * 14;
       }
@@ -418,6 +480,13 @@ export default {
     },
   },
   methods: {
+    categoryNormalizer(node) {
+      return {
+        id: node.name,
+        label: node.name,
+        children: node.children,
+      };
+    },
     backToTopHandler() {
       this.$refs.summariesList.scrollTop = 0;
     },
@@ -441,6 +510,7 @@ export default {
     },
     activeEditor(summary) {
       this.editor.setContent(summary.content, true);
+      if (summary.chapter) this.summaryChapter = summary.chapter;
       this.$store.dispatch('activeSummaryEditing', summary.id);
       this.editor.focus();
     },
@@ -448,9 +518,14 @@ export default {
       if (type === 'cancel') {
         this.$store.dispatch('cancelSummaryEditing');
         this.JSONtemp = null;
+        this.summaryChapter = null;
       } else if (type === 'save') {
-        this.$store.dispatch('saveSummaryEditing', this.JSONtemp);
+        this.$store.dispatch('saveSummaryEditing', {
+          chapter: this.summaryChapter,
+          content: this.JSONtemp,
+        });
         this.JSONtemp = null;
+        this.summaryChapter = null;
       }
     },
     insert() {

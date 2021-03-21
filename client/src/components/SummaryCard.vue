@@ -51,11 +51,20 @@
     </slot>
     <div class="card-footer-container h-14 flex items-end">
       <div
-        v-if="summary.id !== editingSummary"
-        class="card-footer pb-4 px-4 flex-grow hidden justify-between items-end"
+        class="card-footer pb-4 px-4 flex-grow justify-between items-end"
+        :class="{
+          hidden: summary.id !== editingSummary,
+          flex: summary.id === editingSummary,
+        }"
       >
-        <div class="left"></div>
-        <div class="right flex items-center space-x-1.5">
+        <div class="left flex items-center">
+          <slot name="location">
+            <div class="summary-location text-xs opacity-30">
+              <p>章节：{{ summary.chapter || "未分类" }}</p>
+            </div>
+          </slot>
+        </div>
+        <div class="right flex-shrink-0 flex items-center space-x-1.5">
           <!-- <button class="opacity-30">
               <img
                 src="@/assets/icons/add.svg"
@@ -91,7 +100,10 @@
               class="w-5 h-5"
             />
           </button>
-          <button class="opacity-70 hover:opacity-100" @click="$store.dispatch('deleteSummary', summary.id)">
+          <button
+            class="opacity-70 hover:opacity-100"
+            @click="$store.dispatch('deleteSummary', summary.id)"
+          >
             <img
               src="@/assets/icons/delete.svg"
               alt="delete icon"
@@ -100,7 +112,7 @@
           </button>
         </div>
       </div>
-      <div
+      <!-- <div
         v-if="summary.id === editingSummary"
         class="card-footer pb-4 px-4 flex-grow hidden justify-between items-end"
       >
@@ -142,7 +154,7 @@
           </svg>
           <span class="ml-0.5 text-xs">Save</span>
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
