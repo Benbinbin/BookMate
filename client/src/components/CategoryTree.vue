@@ -113,9 +113,13 @@ export default {
   methods: {
     clickHandler(val) {
       if (val.type === 'summary') {
-        this.$store.dispatch('navSummaries', val.chapter);
+        this.$store.dispatch('navSummaries', val.chapter).then(() => {
+          this.$store.dispatch('clearNavSummaries');
+        });
       } else if (val.type === 'quote') {
-        this.$store.dispatch('navQuotes', val.chapter);
+        this.$store.dispatch('navQuotes', val.chapter).then(() => {
+          this.$store.dispatch('clearNavQuotes');
+        });
       }
     },
   },

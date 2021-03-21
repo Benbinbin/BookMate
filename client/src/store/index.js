@@ -40,15 +40,15 @@ export default new Vuex.Store({
     },
     SET_QUOTES_CHAPTER(state, payload) {
       state.currentQuotesChapter = payload;
-      setTimeout(() => {
-        state.currentQuotesChapter = null;
-      }, 10);
     },
     SET_SUMMARIES_CHAPTER(state, payload) {
       state.currentSummariesChapter = payload;
-      setTimeout(() => {
-        state.currentSummariesChapter = null;
-      }, 10);
+    },
+    CLEAR_QUOTES_CHAPTER(state) {
+      state.currentQuotesChapter = null;
+    },
+    CLEAR_SUMMARIES_CHAPTER(state) {
+      state.currentSummariesChapter = null;
     },
     // quote content
     ACTIVE_QUOTE_EDITING(state, payload) {
@@ -155,17 +155,23 @@ export default new Vuex.Store({
       context.commit('CHANGE_SUMMARIES_MODE', payload);
     },
     navQuotes(context, payload) {
-      context.commit('SET_QUOTES_CHAPTER', payload);
+      return new Promise((resolve, reject) => {
+        context.commit('SET_QUOTES_CHAPTER', payload);
+        resolve('set quotes chapter success');
+      });
     },
     clearNavQuotes(context) {
       context.commit('CLEAR_QUOTES_CHAPTER');
     },
     navSummaries(context, payload) {
-      context.commit('SET_SUMMARIES_CHAPTER', payload);
+      return new Promise((resolve, reject) => {
+        context.commit('SET_SUMMARIES_CHAPTER', payload);
+        resolve('set summaries chapter success');
+      });
     },
-    // clearNavSummaries(context) {
-    //   context.commit('CLEAR_SUMMARIES_CHAPTER')
-    // },
+    clearNavSummaries(context) {
+      context.commit('CLEAR_SUMMARIES_CHAPTER');
+    },
     // quote content
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
