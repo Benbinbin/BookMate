@@ -103,8 +103,9 @@
     >
       <div v-if="quotesListMode === 'default'" class="quotes space-y-3">
         <quote-card
-          v-for="(quote, index) of item.quotes"
-          :key="index"
+          v-for="quote of item.quotes"
+          :key="quote.id"
+          :ref="quote.id"
           :quote="quote"
           @active-editor="activeEditor(quote)"
           @inactive-editor="inactiveEditor"
@@ -507,8 +508,9 @@
             class="quotes space-y-3"
           >
             <quote-card
-              v-for="(quote, index) of item.quotes"
-              :key="index"
+              v-for="quote of item.quotes"
+              :key="quote.id"
+              :ref="quote.id"
               :quote="quote"
               @active-editor="activeEditor(quote)"
               @inactive-editor="inactiveEditor"
@@ -1068,6 +1070,8 @@ export default {
       }
     },
     inactiveEditor(type) {
+      const target = this.editingQuote;
+
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
         this.editor.clearContent();
@@ -1090,6 +1094,11 @@ export default {
         this.quoteChapter = null;
         this.quoteLocation = 0;
       }
+
+      // focus the editing quote
+      this.$nextTick(() => {
+        this.$refs[target][0].$el.focus();
+      });
     },
     markHeading(headerLevel) {
       this.editor.commands.heading({ level: headerLevel });

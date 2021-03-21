@@ -91,7 +91,7 @@
           </button>
           <button
             class="right flex items-center bg-green-500 rounded p-1 text-white opacity-50 hover:opacity-80"
-            @click="$emit('inactive-editor', 'save')"
+            @click="$emit('inactive-editor','save')"
           >
             <svg
               class="w-5 h-5"

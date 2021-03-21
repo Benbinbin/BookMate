@@ -224,8 +224,9 @@
     >
       <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
-          v-for="(summary, index) of item.summaries"
-          :key="index"
+          v-for="summary of item.summaries"
+          :key="summary.id"
+          :ref="summary.id"
           :summary="summary"
           @active-editor="activeEditor(summary)"
           @inactive-editor="inactiveEditor"
@@ -307,8 +308,9 @@
             class="summaries space-y-3"
           >
             <summary-card
-              v-for="(summary, index) of item.summaries"
-              :key="index"
+              v-for="summary of item.summaries"
+              :key="summary.id"
+              :ref="summary.id"
               :summary="summary"
               @active-editor="activeEditor(summary)"
               @inactive-editor="inactiveEditor"
@@ -515,6 +517,8 @@ export default {
       this.editor.focus();
     },
     inactiveEditor(type) {
+      const target = this.editingSummary;
+
       if (type === 'cancel') {
         this.$store.dispatch('cancelSummaryEditing');
         this.JSONtemp = null;
@@ -527,6 +531,11 @@ export default {
         this.JSONtemp = null;
         this.summaryChapter = null;
       }
+
+      // focus the editing summary
+      this.$nextTick(() => {
+        this.$refs[target][0].$el.focus();
+      });
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);
