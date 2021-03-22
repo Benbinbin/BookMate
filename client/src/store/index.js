@@ -58,19 +58,26 @@ export default new Vuex.Store({
       state.editingQuote = null;
       state.quoteAddingComment = null;
     },
-    SAVE_QUOTE_EDITING(state, payload) {
-      const index = state.book.quotes.findIndex((item) => item.id === state.editingQuote);
+    SAVE_QUOTE_EDITING(state, {
+      id, chapter, location, content, comment, type,
+    }) {
+      const index = state.book.quotes.findIndex((item) => item.id === id);
 
-      if (index !== -1) {
-        state.book.quotes[index].content = payload.body;
-        if (state.book.quotes[index].comment || payload.comment) {
-          state.book.quotes[index].comment = payload.comment;
+      if (index === -1) {
+        state.book.quotes.push({
+          id, chapter, location, content, comment, type,
+        });
+      } else {
+        state.book.quotes[index].content = content;
+        if (state.book.quotes[index].comment || comment) {
+          state.book.quotes[index].comment = comment;
         }
-        state.book.quotes[index].chapter = payload.chapter;
-        state.book.quotes[index].location = payload.location;
-        state.editingQuote = null;
-        state.quoteAddingComment = null;
+        state.book.quotes[index].chapter = chapter;
+        state.book.quotes[index].location = location;
+        state.book.quotes[index].type = type;
       }
+      state.editingQuote = null;
+      state.quoteAddingComment = null;
     },
     DELETE_QUOTE(state, payload) {
       const index = state.book.quotes.findIndex((item) => item.id === payload);
@@ -178,6 +185,7 @@ export default new Vuex.Store({
     clearNavSummaries(context) {
       context.commit('CLEAR_SUMMARIES_CHAPTER');
     },
+
     // quote content
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
@@ -186,7 +194,21 @@ export default new Vuex.Store({
       context.commit('CANCEL_QUOTE_EDITING');
     },
     saveQuoteEditing(context, payload) {
-      context.commit('SAVE_QUOTE_EDITING', payload);
+      const {
+        id, chapter, location, content, comment, type,
+      } = payload;
+      return new Promise((resolve, reject) => {
+        if (/new$/.test(id)) {
+          const newID = `quote_${+new Date()}`;
+          context.commit('SAVE_QUOTE_EDITING', {
+            id: newID, chapter, location, content, comment, type,
+          });
+          resolve(newID);
+        } else {
+          context.commit('SAVE_QUOTE_EDITING', payload);
+          resolve(id);
+        }
+      });
     },
     deleteQuote(context, payload) {
       context.commit('DELETE_QUOTE', payload);
@@ -194,6 +216,7 @@ export default new Vuex.Store({
     activeAddingComment(context, payload) {
       context.commit('ACTIVE_ADDING_COMMENT', payload);
     },
+
     // summary content
     activeSummaryEditing(context, payload) {
       context.commit('ACTIVE_SUMMARY_EDITING', payload);
@@ -217,6 +240,7 @@ export default new Vuex.Store({
     deleteSummary(context, payload) {
       context.commit('DELETE_SUMMARY', payload);
     },
+
     // insert quote into summary
     setQuote(context, payload) {
       context.commit('SET_QUOTE', payload);

@@ -149,11 +149,18 @@
           >
             <button
               :class="{
-                'opacity-30 hover:opacity-80': !quoteAddingComment,
-                'opacity-10': quoteAddingComment,
+                'opacity-30 hover:opacity-80':
+                  !editingQuote ||
+                  (editingQuote &&
+                    !quoteAddingComment &&
+                    quote.id === editingQuote),
+                'opacity-10': quoteAddingComment || quote.id !== editingQuote,
               }"
               v-if="!showComment"
-              :disabled="quoteAddingComment"
+              :disabled="
+                quoteAddingComment ||
+                (editingQuote && quote.id !== editingQuote)
+              "
               @click="addCommentHandler(quote)"
             >
               <img

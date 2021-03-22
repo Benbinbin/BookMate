@@ -5,11 +5,14 @@
         v-if="!editingQuote"
         class="default w-full h-full flex justify-between items-center"
       >
-        <button class="flex items-center opacity-30 hover:opacity-80">
+        <button
+          class="flex items-center opacity-30 hover:opacity-80"
+          @click="addNewQuote('whole_book_new')"
+        >
           <img
             class="w-6 h-6"
             src="@/assets/icons/add.svg"
-            alt="add summary icon"
+            alt="add quote icon"
           />
         </button>
         <h2 class="text-xl font-bold">书摘</h2>
@@ -111,6 +114,360 @@
       class="flex-grow quotes-list px-3 py-6 h-full"
       v-if="quotes.length > 0"
     >
+      <quote-card
+        v-if="newQuote && newQuote.id === 'whole_book_new'"
+        ref="whole_book_new"
+        :quote="newQuote"
+        @inactive-editor="inactiveEditor"
+      >
+        <template v-slot:body>
+          <div class="editor card-body mx-8">
+            <editor-floating-menu
+              :editor="editor"
+              v-slot="{ commands, isActive, menu }"
+            >
+              <div
+                class="floating-menubar flex items-center ml-2 space-x-0.5"
+                :class="{ 'is-active': menu.isActive }"
+                :style="`top: ${menu.top}px`"
+              >
+                <div class="headings-container flex items-center relative">
+                  <button
+                    class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{
+                      'is-active':
+                        isActive.heading() || showEditorHeadingsModal,
+                    }"
+                    @click="showEditorHeadingsModal = !showEditorHeadingsModal"
+                  >
+                    <img
+                      src="@/assets/icons/editor/header.svg"
+                      alt="header icon"
+                    />
+                  </button>
+
+                  <div
+                    class="modal-container absolute top-7 left-1 z-20"
+                    v-show="showEditorHeadingsModal"
+                  >
+                    <div
+                      class="modal flex space-x-1 rounded bg-gray-100 shadow-md"
+                    >
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 1 }),
+                        }"
+                        @click="markHeading(1)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h1.svg"
+                          alt="heading 1 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 2 }),
+                        }"
+                        @click="markHeading(2)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h2.svg"
+                          alt="heading 2 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 3 }),
+                        }"
+                        @click="markHeading(3)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h3.svg"
+                          alt="heading 3 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 4 }),
+                        }"
+                        @click="markHeading(4)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h4.svg"
+                          alt="heading 4 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 5 }),
+                        }"
+                        @click="markHeading(5)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h5.svg"
+                          alt="heading 5 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 6 }),
+                        }"
+                        @click="markHeading(6)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h6.svg"
+                          alt="heading 6 icon"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.bullet_list() }"
+                  @click="commands.bullet_list"
+                >
+                  <img
+                    src="@/assets/icons/editor/unordered-list.svg"
+                    alt="unordered list icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.ordered_list() }"
+                  @click="commands.ordered_list"
+                >
+                  <img
+                    src="@/assets/icons/editor/ordered-list.svg"
+                    alt="ordered list icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.code_block() }"
+                  @click="commands.code_block"
+                >
+                  <img
+                    src="@/assets/icons/editor/codeblock.svg"
+                    alt="codeblock icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.blockquote() }"
+                  @click="commands.blockquote"
+                >
+                  <img src="@/assets/icons/quote.svg" alt="codeblock icon" />
+                </button>
+              </div>
+            </editor-floating-menu>
+            <editor-content :editor="editor"></editor-content>
+          </div>
+        </template>
+        <template v-slot:location>
+          <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
+            <div class="flex items-center">
+              <label class="flex-shrink-0 opacity-30" for="quote-chapter"
+                >章节：</label
+              >
+              <treeselect
+                class="w-4/5 z-10"
+                v-model="quoteChapter"
+                placeholder="请选择章节"
+                :multiple="false"
+                :options="category"
+                :normalizer="categoryNormalizer"
+                :searchable="true"
+                :flatten-search-results="true"
+                :close-on-select="true"
+                :default-expand-level="1"
+              />
+            </div>
+            <div class="flex items-center">
+              <label class="flex-shrink-0 opacity-30" for="quote-location">
+                页码：</label
+              >
+              <input
+                class="w-4/5"
+                id="quote-location"
+                type="number"
+                v-model="quoteLocation"
+                placeholder="请输入页码"
+              />
+            </div>
+          </div>
+        </template>
+        <template
+          v-slot:comment
+          v-if="
+            (newQuote.id === editingQuote &&
+              newQuote.comment &&
+              newQuote.comment !== '<p></p>') ||
+            newQuote.id === quoteAddingComment
+          "
+        >
+          <div
+            class="editor quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+          >
+            <editor-floating-menu
+              :editor="commentEditor"
+              v-slot="{ commands, isActive, menu }"
+            >
+              <div
+                class="floating-menubar flex items-center ml-2 space-x-0.5"
+                :class="{ 'is-active': menu.isActive }"
+                :style="`top: ${menu.top}px`"
+              >
+                <div class="headings-container flex items-center relative">
+                  <button
+                    class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                    :class="{
+                      'is-active':
+                        isActive.heading() || showcommentEditorHeadingsModal,
+                    }"
+                    @click="
+                      showcommentEditorHeadingsModal = !showcommentEditorHeadingsModal
+                    "
+                  >
+                    <img
+                      src="@/assets/icons/editor/header.svg"
+                      alt="header icon"
+                    />
+                  </button>
+
+                  <div
+                    class="modal-container absolute top-7 left-1 z-20"
+                    v-show="showcommentEditorHeadingsModal"
+                  >
+                    <div
+                      class="modal flex space-x-1 rounded bg-gray-100 shadow-md"
+                    >
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 1 }),
+                        }"
+                        @click="markCommentHeading(1)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h1.svg"
+                          alt="heading 1 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 2 }),
+                        }"
+                        @click="markCommentHeading(2)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h2.svg"
+                          alt="heading 2 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 3 }),
+                        }"
+                        @click="markCommentHeading(3)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h3.svg"
+                          alt="heading 3 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 4 }),
+                        }"
+                        @click="markCommentHeading(4)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h4.svg"
+                          alt="heading 4 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 5 }),
+                        }"
+                        @click="markCommentHeading(5)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h5.svg"
+                          alt="heading 5 icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{
+                          'is-active': isActive.heading({ level: 6 }),
+                        }"
+                        @click="markCommentHeading(6)"
+                      >
+                        <img
+                          src="@/assets/icons/editor/h6.svg"
+                          alt="heading 6 icon"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.bullet_list() }"
+                  @click="commands.bullet_list"
+                >
+                  <img
+                    src="@/assets/icons/editor/unordered-list.svg"
+                    alt="unordered list icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.ordered_list() }"
+                  @click="commands.ordered_list"
+                >
+                  <img
+                    src="@/assets/icons/editor/ordered-list.svg"
+                    alt="ordered list icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.code_block() }"
+                  @click="commands.code_block"
+                >
+                  <img
+                    src="@/assets/icons/editor/codeblock.svg"
+                    alt="codeblock icon"
+                  />
+                </button>
+                <button
+                  class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                  :class="{ 'is-active': isActive.blockquote() }"
+                  @click="commands.blockquote"
+                >
+                  <img src="@/assets/icons/quote.svg" alt="codeblock icon" />
+                </button>
+              </div>
+            </editor-floating-menu>
+            <editor-content :editor="commentEditor"></editor-content>
+          </div>
+        </template>
+      </quote-card>
       <div v-if="quotesListMode === 'default'" class="quotes space-y-3">
         <quote-card
           v-for="quote of item.quotes"
@@ -481,14 +838,15 @@
         <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
           <div class="chapter py-3 flex justify-between opacity-50">
             <div class="flex items-center">
-              <button>
+              <button  class="flex items-center"
+                @click="addNewQuote(`${item.name}_new`, item.name)">
                 <img
                   src="@/assets/icons/add-circle.svg"
                   alt="add icon"
                   class="flex-shrink-0 w-6 h-6"
                 />
               </button>
-              <span>{{
+              <span class="ml-1">{{
                 item.name !== "未分类(NoChapter)" ? item.name : "未分类"
               }}</span>
             </div>
@@ -517,6 +875,376 @@
             v-show="!hiddenQuotes.includes(item.name)"
             class="quotes space-y-3"
           >
+            <quote-card
+              v-if="newQuote && newQuote.id === `${item.name}_new`"
+              :ref="`${item.name}_new`"
+              :quote="newQuote"
+              @inactive-editor="inactiveEditor"
+            >
+              <template v-slot:body>
+                <div class="editor card-body mx-8">
+                  <editor-floating-menu
+                    :editor="editor"
+                    v-slot="{ commands, isActive, menu }"
+                  >
+                    <div
+                      class="floating-menubar flex items-center ml-2 space-x-0.5"
+                      :class="{ 'is-active': menu.isActive }"
+                      :style="`top: ${menu.top}px`"
+                    >
+                      <div
+                        class="headings-container flex items-center relative"
+                      >
+                        <button
+                          class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                          :class="{
+                            'is-active':
+                              isActive.heading() || showEditorHeadingsModal,
+                          }"
+                          @click="
+                            showEditorHeadingsModal = !showEditorHeadingsModal
+                          "
+                        >
+                          <img
+                            src="@/assets/icons/editor/header.svg"
+                            alt="header icon"
+                          />
+                        </button>
+
+                        <div
+                          class="modal-container absolute top-7 left-1 z-20"
+                          v-show="showEditorHeadingsModal"
+                        >
+                          <div
+                            class="modal flex space-x-1 rounded bg-gray-100 shadow-md"
+                          >
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 1 }),
+                              }"
+                              @click="markHeading(1)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h1.svg"
+                                alt="heading 1 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 2 }),
+                              }"
+                              @click="markHeading(2)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h2.svg"
+                                alt="heading 2 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 3 }),
+                              }"
+                              @click="markHeading(3)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h3.svg"
+                                alt="heading 3 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 4 }),
+                              }"
+                              @click="markHeading(4)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h4.svg"
+                                alt="heading 4 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 5 }),
+                              }"
+                              @click="markHeading(5)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h5.svg"
+                                alt="heading 5 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 6 }),
+                              }"
+                              @click="markHeading(6)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h6.svg"
+                                alt="heading 6 icon"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.bullet_list() }"
+                        @click="commands.bullet_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/unordered-list.svg"
+                          alt="unordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.ordered_list() }"
+                        @click="commands.ordered_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/ordered-list.svg"
+                          alt="ordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.code_block() }"
+                        @click="commands.code_block"
+                      >
+                        <img
+                          src="@/assets/icons/editor/codeblock.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.blockquote() }"
+                        @click="commands.blockquote"
+                      >
+                        <img
+                          src="@/assets/icons/quote.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                    </div>
+                  </editor-floating-menu>
+                  <editor-content :editor="editor"></editor-content>
+                </div>
+              </template>
+              <template v-slot:location>
+                <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
+                  <div class="flex items-center">
+                    <label class="flex-shrink-0 opacity-30" for="quote-chapter"
+                      >章节：</label
+                    >
+                    <treeselect
+                      class="w-4/5 z-10"
+                      v-model="quoteChapter"
+                      placeholder="请选择章节"
+                      :multiple="false"
+                      :options="category"
+                      :normalizer="categoryNormalizer"
+                      :searchable="true"
+                      :flatten-search-results="true"
+                      :close-on-select="true"
+                      :default-expand-level="1"
+                    />
+                  </div>
+                  <div class="flex items-center">
+                    <label
+                      class="flex-shrink-0 opacity-30"
+                      for="quote-location"
+                    >
+                      页码：</label
+                    >
+                    <input
+                      class="w-4/5"
+                      id="quote-location"
+                      type="number"
+                      v-model="quoteLocation"
+                      placeholder="请输入页码"
+                    />
+                  </div>
+                </div>
+              </template>
+              <template
+                v-slot:comment
+                v-if="
+                  (newQuote.id === editingQuote &&
+                    newQuote.comment &&
+                    newQuote.comment !== '<p></p>') ||
+                  newQuote.id === quoteAddingComment
+                "
+              >
+                <div
+                  class="editor quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+                >
+                  <editor-floating-menu
+                    :editor="commentEditor"
+                    v-slot="{ commands, isActive, menu }"
+                  >
+                    <div
+                      class="floating-menubar flex items-center ml-2 space-x-0.5"
+                      :class="{ 'is-active': menu.isActive }"
+                      :style="`top: ${menu.top}px`"
+                    >
+                      <div
+                        class="headings-container flex items-center relative"
+                      >
+                        <button
+                          class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                          :class="{
+                            'is-active':
+                              isActive.heading() ||
+                              showcommentEditorHeadingsModal,
+                          }"
+                          @click="
+                            showcommentEditorHeadingsModal = !showcommentEditorHeadingsModal
+                          "
+                        >
+                          <img
+                            src="@/assets/icons/editor/header.svg"
+                            alt="header icon"
+                          />
+                        </button>
+
+                        <div
+                          class="modal-container absolute top-7 left-1 z-20"
+                          v-show="showcommentEditorHeadingsModal"
+                        >
+                          <div
+                            class="modal flex space-x-1 rounded bg-gray-100 shadow-md"
+                          >
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 1 }),
+                              }"
+                              @click="markCommentHeading(1)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h1.svg"
+                                alt="heading 1 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 2 }),
+                              }"
+                              @click="markCommentHeading(2)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h2.svg"
+                                alt="heading 2 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 3 }),
+                              }"
+                              @click="markCommentHeading(3)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h3.svg"
+                                alt="heading 3 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 4 }),
+                              }"
+                              @click="markCommentHeading(4)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h4.svg"
+                                alt="heading 4 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 5 }),
+                              }"
+                              @click="markCommentHeading(5)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h5.svg"
+                                alt="heading 5 icon"
+                              />
+                            </button>
+                            <button
+                              class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                              :class="{
+                                'is-active': isActive.heading({ level: 6 }),
+                              }"
+                              @click="markCommentHeading(6)"
+                            >
+                              <img
+                                src="@/assets/icons/editor/h6.svg"
+                                alt="heading 6 icon"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.bullet_list() }"
+                        @click="commands.bullet_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/unordered-list.svg"
+                          alt="unordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.ordered_list() }"
+                        @click="commands.ordered_list"
+                      >
+                        <img
+                          src="@/assets/icons/editor/ordered-list.svg"
+                          alt="ordered list icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.code_block() }"
+                        @click="commands.code_block"
+                      >
+                        <img
+                          src="@/assets/icons/editor/codeblock.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                      <button
+                        class="w-6 h-6 hover:bg-gray-200 p-0.5 rounded"
+                        :class="{ 'is-active': isActive.blockquote() }"
+                        @click="commands.blockquote"
+                      >
+                        <img
+                          src="@/assets/icons/quote.svg"
+                          alt="codeblock icon"
+                        />
+                      </button>
+                    </div>
+                  </editor-floating-menu>
+                  <editor-content :editor="commentEditor"></editor-content>
+                </div>
+              </template>
+            </quote-card>
             <quote-card
               v-for="quote of item.quotes"
               :key="quote.id"
@@ -964,6 +1692,8 @@ export default {
       commentJSONtemp: null,
       quoteChapter: null,
       quoteLocation: 0,
+      quoteType: 'annotation',
+      newQuote: null,
       convertor: null,
       editor: null,
       commentEditor: null,
@@ -1066,31 +1796,84 @@ export default {
       this.$store.dispatch('changeQuotesMode', mode);
     },
     activeEditor(quote) {
-      this.editor.setContent(quote.content, true);
-      if (quote.comment) {
-        this.commentEditor.setContent(quote.comment, true);
+      if (!this.editingQuote) {
+        this.editor.setContent(quote.content, true);
+        if (quote.comment) {
+          this.commentEditor.setContent(quote.comment, true);
+        }
+        if (quote.chapter) this.quoteChapter = quote.chapter;
+        if (quote.location) this.quoteLocation = quote.location;
+        this.quoteType = quote.type;
+        this.$store.dispatch('activeQuoteEditing', quote.id);
       }
-      if (quote.chapter) this.quoteChapter = quote.chapter;
-      if (quote.location) this.quoteLocation = quote.location;
-      this.$store.dispatch('activeQuoteEditing', quote.id);
-      if (this.quoteAddingComment) {
-        this.commentEditor.focus();
+
+      this.$nextTick(() => {
+        // console.log(this.$refs[this.editingSummary]);
+        if (this.editingQuote === 'whole_book_new') {
+          this.$refs[this.editingQuote].$el.focus();
+        } else if (
+          /new$/.test(this.editingQuote)
+          && this.editingQuote !== 'whole_book_new'
+        ) {
+          this.$refs[this.editingQuote][0].$el.focus();
+        }
+
+        if (this.quoteAddingComment) {
+          this.commentEditor.focus();
+        } else {
+          this.editor.focus();
+        }
+      });
+    },
+    addNewQuote(newID, newChapter = null) {
+      if (!newChapter || newChapter === '未分类(NoChapter)') {
+        this.newQuote = {
+          id: newID,
+          chapter: null,
+          content: null,
+          location: 0,
+          type: 'annotation',
+        };
       } else {
-        this.editor.focus();
+        this.newQuote = {
+          id: newID,
+          chapter: newChapter,
+          content: null,
+          location: 0,
+          type: 'annotation',
+        };
       }
+
+      this.activeEditor(this.newQuote);
     },
     inactiveEditor(type) {
-      const target = this.editingQuote;
+      let target = this.editingQuote;
 
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
+        if (!/new$/.test(target)) {
+          // focus the editing quote
+          this.$nextTick(() => {
+            this.$refs[target][0].$el.focus();
+          });
+        }
       } else if (type === 'save') {
-        this.$store.dispatch('saveQuoteEditing', {
-          chapter: this.quoteChapter,
-          location: this.quoteLocation,
-          body: this.JSONtemp,
-          comment: this.commentJSONtemp,
-        });
+        this.$store
+          .dispatch('saveQuoteEditing', {
+            id: this.editingQuote,
+            chapter: this.quoteChapter,
+            location: this.quoteLocation,
+            content: this.JSONtemp,
+            comment: this.commentJSONtemp,
+            type: this.quoteType,
+          })
+          .then((id) => {
+            target = id;
+            // focus the editing quote
+            this.$nextTick(() => {
+              this.$refs[target][0].$el.focus();
+            });
+          });
       }
       this.editor.clearContent();
       this.commentEditor.clearContent();
@@ -1098,11 +1881,7 @@ export default {
       this.commentJSONtemp = null;
       this.quoteChapter = null;
       this.quoteLocation = 0;
-
-      // focus the editing quote
-      this.$nextTick(() => {
-        this.$refs[target][0].$el.focus();
-      });
+      this.newQuote = null;
     },
     markHeading(headerLevel) {
       this.editor.commands.heading({ level: headerLevel });

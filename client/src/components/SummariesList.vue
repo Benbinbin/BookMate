@@ -27,7 +27,7 @@
       >
         <div class="menubar w-full h-full flex items-center space-x-2">
           <button
-            class="flex-grow flex items-center justify-center text-red-200 hover:bg-red-200 hover:text-white p-1.5 rounded"
+            class="flex-grow flex items-center justify-center bg-red-200 text-white p-1.5 rounded"
             @click="inactiveEditor('cancel')"
           >
             <svg
@@ -242,7 +242,6 @@
       >
         <template
           v-slot:body
-          v-if="editingSummary && newSummary.id === editingSummary"
         >
           <div class="card-body mx-8">
             <editor-content :editor="editor"></editor-content>
@@ -250,7 +249,6 @@
         </template>
         <template
           v-slot:location
-          v-if="editingSummary && newSummary.id === editingSummary"
         >
           <div class="summary-location text-xs flex items-center">
             <label class="flex-shrink-0 opacity-30" for="summary-chapter"
@@ -365,7 +363,6 @@
             >
               <template
                 v-slot:body
-                v-if="editingSummary && newSummary.id === editingSummary"
               >
                 <div class="card-body mx-8">
                   <editor-content :editor="editor"></editor-content>
@@ -373,7 +370,6 @@
               </template>
               <template
                 v-slot:location
-                v-if="editingSummary && newSummary.id === editingSummary"
               >
                 <div class="summary-location text-xs flex items-center">
                   <label class="flex-shrink-0 opacity-30" for="summary-chapter"
@@ -739,7 +735,7 @@ export default {
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
       },
-      onDrop: (view, event, slice) => {
+      onDrop: (slice) => {
         // console.log(slice);
         if (
           slice.size === 1
