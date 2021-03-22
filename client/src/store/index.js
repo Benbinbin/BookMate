@@ -204,7 +204,7 @@ export default new Vuex.Store({
     saveSummaryEditing(context, payload) {
       const { id, content, chapter } = payload;
       return new Promise((resolve, reject) => {
-        if (id === 'new') {
+        if (/new$/.test(id)) {
           const newID = `summary_${+new Date()}`;
           context.commit('SAVE_SUMMARY_EDITING', { id: newID, chapter, content });
           resolve(newID);

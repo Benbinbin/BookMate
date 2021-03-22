@@ -1084,12 +1084,6 @@ export default {
 
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
-        this.editor.clearContent();
-        this.commentEditor.clearContent();
-        this.JSONtemp = null;
-        this.commentJSONtemp = null;
-        this.quoteChapter = null;
-        this.quoteLocation = 0;
       } else if (type === 'save') {
         this.$store.dispatch('saveQuoteEditing', {
           chapter: this.quoteChapter,
@@ -1097,13 +1091,13 @@ export default {
           body: this.JSONtemp,
           comment: this.commentJSONtemp,
         });
-        this.editor.clearContent();
-        this.commentEditor.clearContent();
-        this.JSONtemp = null;
-        this.commentJSONtemp = null;
-        this.quoteChapter = null;
-        this.quoteLocation = 0;
       }
+      this.editor.clearContent();
+      this.commentEditor.clearContent();
+      this.JSONtemp = null;
+      this.commentJSONtemp = null;
+      this.quoteChapter = null;
+      this.quoteLocation = 0;
 
       // focus the editing quote
       this.$nextTick(() => {

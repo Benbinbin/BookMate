@@ -239,7 +239,6 @@
         v-if="newSummary && newSummary.id === 'whole_book_new'"
         ref="whole_book_new"
         :summary="newSummary"
-        @inactive-editor="inactiveEditor"
       >
         <template
           v-slot:body
@@ -279,7 +278,6 @@
           :ref="summary.id"
           :summary="summary"
           @active-editor="activeEditor(summary)"
-          @inactive-editor="inactiveEditor"
         >
           <template
             v-slot:body
@@ -323,7 +321,7 @@
             <div class="flex items-center">
               <button
                 class="flex items-center"
-                @click="addNewSummary(`${item.name}_new`)"
+                @click="addNewSummary(`${item.name}_new`, item.name)"
               >
                 <img
                   src="@/assets/icons/add-circle.svg"
@@ -364,7 +362,6 @@
               v-if="newSummary && newSummary.id === `${item.name}_new`"
               :ref="`${item.name}_new`"
               :summary="newSummary"
-              @inactive-editor="inactiveEditor"
             >
               <template
                 v-slot:body
@@ -403,7 +400,6 @@
               :ref="summary.id"
               :summary="summary"
               @active-editor="activeEditor(summary)"
-              @inactive-editor="inactiveEditor"
             >
               <template
                 v-slot:body
@@ -607,7 +603,7 @@ export default {
       this.$store.dispatch('activeSummaryEditing', summary.id);
 
       this.$nextTick(() => {
-        console.log(this.$refs[this.editingSummary]);
+        // console.log(this.$refs[this.editingSummary]);
         if (this.editingSummary === 'whole_book_new') {
           this.$refs[this.editingSummary].$el.focus();
         } else if (
@@ -619,25 +615,33 @@ export default {
         this.editor.focus();
       });
     },
-    addNewSummary(val) {
-      this.newSummary = {
-        chapter: null,
-        content: null,
-        id: val,
-      };
+    addNewSummary(newID, newChapter = null) {
+      if (!newChapter || newChapter === '整书(whole)') {
+        this.newSummary = {
+          chapter: null,
+          content: null,
+          id: newID,
+        };
+      } else {
+        this.newSummary = {
+          chapter: newChapter,
+          content: null,
+          id: newID,
+        };
+      }
+
       this.activeEditor(this.newSummary);
     },
     inactiveEditor(type) {
       let target = this.editingSummary;
       if (type === 'cancel') {
         this.$store.dispatch('cancelSummaryEditing');
-        this.JSONtemp = null;
-        this.summaryChapter = null;
-        this.newSummary = null;
-        if (/new$/.test(target)) return;
-        this.$nextTick(() => {
-          this.$refs[target][0].$el.focus();
-        });
+
+        if (!/new$/.test(target)) {
+          this.$nextTick(() => {
+            this.$refs[target][0].$el.focus();
+          });
+        }
       } else if (type === 'save') {
         this.$store
           .dispatch('saveSummaryEditing', {
@@ -652,11 +656,11 @@ export default {
               this.$refs[target][0].$el.focus();
             });
           });
-
-        this.JSONtemp = null;
-        this.summaryChapter = null;
-        this.newSummary = null;
       }
+      this.editor.clearContent();
+      this.JSONtemp = null;
+      this.summaryChapter = null;
+      this.newSummary = null;
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);
@@ -736,7 +740,7 @@ export default {
         this.JSONtemp = getJSON();
       },
       onDrop: (view, event, slice) => {
-        console.log(slice);
+        // console.log(slice);
         if (
           slice.size === 1
           && slice.content.content[0].attrs.alt === 'quote icon'
