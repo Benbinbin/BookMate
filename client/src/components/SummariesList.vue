@@ -3,9 +3,22 @@
     <nav class="flex-shrink-0 h-16 px-8 border-b-2 border-gray-20">
       <div
         v-if="!editingSummary"
-        class="default w-full h-full flex items-center justify-center"
+        class="default w-full h-full flex justify-between items-center"
       >
+        <button
+          class="flex items-center opacity-30 hover:opacity-80"
+          @click="addNewSummary('whole_book_new')"
+        >
+          <img
+            class="w-6 h-6"
+            src="@/assets/icons/add.svg"
+            alt="add summary icon"
+          />
+        </button>
         <h2 class="text-xl font-bold">概述</h2>
+        <button class="flex items-center opacity-30 hover:opacity-80">
+          <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
+        </button>
       </div>
       <editor-menu-bar
         v-if="editingSummary"
@@ -222,6 +235,43 @@
       v-if="summaries.length > 0"
       class="summaries-list px-6 py-6 h-full"
     >
+      <summary-card
+        v-if="newSummary && newSummary.id === 'whole_book_new'"
+        ref="whole_book_new"
+        :summary="newSummary"
+        @inactive-editor="inactiveEditor"
+      >
+        <template
+          v-slot:body
+          v-if="editingSummary && newSummary.id === editingSummary"
+        >
+          <div class="card-body mx-8">
+            <editor-content :editor="editor"></editor-content>
+          </div>
+        </template>
+        <template
+          v-slot:location
+          v-if="editingSummary && newSummary.id === editingSummary"
+        >
+          <div class="summary-location text-xs flex items-center">
+            <label class="flex-shrink-0 opacity-30" for="summary-chapter"
+              >章节：</label
+            >
+            <treeselect
+              class="w-4/5 z-10"
+              v-model="summaryChapter"
+              placeholder="请选择章节"
+              :multiple="false"
+              :options="category"
+              :normalizer="categoryNormalizer"
+              :searchable="true"
+              :flatten-search-results="true"
+              :close-on-select="true"
+              :default-expand-level="1"
+            />
+          </div>
+        </template>
+      </summary-card>
       <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
           v-for="summary of item.summaries"
@@ -271,7 +321,10 @@
         >
           <div class="chapter py-3 flex justify-between opacity-50">
             <div class="flex items-center">
-              <button>
+              <button
+                class="flex items-center"
+                @click="addNewSummary(`${item.name}_new`)"
+              >
                 <img
                   src="@/assets/icons/add-circle.svg"
                   alt="add icon"
@@ -307,6 +360,43 @@
             v-show="!hiddenSummaries.includes(item.name)"
             class="summaries space-y-3"
           >
+            <summary-card
+              v-if="newSummary && newSummary.id === `${item.name}_new`"
+              :ref="`${item.name}_new`"
+              :summary="newSummary"
+              @inactive-editor="inactiveEditor"
+            >
+              <template
+                v-slot:body
+                v-if="editingSummary && newSummary.id === editingSummary"
+              >
+                <div class="card-body mx-8">
+                  <editor-content :editor="editor"></editor-content>
+                </div>
+              </template>
+              <template
+                v-slot:location
+                v-if="editingSummary && newSummary.id === editingSummary"
+              >
+                <div class="summary-location text-xs flex items-center">
+                  <label class="flex-shrink-0 opacity-30" for="summary-chapter"
+                    >章节：</label
+                  >
+                  <treeselect
+                    class="w-4/5 z-10"
+                    v-model="summaryChapter"
+                    placeholder="请选择章节"
+                    :multiple="false"
+                    :options="category"
+                    :normalizer="categoryNormalizer"
+                    :searchable="true"
+                    :flatten-search-results="true"
+                    :close-on-select="true"
+                    :default-expand-level="1"
+                  />
+                </div>
+              </template>
+            </summary-card>
             <summary-card
               v-for="summary of item.summaries"
               :key="summary.id"
@@ -411,6 +501,7 @@ export default {
       HTMLtemp: null,
       JSONtemp: null,
       summaryChapter: null,
+      newSummary: null,
       convertor: null,
       editor: null,
       showHeadingsModal: false,
@@ -514,28 +605,58 @@ export default {
       this.editor.setContent(summary.content, true);
       if (summary.chapter) this.summaryChapter = summary.chapter;
       this.$store.dispatch('activeSummaryEditing', summary.id);
-      this.editor.focus();
+
+      this.$nextTick(() => {
+        console.log(this.$refs[this.editingSummary]);
+        if (this.editingSummary === 'whole_book_new') {
+          this.$refs[this.editingSummary].$el.focus();
+        } else if (
+          /new$/.test(this.editingSummary)
+          && this.editingSummary !== 'whole_book_new'
+        ) {
+          this.$refs[this.editingSummary][0].$el.focus();
+        }
+        this.editor.focus();
+      });
+    },
+    addNewSummary(val) {
+      this.newSummary = {
+        chapter: null,
+        content: null,
+        id: val,
+      };
+      this.activeEditor(this.newSummary);
     },
     inactiveEditor(type) {
-      const target = this.editingSummary;
-
+      let target = this.editingSummary;
       if (type === 'cancel') {
         this.$store.dispatch('cancelSummaryEditing');
         this.JSONtemp = null;
         this.summaryChapter = null;
-      } else if (type === 'save') {
-        this.$store.dispatch('saveSummaryEditing', {
-          chapter: this.summaryChapter,
-          content: this.JSONtemp,
+        this.newSummary = null;
+        if (/new$/.test(target)) return;
+        this.$nextTick(() => {
+          this.$refs[target][0].$el.focus();
         });
+      } else if (type === 'save') {
+        this.$store
+          .dispatch('saveSummaryEditing', {
+            id: this.editingSummary,
+            chapter: this.summaryChapter,
+            content: this.JSONtemp,
+          })
+          .then((id) => {
+            target = id;
+
+            this.$nextTick(() => {
+              this.$refs[target][0].$el.focus();
+            });
+          });
+
         this.JSONtemp = null;
         this.summaryChapter = null;
+        this.newSummary = null;
       }
-
-      // focus the editing summary
-      this.$nextTick(() => {
-        this.$refs[target][0].$el.focus();
-      });
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);

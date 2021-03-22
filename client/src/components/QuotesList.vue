@@ -3,9 +3,19 @@
     <nav class="flex-shrink-0 h-16 px-6 border-b-2 border-gray-20">
       <div
         v-if="!editingQuote"
-        class="default w-full h-full flex items-center justify-center"
+        class="default w-full h-full flex justify-between items-center"
       >
+        <button class="flex items-center opacity-30 hover:opacity-80">
+          <img
+            class="w-6 h-6"
+            src="@/assets/icons/add.svg"
+            alt="add summary icon"
+          />
+        </button>
         <h2 class="text-xl font-bold">书摘</h2>
+        <button class="flex items-center opacity-30 hover:opacity-80">
+          <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
+        </button>
       </div>
       <editor-menu-bar
         v-if="editingQuote"

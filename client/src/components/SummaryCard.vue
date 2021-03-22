@@ -101,7 +101,11 @@
             />
           </button>
           <button
-            class="opacity-70 hover:opacity-100"
+            :class="{
+              'opacity-70 hover:opacity-100': !editingSummary,
+              'opacity-30': editingSummary,
+            }"
+            :disabled="editingSummary"
             @click="$store.dispatch('deleteSummary', summary.id)"
           >
             <img

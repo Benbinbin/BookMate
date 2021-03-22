@@ -55,7 +55,11 @@
               />
             </button>
             <button
-              class="opacity-70 hover:opacity-100"
+              :class="{
+                'opacity-70 hover:opacity-100': !editingQuote,
+                'opacity-30': editingQuote,
+              }"
+              :disabled="editingQuote"
               @click="$store.dispatch('deleteQuote', quote.id)"
             >
               <img
@@ -91,7 +95,7 @@
           </button>
           <button
             class="right flex items-center bg-green-500 rounded p-1 text-white opacity-50 hover:opacity-80"
-            @click="$emit('inactive-editor','save')"
+            @click="$emit('inactive-editor', 'save')"
           >
             <svg
               class="w-5 h-5"
@@ -129,7 +133,7 @@
             />
             <slot name="location">
               <div
-                class="quote-location ml-1.5 text-xs hidden flex-col space-y-1 opacity-30 "
+                class="quote-location ml-1.5 text-xs hidden flex-col space-y-1 opacity-30"
               >
                 <p>章节：{{ quote.chapter || "未分类" }}</p>
                 <p>页码：{{ quote.location || "未知" }}</p>

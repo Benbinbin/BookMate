@@ -89,14 +89,21 @@ export default new Vuex.Store({
     CANCEL_SUMMARY_EDITING(state) {
       state.editingSummary = null;
     },
-    SAVE_SUMMARY_EDITING(state, payload) {
-      const index = state.book.summaries.findIndex((item) => item.id === state.editingSummary);
+    SAVE_SUMMARY_EDITING(state, { id, chapter, content }) {
+      const index = state.book.summaries.findIndex((item) => item.id === id);
 
-      if (index !== -1) {
-        state.book.summaries[index].content = payload.content;
-        state.book.summaries[index].chapter = payload.chapter;
-        state.editingSummary = null;
+      if (index === -1) {
+        state.book.summaries.push({
+          id,
+          chapter,
+          content,
+        });
+      } else {
+        state.book.summaries[index].content = content;
+        state.book.summaries[index].chapter = chapter;
       }
+
+      state.editingSummary = null;
     },
     DELETE_SUMMARY(state, payload) {
       const index = state.book.summaries.findIndex((item) => item.id === payload);
@@ -195,7 +202,17 @@ export default new Vuex.Store({
       context.commit('CANCEL_SUMMARY_EDITING');
     },
     saveSummaryEditing(context, payload) {
-      context.commit('SAVE_SUMMARY_EDITING', payload);
+      const { id, content, chapter } = payload;
+      return new Promise((resolve, reject) => {
+        if (id === 'new') {
+          const newID = `summary_${+new Date()}`;
+          context.commit('SAVE_SUMMARY_EDITING', { id: newID, chapter, content });
+          resolve(newID);
+        } else {
+          context.commit('SAVE_SUMMARY_EDITING', payload);
+          resolve(id);
+        }
+      });
     },
     deleteSummary(context, payload) {
       context.commit('DELETE_SUMMARY', payload);
