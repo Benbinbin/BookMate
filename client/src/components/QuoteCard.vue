@@ -1,6 +1,6 @@
 <template>
   <div
-    class="quote-card bg-white rounded-lg outline-none"
+    class="quote-card relative bg-white rounded-lg outline-none"
     :class="{ editing: quote.id === editingQuote }"
     tabindex="0"
   >
@@ -60,7 +60,7 @@
                 'opacity-30': editingQuote,
               }"
               :disabled="editingQuote"
-              @click="$store.dispatch('deleteQuote', quote.id)"
+              @click="showDeleteModal = true"
             >
               <img
                 src="@/assets/icons/delete.svg"
@@ -122,21 +122,24 @@
           class="card-footer pb-3 px-3 flex justify-between items-end flex-grow"
         >
           <div class="left flex items-center">
-            <img
-              :src="require(`@/assets/icons/${quote.type}.svg`)"
-              :alt="`${quote.type} icon`"
-              class="quote-type w-5 h-5"
-              :class="{
-                'hidden opacity-30':
-                  quote.type === 'annotation' && !showComment,
-              }"
-            />
+            <slot name="type">
+              <img
+                :src="require(`@/assets/icons/${quote.type}.svg`)"
+                :alt="`${quote.type} icon`"
+                class="quote-type w-5 h-5"
+                :class="{
+                  'hidden opacity-30':
+                    quote.type === 'annotation' && !showComment,
+                }"
+              />
+            </slot>
+
             <slot name="location">
               <div
-                class="quote-location ml-1.5 text-xs hidden flex-col space-y-1 opacity-30"
+                class="quote-location ml-1.5 text-xs flex flex-col space-y-1"
               >
-                <p>章节：{{ quote.chapter || "未分类" }}</p>
-                <p>页码：{{ quote.location || "未知" }}</p>
+                <p class="opacity-0">章节：{{ quote.chapter || "未分类" }}</p>
+                <p class="opacity-0">页码：{{ quote.location || "未知" }}</p>
               </div>
             </slot>
           </div>
@@ -209,6 +212,27 @@
         v-html="quote.comment"
       ></div>
     </slot>
+
+    <div
+      class="delete-modal absolute inset-0 flex-col justify-center items-center rounded-lg bg-opacity-90 bg-gray-200"
+      :class="{ hidden: !showDeleteModal, flex: showDeleteModal }"
+    >
+      <p class="text-gray-700 font-bold">是否删除该书摘？</p>
+      <div class="flex mt-4 space-x-4">
+        <button
+          class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
+          @click="$store.dispatch('deleteQuote', quote.id)"
+        >
+          确定
+        </button>
+        <button
+          class="p-2 rounded-lg bg-gray-400 hover:bg-gray-600 text-white"
+          @click="showDeleteModal = false"
+        >
+          取消
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -220,6 +244,7 @@ export default {
   data() {
     return {
       addComment: false,
+      showDeleteModal: false,
     };
   },
   computed: {
@@ -306,10 +331,15 @@ export default {
       display: block;
     }
 
-    .quote-location,
+    .quote-location {
+      p {
+        opacity: 30%;
+      }
+    }
     .btns {
       display: flex;
     }
   }
+
 }
 </style>
