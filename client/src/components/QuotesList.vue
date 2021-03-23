@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-grow flex flex-col">
+  <div class="max-w-full flex-grow flex flex-col">
     <nav class="flex-shrink-0 h-16 px-6 border-b-2 border-gray-20">
       <div
         v-if="!editingQuote"
