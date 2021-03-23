@@ -17,7 +17,7 @@
         </button>
 
         <div
-          class="modal-container absolute -top-7 left-1 z-20"
+          class="headings-modal-container absolute -top-7 left-1 z-20"
           v-show="showEditorHeadingsModal"
         >
           <div class="modal flex space-x-1 rounded bg-gray-100 shadow-md">

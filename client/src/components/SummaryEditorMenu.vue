@@ -49,11 +49,11 @@
             />
           </button>
           <div
-            class="modal-container absolute top-9 inset-x-0 z-20"
+            class="headings-modal-container absolute top-9 inset-x-0 z-20"
             v-show="showHeadingsModal"
           >
             <div
-              class="modal flex flex-col space-y-1 rounded bg-gray-100 shadow-md"
+              class="headings-modal flex flex-col space-y-1 rounded bg-gray-100 shadow-md"
             >
               <button
                 class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"

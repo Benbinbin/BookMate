@@ -123,15 +123,17 @@
         >
           <div class="left flex items-center">
             <slot name="type">
-              <img
-                :src="require(`@/assets/icons/${quote.type}.svg`)"
-                :alt="`${quote.type} icon`"
-                class="quote-type w-5 h-5"
-                :class="{
-                  'hidden opacity-30':
-                    quote.type === 'annotation' && !showComment,
-                }"
-              />
+              <div class="quote-type p-1">
+                <img
+                  :src="require(`@/assets/icons/${quote.type}.svg`)"
+                  :alt="`${quote.type} icon`"
+                  class="quote-type w-5 h-5"
+                  :class="{
+                    'hidden opacity-30':
+                      quote.type === 'annotation' && !showComment,
+                  }"
+                />
+              </div>
             </slot>
 
             <slot name="location">
@@ -340,6 +342,5 @@ export default {
       display: flex;
     }
   }
-
 }
 </style>

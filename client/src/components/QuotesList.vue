@@ -39,10 +39,41 @@
       >
         <template v-slot:body>
           <div class="quote-editor-container card-body mx-8">
-           <quote-editor-floating-menu
+            <quote-editor-floating-menu
               :editor="editor"
             ></quote-editor-floating-menu>
             <editor-content :editor="editor"></editor-content>
+          </div>
+        </template>
+        <template v-slot:type>
+          <div class="quote-type flex-shrink-0 relative">
+            <button
+              class="border p-1 border-gray-300 rounded"
+              @click="showTypesModal = true"
+            >
+              <img
+                :src="require(`@/assets/icons/${quoteType}.svg`)"
+                :alt="`${quoteType} icon`"
+                class="w-5 h-5"
+              />
+            </button>
+            <div
+              v-show="showTypesModal"
+              class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
+            >
+              <button
+                v-for="type of types"
+                :key="type"
+                class="p-1 hover:bg-gray-200 rounded"
+                @click="changeQuoteType(type)"
+              >
+                <img
+                  :src="require(`@/assets/icons/${type}.svg`)"
+                  :alt="`${type} icon`"
+                  class="w-5 h-5"
+                />
+              </button>
+            </div>
           </div>
         </template>
         <template v-slot:location>
@@ -115,6 +146,40 @@
                 :editor="editor"
               ></quote-editor-floating-menu>
               <editor-content :editor="editor"></editor-content>
+            </div>
+          </template>
+          <template
+            v-slot:type
+            v-if="editingQuote && quote.id === editingQuote"
+          >
+            <div class="quote-type flex-shrink-0 relative">
+              <button
+                class="border p-1 border-gray-300 rounded"
+                @click="showTypesModal = true"
+              >
+                <img
+                  :src="require(`@/assets/icons/${quoteType}.svg`)"
+                  :alt="`${quoteType} icon`"
+                  class="w-5 h-5"
+                />
+              </button>
+              <div
+                v-show="showTypesModal"
+                class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
+              >
+                <button
+                  v-for="type of types"
+                  :key="type"
+                  class="p-1 hover:bg-gray-200 rounded"
+                  @click="changeQuoteType(type)"
+                >
+                  <img
+                    :src="require(`@/assets/icons/${type}.svg`)"
+                    :alt="`${type} icon`"
+                    class="w-5 h-5"
+                  />
+                </button>
+              </div>
             </div>
           </template>
           <template
@@ -230,6 +295,37 @@
                   <editor-content :editor="editor"></editor-content>
                 </div>
               </template>
+              <template v-slot:type>
+                <div class="quote-type flex-shrink-0 relative">
+                  <button
+                    class="border p-1 border-gray-300 rounded"
+                    @click="showTypesModal = true"
+                  >
+                    <img
+                      :src="require(`@/assets/icons/${quoteType}.svg`)"
+                      :alt="`${quoteType} icon`"
+                      class="w-5 h-5"
+                    />
+                  </button>
+                  <div
+                    v-show="showTypesModal"
+                    class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
+                  >
+                    <button
+                      v-for="type of types"
+                      :key="type"
+                      class="p-1 hover:bg-gray-200 rounded"
+                      @click="changeQuoteType(type)"
+                    >
+                      <img
+                        :src="require(`@/assets/icons/${type}.svg`)"
+                        :alt="`${type} icon`"
+                        class="w-5 h-5"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </template>
               <template v-slot:location>
                 <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
                   <div class="flex items-center">
@@ -278,7 +374,7 @@
                 <div
                   class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
                 >
-                 <quote-editor-floating-menu
+                  <quote-editor-floating-menu
                     :editor="commentEditor"
                   ></quote-editor-floating-menu>
                   <editor-content :editor="commentEditor"></editor-content>
@@ -302,6 +398,40 @@
                     :editor="editor"
                   ></quote-editor-floating-menu>
                   <editor-content :editor="editor"></editor-content>
+                </div>
+              </template>
+              <template
+                v-slot:type
+                v-if="editingQuote && quote.id === editingQuote"
+              >
+                <div class="quote-type flex-shrink-0 relative">
+                  <button
+                    class="border p-1 border-gray-300 rounded"
+                    @click="showTypesModal = true"
+                  >
+                    <img
+                      :src="require(`@/assets/icons/${quoteType}.svg`)"
+                      :alt="`${quoteType} icon`"
+                      class="w-5 h-5"
+                    />
+                  </button>
+                  <div
+                    v-show="showTypesModal"
+                    class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
+                  >
+                    <button
+                      v-for="type of types"
+                      :key="type"
+                      class="p-1 hover:bg-gray-200 rounded"
+                      @click="changeQuoteType(type)"
+                    >
+                      <img
+                        :src="require(`@/assets/icons/${type}.svg`)"
+                        :alt="`${type} icon`"
+                        class="w-5 h-5"
+                      />
+                    </button>
+                  </div>
                 </div>
               </template>
               <template
@@ -382,10 +512,7 @@
 </template>
 
 <script>
-import {
-  Editor,
-  EditorContent,
-} from 'tiptap';
+import { Editor, EditorContent } from 'tiptap';
 import {
   Bold,
   Blockquote,
@@ -436,6 +563,8 @@ export default {
       convertor: null,
       editor: null,
       commentEditor: null,
+      showTypesModal: false,
+      types: ['annotation', 'question', 'deep-reading', 'inspiration'],
     };
   },
   computed: {
@@ -582,6 +711,10 @@ export default {
       }
 
       this.activeEditor(this.newQuote);
+    },
+    changeQuoteType(type) {
+      this.quoteType = type;
+      this.showTypesModal = false;
     },
     inactiveEditor(type) {
       let target = this.editingQuote;
@@ -754,7 +887,8 @@ export default {
 </style>
 
 <style lang="scss">
-.quote-editor-container, .comment-editor-container {
+.quote-editor-container,
+.comment-editor-container {
   position: relative;
 }
 </style>
