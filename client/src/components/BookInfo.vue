@@ -1,8 +1,5 @@
 <template>
-  <div
-    ref="introductionMain"
-    class="introduction-main px-3 py-6 flex flex-col"
-  >
+  <div ref="introductionMain" class="introduction-main px-3 py-6 flex flex-col">
     <div class="grid grid-cols-2 gap-3">
       <div
         class="cover bg-contain bg-no-repeat bg-top"
@@ -65,27 +62,31 @@
           <span class="text-sm font-bold ml-1.5">目录</span>
         </button>
         <div class="space-x-1">
-          <button v-for="item of infoButtons" :key="item.icon">
+          <button
+            v-for="item of metadata.defaultCollections"
+            :key="item.name"
+            :class="{
+              'opacity-60': item.active,
+              'opacity-10': !item.active,
+            }"
+            @click="toggleDefaultCollections(item.name)"
+          >
             <img
-              :src="require(`@/assets/icons/${item.icon}.svg`)"
-              :alt="`${item.icon} icon`"
               class="w-6 h-6"
-              :class="{
-                'opacity-60': item.active,
-                'opacity-30': !item.active,
-              }"
+              :src="require(`@/assets/icons/${item.name}.svg`)"
+              :alt="`${item.icon} icon`"
             />
           </button>
         </div>
       </div>
     </div>
-    <div class="flex items-start space-x-2 my-3">
+    <div class="collections-container flex items-start space-x-2 my-3">
       <img
         src="@/assets/icons/folder.svg"
         alt="folder icon"
         class="w-6 h-6 opacity-60"
       />
-      <ul class="collections flex-grow flex space-x-1.5 overflow-x-auto">
+      <ul class="collections flex space-x-1.5 overflow-x-auto">
         <li
           v-for="item in metadata.collections"
           :key="item"
@@ -94,14 +95,21 @@
           {{ item }}
         </li>
       </ul>
+      <button class="add-collection flex-shrink-0 opacity-10 hover:opacity-60">
+        <img
+          class="w-6 h-6"
+          src="@/assets/icons/add-circle.svg"
+          alt="add collection icon"
+        />
+      </button>
     </div>
-    <div class="flex items-start space-x-2 mb-3">
+    <div class="tags-container flex items-start space-x-2 mb-3">
       <img
         src="@/assets/icons/tag.svg"
         alt="tag icon"
         class="w-6 h-6 opacity-60"
       />
-      <ul class="tags flex-grow flex space-x-1.5 overflow-x-auto">
+      <ul class="tags flex space-x-1.5 overflow-x-auto">
         <li
           v-for="item in metadata.tags"
           :key="item"
@@ -110,6 +118,13 @@
           #{{ item }}
         </li>
       </ul>
+      <button class="add-tag flex-shrink-0 opacity-10 hover:opacity-60">
+        <img
+          class="w-6 h-6"
+          src="@/assets/icons/add-circle.svg"
+          alt="add tag icon"
+        />
+      </button>
     </div>
     <p class="my-8 leading-87" v-show="!showCategory">
       {{ metadata.description }}
@@ -149,30 +164,15 @@ export default {
   },
   data() {
     return {
-      infoButtons: [
-        {
-          icon: 'like',
-          active: true,
-        },
-        {
-          icon: 'reading',
-          active: true,
-        },
-        {
-          icon: 'read-it-later',
-          active: false,
-        },
-        {
-          icon: 'buy',
-          active: false,
-        },
-      ],
       showCategory: false,
     };
   },
   methods: {
     backToTopHandler(el) {
       this.$refs[el].scrollTop = 0;
+    },
+    toggleDefaultCollections(val) {
+      this.$store.dispatch('toggleDefaultCollections', val);
     },
   },
 };

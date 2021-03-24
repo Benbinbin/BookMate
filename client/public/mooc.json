@@ -15,15 +15,35 @@
         "见面如来.jpg"
       ],
       "defaultCollections": [
-        "reading"
+        {
+          "name": "like",
+          "active": true
+        },
+        {
+          "name": "reading",
+          "active": false
+        },
+        {
+          "name": "read-it-later",
+          "active": false
+        },
+        {
+          "name": "buy",
+          "active": false
+        }
       ],
       "collections": [
-        "文学"
+        "文学",
+        "设计",
+        "科学",
+        "科技",
+        "传记"
       ],
       "tags": [
         "治愈",
         "收集书单",
-        "书籍推荐"
+        "书籍推荐",
+        "描述性标签"
       ],
       "sources": [],
       "links": [],

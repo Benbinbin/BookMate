@@ -31,6 +31,12 @@ export default new Vuex.Store({
     CLEAR_BOOK(state) {
       state.book = null;
     },
+    // book metadata
+    TOGGLE_DEFAULT_COLLECTIONS(state, payload) {
+      const index = state.book.metadata.defaultCollections.findIndex((item) => item.name === payload);
+      const item = state.book.metadata.defaultCollections[index];
+      item.active = !item.active;
+    },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
@@ -159,6 +165,10 @@ export default new Vuex.Store({
     },
     clearBook(context) {
       context.commit('CLEAR_BOOK');
+    },
+    // book metadata
+    toggleDefaultCollections(context, payload) {
+      context.commit('TOGGLE_DEFAULT_COLLECTIONS', payload);
     },
     // quote and summary status
     changeQuotesMode(context, payload) {
