@@ -57,6 +57,7 @@
               :flatten-search-results="true"
               :close-on-select="true"
               :default-expand-level="1"
+              :max-height="150"
             />
           </div>
         </template>
@@ -96,6 +97,7 @@
                 :flatten-search-results="true"
                 :close-on-select="true"
                 :default-expand-level="1"
+                :max-height="150"
               />
             </div>
           </template>
@@ -174,6 +176,7 @@
                     :flatten-search-results="true"
                     :close-on-select="true"
                     :default-expand-level="1"
+                    :max-height="150"
                   />
                 </div>
               </template>
@@ -212,6 +215,7 @@
                     :flatten-search-results="true"
                     :close-on-select="true"
                     :default-expand-level="1"
+                    :max-height="150"
                   />
                 </div>
               </template>

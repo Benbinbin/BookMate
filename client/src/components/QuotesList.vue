@@ -93,6 +93,7 @@
                 :flatten-search-results="true"
                 :close-on-select="true"
                 :default-expand-level="1"
+                :max-height="150"
               />
             </div>
             <div class="flex items-center">
@@ -202,6 +203,7 @@
                   :flatten-search-results="true"
                   :close-on-select="true"
                   :default-expand-level="1"
+                  :max-height="150"
                 />
               </div>
               <div class="flex items-center">
@@ -343,6 +345,7 @@
                       :flatten-search-results="true"
                       :close-on-select="true"
                       :default-expand-level="1"
+                      :max-height="150"
                     />
                   </div>
                   <div class="flex items-center">
@@ -454,6 +457,7 @@
                       :flatten-search-results="true"
                       :close-on-select="true"
                       :default-expand-level="1"
+                      :max-height="150"
                     />
                   </div>
                   <div class="flex items-center">

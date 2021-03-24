@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 
 const filterMap = {
   readingBooks: '在读',
@@ -171,6 +171,7 @@ export default {
   },
   computed: {
     ...mapState(['booksList']),
+    ...mapGetters(['allCollections']),
     currentList() {
       return {
         name: filterMap[this.selected],
@@ -186,17 +187,12 @@ export default {
     loveBooks() {
       return filterBooks('defaultCollections', 'love', this.booksList);
     },
-    cartBooks(stae) {
+    cartBooks() {
       return filterBooks('defaultCollections', 'cart', this.booksList);
     },
     collectionsBooks() {
-      let arr = [];
-      this.booksList.forEach((item) => {
-        arr = arr.concat(item.metadata.collections);
-      });
-      const collections = new Set(arr);
       const collectionsBooks = [];
-      collections.forEach((val) => {
+      this.allCollections.forEach((val) => {
         collectionsBooks.push({
           name: val,
           data: filterBooks('collections', val, this.booksList),

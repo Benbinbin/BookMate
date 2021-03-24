@@ -18,7 +18,13 @@ export default new Vuex.Store({
     insertQuote: false,
   },
   getters: {
-
+    allCollections(state) {
+      let arr = [];
+      state.booksList.forEach((item) => {
+        arr = arr.concat(item.metadata.collections);
+      });
+      return new Set(arr);
+    },
   },
   mutations: {
     // book
@@ -36,6 +42,9 @@ export default new Vuex.Store({
       const index = state.book.metadata.defaultCollections.findIndex((item) => item.name === payload);
       const item = state.book.metadata.defaultCollections[index];
       item.active = !item.active;
+    },
+    SET_COLLECTIONS(state, payload) {
+      state.book.metadata.collections = payload;
     },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
@@ -169,6 +178,9 @@ export default new Vuex.Store({
     // book metadata
     toggleDefaultCollections(context, payload) {
       context.commit('TOGGLE_DEFAULT_COLLECTIONS', payload);
+    },
+    setCollections(context, payload) {
+      context.commit('SET_COLLECTIONS', payload);
     },
     // quote and summary status
     changeQuotesMode(context, payload) {
