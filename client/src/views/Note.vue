@@ -43,7 +43,7 @@
         </button>
       </div>
     </aside>
-    <div class="split-container flex flex-grow">
+    <div class="split-container flex flex-grow" style="max-width: calc(100% - 5rem)">
       <div
         v-show="menuButtons.find((item) => item.icon === 'info').active"
         id="split-left"
