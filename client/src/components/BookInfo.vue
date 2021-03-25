@@ -19,16 +19,21 @@
             :active-color="'rgba(243, 238, 102, 1)'"
             :inactive-color="'#E5E7EB'"
             :clearable="true"
-            @rating-selected ="setStars"
+            @rating-selected="setStars"
           >
           </star-rating>
         </div>
         <div class="space-y-1.5 text-xs">
-          <p>作者：{{ metadata.authors.join("、") }}</p>
-          <p>ISBN：{{ metadata.isbn }}</p>
+          <p v-if="metadata.authors && metadata.authors.length > 0">
+            作者：{{ metadata.authors.join("、") }}
+          </p>
+          <p v-if="metadata.translators && metadata.translators.length > 0">
+            译者：{{ metadata.translators.join("、") }}
+          </p>
+          <p v-if="metadata.isbn">ISBN：{{ metadata.isbn }}</p>
         </div>
         <button
-          class="flex justify-center items-center py-1 px-2 rounded text-white"
+          class="flex justify-center items-center p-1 rounded text-white hover:bg-blue-500"
           :class="{
             'bg-blue-300': !showCategory,
             'bg-blue-500': showCategory,
@@ -60,7 +65,7 @@
               d="M41.7916 12.5H16.5416C15.4601 12.5 14.5833 13.3768 14.5833 14.4583V14.7083C14.5833 15.7899 15.4601 16.6667 16.5416 16.6667H41.7916C42.8732 16.6667 43.75 15.7899 43.75 14.7083V14.4583C43.75 13.3768 42.8732 12.5 41.7916 12.5Z"
             />
           </svg>
-          <span class="text-sm font-bold ml-1.5">目录</span>
+          <span class="text-xs ml-1.5">目录</span>
         </button>
         <div class="space-x-1">
           <button
@@ -204,9 +209,23 @@
         </svg>
       </button>
     </div>
-    <p class="my-8 leading-87" v-show="!showCategory">
-      {{ metadata.description }}
-    </p>
+    <div v-show="!showCategory">
+      <div v-if="metadata.description" class="book-description">
+        <h2 class="font-bold text-center my-2">简介</h2>
+        <hr class="w-1/2 mx-auto border-gray-300 my-2" />
+        <p class="my-8 leading-87">
+          {{ metadata.description }}
+        </p>
+      </div>
+      <div v-if="metadata.review" class="book-review">
+        <h2 class="font-bold text-center my-2">短评</h2>
+        <hr class="w-1/2 mx-auto border-gray-300 my-2" />
+        <p class="my-8 leading-87">
+          {{ metadata.review }}
+        </p>
+      </div>
+    </div>
+
     <ul class="category" v-show="showCategory">
       <category-tree
         v-for="(item, index) of metadata.category.children"
@@ -271,7 +290,6 @@ export default {
       this.$refs[el].scrollTop = 0;
     },
     setStars(stars) {
-      console.log(stars);
       this.$store.dispatch('setStars', stars);
     },
     toggleDefaultCollections(val) {
@@ -320,9 +338,6 @@ export default {
       this.tags = [];
     },
   },
-  created() {
-    this.$store.dispatch('getBooksList');
-  },
 };
 </script>
 
@@ -360,67 +375,69 @@ export default {
 
 <style lang="scss">
 // custom the collection and tag input UI
-.vue-tags-input {
-  max-width: calc(100% - 4rem) !important;
-  background-color: transparent !important;
+.introduction-main {
+  .vue-tags-input {
+    max-width: calc(100% - 4rem) !important;
+    background-color: transparent !important;
 
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(156, 163, 175, 0);
-  }
-  &:hover::-webkit-scrollbar-thumb {
-    background-color: rgba(156, 163, 175, 0.5);
-  }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0);
+    }
+    &:hover::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+    }
 
-  .ti-input {
-    overflow-x: overlay;
-    border: none;
-    padding: 0 0 0.75rem 0;
-    .ti-tags {
-      flex-wrap: nowrap !important;
-      align-items: flex-start;
+    .ti-input {
+      overflow-x: overlay;
+      border: none;
+      padding: 0 0 0.75rem 0;
+      .ti-tags {
+        flex-wrap: nowrap !important;
+        align-items: flex-start;
 
-      .ti-tag {
+        .ti-tag {
+          padding: 0.25rem 0.375rem 0.25rem 0.375rem;
+          flex-shrink: 0;
+          // background: #93c5fd;
+          // color: white;
+          font-size: 0.75rem;
+          line-height: 1rem;
+          border-radius: 0.25rem;
+          margin: 0 0 0 0.375rem;
+          // &:hover {
+          //   background: #3b82f6;
+          // }
+        }
+        .ti-deletion-mark {
+          background: #fca5a5;
+        }
+        .ti-new-tag-input-wrapper {
+          margin: 0 0 0 0.375rem;
+          padding: 0;
+          input {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+
+    .ti-autocomplete {
+      border-radius: 0.25rem;
+      background: #f3f4f6;
+      border: none !important;
+      box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000,
+        0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+      li {
         padding: 0.25rem 0.375rem 0.25rem 0.375rem;
-        flex-shrink: 0;
-        // background: #93c5fd;
-        // color: white;
+        border-radius: 0.25rem;
         font-size: 0.75rem;
         line-height: 1rem;
-        border-radius: 0.25rem;
-        margin: 0 0 0 0.375rem;
-        // &:hover {
-        //   background: #3b82f6;
-        // }
       }
-      .ti-deletion-mark {
-        background: #fca5a5;
-      }
+      // .ti-selected-item {
+      //   background: #3b82f6;
+      // }
     }
-    .ti-new-tag-input-wrapper {
-      margin: 0 0 0 0.375rem;
-      padding: 0;
-      input {
-        background-color: transparent;
-      }
-    }
-  }
-
-  .ti-autocomplete {
-    border-radius: 0.25rem;
-    background: #f3f4f6;
-    border: none !important;
-    box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000,
-      0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-    li {
-      padding: 0.25rem 0.375rem 0.25rem 0.375rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      line-height: 1rem;
-    }
-    // .ti-selected-item {
-    //   background: #3b82f6;
-    // }
   }
 }
 

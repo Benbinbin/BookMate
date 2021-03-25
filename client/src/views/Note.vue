@@ -1,5 +1,5 @@
 <template>
-  <div class="note-container h-screen w-screen flex">
+  <div class="note-container h-screen w-screen flex relative">
     <aside
       class="w-16 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
     >
@@ -43,16 +43,36 @@
         </button>
       </div>
     </aside>
-    <div class="split-container flex flex-grow" style="max-width: calc(100% - 4rem)">
+    <div
+      class="split-container flex flex-grow"
+      style="max-width: calc(100% - 4rem)"
+    >
       <div
         v-show="menuButtons.find((item) => item.icon === 'info').active"
         id="split-left"
-        class=" border-gray-200 flex-grow flex flex-col"
+        class="border-gray-200 flex-grow flex flex-col"
       >
-        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-100">
-          <div class="default w-full h-full flex items-center justify-center">
-            <h2 class="text-xl font-bold">简介</h2>
-          </div>
+        <nav
+          class="flex-shrink-0 h-16 px-3 flex items-center justify-between border-b-2 border-gray-100"
+        >
+          <button
+            class="flex items-center opacity-30 hover:opacity-80"
+            @click="showBookModal = true"
+          >
+            <img
+              class="w-6 h-6"
+              src="@/assets/icons/edit.svg"
+              alt="edit icon"
+            />
+          </button>
+          <h2 class="text-xl font-bold">简介</h2>
+          <button class="flex items-center opacity-30 hover:opacity-80">
+            <img
+              class="w-6 h-6"
+              src="@/assets/icons/menu.svg"
+              alt="menu icon"
+            />
+          </button>
         </nav>
         <book-info
           v-if="book && book.metadata"
@@ -65,7 +85,7 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'notes').active"
         id="split-middle"
-        class=" border-gray-200 flex-grow h-full flex"
+        class="border-gray-200 flex-grow h-full flex"
       >
         <summaries-list
           v-if="book"
@@ -88,6 +108,12 @@
         ></quotes-list>
       </div>
     </div>
+    <book-metadata-modal
+      v-if="book && book.metadata && showBookModal"
+      class="absolute inset-0"
+      :metadata="book.metadata"
+      @close-book-modal="showBookModal = false"
+    ></book-metadata-modal>
   </div>
 </template>
 
@@ -97,6 +123,7 @@ import Split from 'split.js';
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';
+import BookMetadataModal from '../components/BookMetadataModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -116,6 +143,7 @@ export default {
     BookInfo,
     QuotesList,
     SummariesList,
+    BookMetadataModal,
   },
   data() {
     return {
@@ -144,6 +172,7 @@ export default {
       ],
       spliter: null,
       containersArr: ['#split-left', '#split-middle', '#split-right'],
+      showBookModal: false,
     };
   },
   computed: {
@@ -251,6 +280,7 @@ export default {
     });
   },
   created() {
+    this.$store.dispatch('getBooksList');
     this.avatar = require('@/assets/avatar.png');
     const isbn = Number(this.$route.params.id);
     this.$store.dispatch('getBook', {
