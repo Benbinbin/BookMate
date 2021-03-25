@@ -1,7 +1,7 @@
 <template>
   <div class="note-container h-screen w-screen flex">
     <aside
-      class="w-20 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
+      class="w-16 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
     >
       <div class="profile flex-shrink-0 h-16 flex justify-center items-center">
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
@@ -10,13 +10,13 @@
         v-if="book"
         :src="`covers/${book.metadata.covers[0]}`"
         alt="book cover"
-        class="w-16 my-4"
+        class="w-12 my-4"
       />
       <div class="menu flex-grow py-4 space-y-4 overflow-y-auto">
         <button
           v-for="item of menuButtons"
           :key="item.icon"
-          class="w-12 h-12 flex-shrink-0 flex justify-center items-center rounded-full hover:opacity-80"
+          class="w-8 h-8 flex-shrink-0 flex justify-center items-center rounded-full hover:opacity-80"
           :class="{
             'bg-gray-200 opacity-60': !item.active,
             'bg-white': item.active,
@@ -26,30 +26,30 @@
           <img
             :src="require(`@/assets/icons/${item.icon}.svg`)"
             :alt="`${item.icon} icon`"
-            class="w-7 h-7"
+            class="w-5 h-5"
           />
         </button>
       </div>
       <div class="back flex-shrink-0 py-4">
         <button
-          class="w-12 h-12 flex justify-center items-center rounded-full bg-gray-200 opacity-60 hover:opacity-80"
+          class="w-8 h-8 flex justify-center items-center rounded-full bg-gray-200 opacity-60 hover:opacity-80"
           @click="$router.push({ name: 'Home' })"
         >
           <img
             :src="require(`@/assets/icons/home.svg`)"
             alt="back to home icon"
-            class="w-7 h-7"
+            class="w-5 h-5"
           />
         </button>
       </div>
     </aside>
-    <div class="split-container flex flex-grow" style="max-width: calc(100% - 5rem)">
+    <div class="split-container flex flex-grow" style="max-width: calc(100% - 4rem)">
       <div
         v-show="menuButtons.find((item) => item.icon === 'info').active"
         id="split-left"
-        class="border-2 border-gray-200 flex-grow flex flex-col"
+        class=" border-gray-200 flex-grow flex flex-col"
       >
-        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-200">
+        <nav class="flex-shrink-0 h-16 border-b-2 border-gray-100">
           <div class="default w-full h-full flex items-center justify-center">
             <h2 class="text-xl font-bold">简介</h2>
           </div>
@@ -65,7 +65,7 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'notes').active"
         id="split-middle"
-        class="border-2 border-gray-200 flex-grow h-full flex"
+        class=" border-gray-200 flex-grow h-full flex"
       >
         <summaries-list
           v-if="book"
@@ -78,7 +78,7 @@
       <div
         v-show="menuButtons.find((item) => item.icon === 'quote').active"
         id="split-right"
-        class="border-2 border-gray-200 flex-grow h-full flex"
+        class="border-gray-200 flex-grow h-full flex"
       >
         <quotes-list
           v-if="book"

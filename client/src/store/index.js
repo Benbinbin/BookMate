@@ -46,6 +46,9 @@ export default new Vuex.Store({
     SET_COLLECTIONS(state, payload) {
       state.book.metadata.collections = payload;
     },
+    SET_TAGS(state, payload) {
+      state.book.metadata.tags = payload;
+    },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
@@ -181,6 +184,9 @@ export default new Vuex.Store({
     },
     setCollections(context, payload) {
       context.commit('SET_COLLECTIONS', payload);
+    },
+    setTags(context, payload) {
+      context.commit('SET_TAGS', payload);
     },
     // quote and summary status
     changeQuotesMode(context, payload) {

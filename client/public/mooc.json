@@ -555,7 +555,22 @@
         "岛上书店.png"
       ],
       "defaultCollections": [
-        "reading"
+        {
+          "name": "like",
+          "active": true
+        },
+        {
+          "name": "reading",
+          "active": false
+        },
+        {
+          "name": "read-it-later",
+          "active": false
+        },
+        {
+          "name": "buy",
+          "active": false
+        }
       ],
       "collections": [
         "文学"
