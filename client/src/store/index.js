@@ -49,6 +49,9 @@ export default new Vuex.Store({
     SET_TAGS(state, payload) {
       state.book.metadata.tags = payload;
     },
+    SET_STARS(state, payload) {
+      state.book.metadata.stars = payload;
+    },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
@@ -187,6 +190,9 @@ export default new Vuex.Store({
     },
     setTags(context, payload) {
       context.commit('SET_TAGS', payload);
+    },
+    setStars(context, payload) {
+      context.commit('SET_STARS', payload);
     },
     // quote and summary status
     changeQuotesMode(context, payload) {

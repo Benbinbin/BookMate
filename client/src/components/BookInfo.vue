@@ -16,9 +16,10 @@
             :rating="metadata.stars"
             :star-size="15"
             :show-rating="false"
-            :read-only="true"
-            :active-color="'#9CA3AF'"
+            :active-color="'rgba(243, 238, 102, 1)'"
             :inactive-color="'#E5E7EB'"
+            :clearable="true"
+            @rating-selected ="setStars"
           >
           </star-rating>
         </div>
@@ -269,6 +270,10 @@ export default {
     backToTopHandler(el) {
       this.$refs[el].scrollTop = 0;
     },
+    setStars(stars) {
+      console.log(stars);
+      this.$store.dispatch('setStars', stars);
+    },
     toggleDefaultCollections(val) {
       this.$store.dispatch('toggleDefaultCollections', val);
     },
@@ -315,7 +320,6 @@ export default {
       this.tags = [];
     },
   },
-
   created() {
     this.$store.dispatch('getBooksList');
   },
