@@ -189,42 +189,69 @@
 
             <div class="information-right p-4 w-8/12 space-y-4">
               <div class="book-covers space-y-2">
-                <h2>
-                  <span class="highlight pr-2 text-lg font-bold">封面</span>
-                </h2>
+                <div class="flex items-end relative">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">封面</span>
+                  </h2>
+                  <button class="tooltip ml-2 flex">
+                    <img
+                      class="w-5 h-5"
+                      src="@/assets/icons/question.svg"
+                      alt="question icon"
+                    />
+                  </button>
+                </div>
                 <div class="covers px-2 py-1 flex space-x-2 overflow-x-auto">
-                  <div
-                    v-for="cover of covers"
-                    :key="cover"
-                    class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
-                    :style="{
-                      backgroundImage: coverURL(cover),
-                    }"
+                  <draggable
+                    v-model="covers"
+                    @start="drag = true"
+                    @end="drag = false"
+                    :animation="200"
+                    :disabled="false"
+                    ghost-class="ghost"
                   >
-                    <button
-                      class="delete-cover-btn w-5 h-5 hidden absolute top-1 right-1 z-10 text-red-500 opacity-80 hover:opacity-100"
-                      @click="deleteCover(cover)"
+                    <transition-group
+                      class="flex space-x-2"
+                      type="transition"
+                      tag="div"
+                      :name="!drag ? 'flip-list' : null"
                     >
-                      <!-- <img
+                      <div
+                        v-for="cover of covers"
+                        :key="cover"
+                        class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
+                        :style="{
+                          backgroundImage: coverURL(cover),
+                        }"
+                        tabindex="0"
+                      >
+                        <button
+                          class="delete-cover-btn w-5 h-5 hidden absolute top-1 right-1 z-10 text-red-500 opacity-80 hover:opacity-100"
+                          @click="deleteCover(cover)"
+                        >
+                          <!-- <img
                         src="@/assets/icons/delete.svg"
                         alt="delete cover icon"
                       /> -->
-                      <svg
-                        viewBox="0 0 50 50"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.5 19.1875C17.9144 19.1875 18.3118 19.3521 18.6049 19.6451C18.8979 19.9382 19.0625 20.3356 19.0625 20.75V39.5C19.0625 39.9144 18.8979 40.3118 18.6049 40.6049C18.3118 40.8979 17.9144 41.0625 17.5 41.0625C17.0856 41.0625 16.6882 40.8979 16.3951 40.6049C16.1021 40.3118 15.9375 39.9144 15.9375 39.5V20.75C15.9375 20.3356 16.1021 19.9382 16.3951 19.6451C16.6882 19.3521 17.0856 19.1875 17.5 19.1875V19.1875ZM25.3125 19.1875C25.7269 19.1875 26.1243 19.3521 26.4174 19.6451C26.7104 19.9382 26.875 20.3356 26.875 20.75V39.5C26.875 39.9144 26.7104 40.3118 26.4174 40.6049C26.1243 40.8979 25.7269 41.0625 25.3125 41.0625C24.8981 41.0625 24.5007 40.8979 24.2076 40.6049C23.9146 40.3118 23.75 39.9144 23.75 39.5V20.75C23.75 20.3356 23.9146 19.9382 24.2076 19.6451C24.5007 19.3521 24.8981 19.1875 25.3125 19.1875V19.1875ZM34.6875 20.75C34.6875 20.3356 34.5229 19.9382 34.2299 19.6451C33.9368 19.3521 33.5394 19.1875 33.125 19.1875C32.7106 19.1875 32.3132 19.3521 32.0201 19.6451C31.7271 19.9382 31.5625 20.3356 31.5625 20.75V39.5C31.5625 39.9144 31.7271 40.3118 32.0201 40.6049C32.3132 40.8979 32.7106 41.0625 33.125 41.0625C33.5394 41.0625 33.9368 40.8979 34.2299 40.6049C34.5229 40.3118 34.6875 39.9144 34.6875 39.5V20.75Z"
-                        />
-                        <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
-                          d="M45.625 11.375C45.625 12.2038 45.2958 12.9987 44.7097 13.5847C44.1237 14.1708 43.3288 14.5 42.5 14.5H40.9375V42.625C40.9375 44.2826 40.279 45.8723 39.1069 47.0444C37.9348 48.2165 36.3451 48.875 34.6875 48.875H15.9375C14.2799 48.875 12.6902 48.2165 11.5181 47.0444C10.346 45.8723 9.6875 44.2826 9.6875 42.625V14.5H8.125C7.2962 14.5 6.50134 14.1708 5.91529 13.5847C5.32924 12.9987 5 12.2038 5 11.375V8.25C5 7.4212 5.32924 6.62634 5.91529 6.04029C6.50134 5.45424 7.2962 5.125 8.125 5.125H19.0625C19.0625 4.2962 19.3917 3.50134 19.9778 2.91529C20.5638 2.32924 21.3587 2 22.1875 2H28.4375C29.2663 2 30.0612 2.32924 30.6472 2.91529C31.2333 3.50134 31.5625 4.2962 31.5625 5.125H42.5C43.3288 5.125 44.1237 5.45424 44.7097 6.04029C45.2958 6.62634 45.625 7.4212 45.625 8.25V11.375ZM13.1813 14.5L12.8125 14.6844V42.625C12.8125 43.4538 13.1417 44.2487 13.7278 44.8347C14.3138 45.4208 15.1087 45.75 15.9375 45.75H34.6875C35.5163 45.75 36.3112 45.4208 36.8972 44.8347C37.4833 44.2487 37.8125 43.4538 37.8125 42.625V14.6844L37.4437 14.5H13.1813ZM8.125 11.375V8.25H42.5V11.375H8.125Z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                          <svg
+                            viewBox="0 0 50 50"
+                            fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M17.5 19.1875C17.9144 19.1875 18.3118 19.3521 18.6049 19.6451C18.8979 19.9382 19.0625 20.3356 19.0625 20.75V39.5C19.0625 39.9144 18.8979 40.3118 18.6049 40.6049C18.3118 40.8979 17.9144 41.0625 17.5 41.0625C17.0856 41.0625 16.6882 40.8979 16.3951 40.6049C16.1021 40.3118 15.9375 39.9144 15.9375 39.5V20.75C15.9375 20.3356 16.1021 19.9382 16.3951 19.6451C16.6882 19.3521 17.0856 19.1875 17.5 19.1875V19.1875ZM25.3125 19.1875C25.7269 19.1875 26.1243 19.3521 26.4174 19.6451C26.7104 19.9382 26.875 20.3356 26.875 20.75V39.5C26.875 39.9144 26.7104 40.3118 26.4174 40.6049C26.1243 40.8979 25.7269 41.0625 25.3125 41.0625C24.8981 41.0625 24.5007 40.8979 24.2076 40.6049C23.9146 40.3118 23.75 39.9144 23.75 39.5V20.75C23.75 20.3356 23.9146 19.9382 24.2076 19.6451C24.5007 19.3521 24.8981 19.1875 25.3125 19.1875V19.1875ZM34.6875 20.75C34.6875 20.3356 34.5229 19.9382 34.2299 19.6451C33.9368 19.3521 33.5394 19.1875 33.125 19.1875C32.7106 19.1875 32.3132 19.3521 32.0201 19.6451C31.7271 19.9382 31.5625 20.3356 31.5625 20.75V39.5C31.5625 39.9144 31.7271 40.3118 32.0201 40.6049C32.3132 40.8979 32.7106 41.0625 33.125 41.0625C33.5394 41.0625 33.9368 40.8979 34.2299 40.6049C34.5229 40.3118 34.6875 39.9144 34.6875 39.5V20.75Z"
+                            />
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M45.625 11.375C45.625 12.2038 45.2958 12.9987 44.7097 13.5847C44.1237 14.1708 43.3288 14.5 42.5 14.5H40.9375V42.625C40.9375 44.2826 40.279 45.8723 39.1069 47.0444C37.9348 48.2165 36.3451 48.875 34.6875 48.875H15.9375C14.2799 48.875 12.6902 48.2165 11.5181 47.0444C10.346 45.8723 9.6875 44.2826 9.6875 42.625V14.5H8.125C7.2962 14.5 6.50134 14.1708 5.91529 13.5847C5.32924 12.9987 5 12.2038 5 11.375V8.25C5 7.4212 5.32924 6.62634 5.91529 6.04029C6.50134 5.45424 7.2962 5.125 8.125 5.125H19.0625C19.0625 4.2962 19.3917 3.50134 19.9778 2.91529C20.5638 2.32924 21.3587 2 22.1875 2H28.4375C29.2663 2 30.0612 2.32924 30.6472 2.91529C31.2333 3.50134 31.5625 4.2962 31.5625 5.125H42.5C43.3288 5.125 44.1237 5.45424 44.7097 6.04029C45.2958 6.62634 45.625 7.4212 45.625 8.25V11.375ZM13.1813 14.5L12.8125 14.6844V42.625C12.8125 43.4538 13.1417 44.2487 13.7278 44.8347C14.3138 45.4208 15.1087 45.75 15.9375 45.75H34.6875C35.5163 45.75 36.3112 45.4208 36.8972 44.8347C37.4833 44.2487 37.8125 43.4538 37.8125 42.625V14.6844L37.4437 14.5H13.1813ZM8.125 11.375V8.25H42.5V11.375H8.125Z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </transition-group>
+                  </draggable>
+
                   <div
                     class="cover-input-container flex-shrink-0 w-24 h-32 relative flex justify-center items-center bg-gray-100 text-gray-300 hover:bg-gray-200 hover:text-gray-400 rounded transition-all duration-300"
                     :class="{ dropping: isDropping }"
@@ -391,7 +418,7 @@
 
 <script>
 import { VueTagsInput, createTags } from '@johmun/vue-tags-input';
-// import { SlickList, SlickItem } from 'vue-slicksort';
+import draggable from 'vuedraggable';
 import StarRating from 'vue-star-rating';
 
 function getText(arr) {
@@ -406,8 +433,7 @@ export default {
   props: ['metadata'],
   components: {
     VueTagsInput,
-    // SlickList,
-    // SlickItem
+    draggable,
     StarRating,
   },
   data() {
@@ -436,6 +462,7 @@ export default {
       files: [],
       coversTemp: [],
       covers: [],
+      drag: false,
       category: {},
     };
   },
@@ -653,18 +680,23 @@ export default {
       background: #e5e7eb;
       color: #9ca3af;
     }
-    .cover:hover {
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(249, 250, 251, 0.8);
+    .cover {
+      &:hover {
+        cursor: move;
       }
-      .delete-cover-btn {
-        display: block;
+      &:focus-within {
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(249, 250, 251, 0.8);
+        }
+        .delete-cover-btn {
+          display: block;
+        }
       }
     }
   }
@@ -723,6 +755,17 @@ export default {
     .ti-tags {
       flex-direction: column;
     }
+  }
+
+  .flip-list-move {
+    transition: transform 300ms;
+  }
+
+  .no-move {
+    transition: transform 0s;
+  }
+  .ghost {
+    opacity: 0;
   }
 }
 </style>
