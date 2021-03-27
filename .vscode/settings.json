@@ -9,5 +9,6 @@
         "prosemirror",
         "set",
         "tiptap"
-    ]
+    ],
+    "vetur.validation.template": false
 }

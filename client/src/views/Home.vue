@@ -8,7 +8,7 @@
         <p class="text-3xl ml-2">{{ user }}</p>
       </div>
       <div
-        class="category flex-grow px-4 xl:px-14 py-14 space-y-6 overflow-y-auto"
+        class="category flex-grow px-4 xl:px-14 py-12 space-y-6 overflow-y-auto"
       >
         <button
           v-for="item of asideButtons"

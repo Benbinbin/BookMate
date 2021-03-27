@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-500 bg-opacity-50 flex justify-center items-center">
     <div
-      class="book-modal-container w-4/5 h-4/5 flex flex-col rounded-lg bg-white"
+      class="book-modal-container w-11/12 h-4/5 flex flex-col rounded-lg bg-white"
     >
       <div
         class="book-modal-header px-1 flex justify-between items-center border-b-2 border-gray-100"
@@ -46,16 +46,21 @@
         class="book-modal-body w-full flex-grow flex"
         style="max-height: calc(100% - 34px)"
       >
-        <div ref="left" class="left w-1/5 rounded-bl-lg bg-gray-50 p-2">
+        <div
+          ref="left"
+          class="left w-1/5 flex-shrink-0 rounded-bl-lg bg-gray-50 p-2"
+        >
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
           <hr class="w-1/2 mx-auto border-gray-300 mb-4" />
         </div>
-        <div ref="right" class="right p-4 flex-grow rounded-br-lg">
-          <div class="content-container flex">
-            <div class="infomation space-y-4 w-4/5">
-              <div class="book-titles text-lg flex flex-col space-y-2">
-                <div class="flex items-end">
-                  <span class="highlight pr-2 font-bold">书名</span>
+        <div ref="right" class="right flex-grow rounded-br-lg">
+          <div class="content-container flex w-full">
+            <div class="infomation-left p-4 space-y-4 w-4/12">
+              <div class="book-titles space-y-2">
+                <div class="flex items-end relative">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">书名</span>
+                  </h2>
                   <button class="tooltip ml-2 flex">
                     <img
                       class="w-5 h-5"
@@ -69,66 +74,299 @@
                   placeholder="添加书名"
                   :tags="titles"
                   :add-on-blur="false"
+                  :allow-edit-tags="true"
                   @tags-changed="(newTitles) => (titles = newTitles)"
                 ></vue-tags-input>
               </div>
-              <div class="book-authors text-lg space-y-2">
-                <h2><span class="highlight pr-2 font-bold">作者</span></h2>
+
+              <div class="book-authors space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold">作者</span>
+                </h2>
                 <vue-tags-input
                   v-model="author"
                   placeholder="添加作者"
                   :tags="authors"
                   :add-on-blur="false"
+                  :allow-edit-tags="true"
                   @tags-changed="(newAuthors) => (authors = newAuthors)"
-                ></vue-tags-input>
+                >
+                  <div slot="tag-left">
+                    <img
+                      src="@/assets/icons/user.svg"
+                      alt="folder icon"
+                      class="w-5 h-5 mr-0.5 opacity-60"
+                    />
+                  </div>
+                </vue-tags-input>
               </div>
-              <div class="book-translators text-lg space-y-2">
-                <h2><span class="highlight pr-2 font-bold">译者</span></h2>
+              <div class="book-translators space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold">译者</span>
+                </h2>
                 <vue-tags-input
                   v-model="translator"
                   placeholder="添加译者"
                   :tags="translators"
                   :add-on-blur="false"
+                  :allow-edit-tags="true"
                   @tags-changed="
                     (newTranslators) => (translators = newTranslators)
                   "
+                >
+                  <div slot="tag-left">
+                    <img
+                      src="@/assets/icons/user.svg"
+                      alt="folder icon"
+                      class="w-5 h-5 mr-0.5 opacity-60"
+                    />
+                  </div>
+                </vue-tags-input>
+              </div>
+
+              <div class="book-collections space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold"
+                    >自定义收藏夹</span
+                  >
+                </h2>
+                <vue-tags-input
+                  v-model="collection"
+                  placeholder="添加收藏夹"
+                  :tags="collections"
+                  :add-on-blur="false"
+                  :allow-edit-tags="true"
+                  @tags-changed="
+                    (newCollections) => (collections = newCollections)
+                  "
+                >
+                  <div slot="tag-left">
+                    <img
+                      src="@/assets/icons/folder.svg"
+                      alt="folder icon"
+                      class="w-5 h-5 mr-0.5 opacity-60"
+                    />
+                  </div>
+                </vue-tags-input>
+              </div>
+              <div class="book-tags space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold"
+                    >描叙性标签</span
+                  >
+                </h2>
+                <vue-tags-input
+                  v-model="tag"
+                  placeholder="添加标签"
+                  :tags="tags"
+                  :add-on-blur="false"
+                  :allow-edit-tags="true"
+                  @tags-changed="(newTags) => (tags = newTags)"
+                >
+                  <div slot="tag-left">
+                    <img
+                      src="@/assets/icons/tag.svg"
+                      alt="folder icon"
+                      class="w-5 h-5 mr-1 opacity-60"
+                    />
+                  </div>
+                </vue-tags-input>
+              </div>
+              <div class="book-links space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold">相关链接</span>
+                </h2>
+                <vue-tags-input
+                  v-model="link"
+                  placeholder="添加链接"
+                  :tags="links"
+                  :add-on-blur="false"
+                  :allow-edit-tags="true"
+                  @tags-changed="(newLinks) => (links = newLinks)"
                 ></vue-tags-input>
               </div>
-              <div class="book-isbn text-lg space-y-2">
-                <h2><span class="highlight pr-2 font-bold">ISBN</span></h2>
-                <input
-                  class="block w-full px-2 py-0.5 border text-sm rounded"
-                  type="number"
-                  v-model="isbn"
-                  placeholder="输入 ISBN 码"
-                />
-              </div>
-              <div class="book-press text-lg space-y-2">
-                <h2><span class="highlight pr-2 font-bold">出版社</span></h2>
-                <input
-                  class="block w-full px-2 py-0.5 border text-sm rounded"
-                  type="text"
-                  v-model="press"
-                  placeholder="输入出版社"
-                />
-              </div>
-              <div class="book-date text-lg space-y-2">
-                <h2><span class="highlight pr-2 font-bold">出版日期</span></h2>
-                <input
-                  class="block w-full px-2 py-0.5 border text-sm rounded"
-                  type="date"
-                  v-model="date"
-                />
-              </div>
             </div>
-            <div class="felx-grow">
-              <div class="covers"></div>
-              <div class="flex">
-                <div class="description">
-                  <textarea name="" id="" cols="30" rows="10"></textarea>
+
+            <div class="information-right p-4 w-8/12 space-y-4">
+              <div class="book-covers space-y-2">
+                <h2>
+                  <span class="highlight pr-2 text-lg font-bold">封面</span>
+                </h2>
+                <div class="covers px-2 py-1 flex space-x-2 overflow-x-auto">
+                  <div
+                    v-for="cover of covers"
+                    :key="cover"
+                    class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
+                    :style="{
+                      backgroundImage: coverURL(cover),
+                    }"
+                  >
+                    <button
+                      class="delete-cover-btn w-5 h-5 hidden absolute top-1 right-1 z-10 text-red-500 opacity-80 hover:opacity-100"
+                      @click="deleteCover(cover)"
+                    >
+                      <!-- <img
+                        src="@/assets/icons/delete.svg"
+                        alt="delete cover icon"
+                      /> -->
+                      <svg
+                        viewBox="0 0 50 50"
+                        fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M17.5 19.1875C17.9144 19.1875 18.3118 19.3521 18.6049 19.6451C18.8979 19.9382 19.0625 20.3356 19.0625 20.75V39.5C19.0625 39.9144 18.8979 40.3118 18.6049 40.6049C18.3118 40.8979 17.9144 41.0625 17.5 41.0625C17.0856 41.0625 16.6882 40.8979 16.3951 40.6049C16.1021 40.3118 15.9375 39.9144 15.9375 39.5V20.75C15.9375 20.3356 16.1021 19.9382 16.3951 19.6451C16.6882 19.3521 17.0856 19.1875 17.5 19.1875V19.1875ZM25.3125 19.1875C25.7269 19.1875 26.1243 19.3521 26.4174 19.6451C26.7104 19.9382 26.875 20.3356 26.875 20.75V39.5C26.875 39.9144 26.7104 40.3118 26.4174 40.6049C26.1243 40.8979 25.7269 41.0625 25.3125 41.0625C24.8981 41.0625 24.5007 40.8979 24.2076 40.6049C23.9146 40.3118 23.75 39.9144 23.75 39.5V20.75C23.75 20.3356 23.9146 19.9382 24.2076 19.6451C24.5007 19.3521 24.8981 19.1875 25.3125 19.1875V19.1875ZM34.6875 20.75C34.6875 20.3356 34.5229 19.9382 34.2299 19.6451C33.9368 19.3521 33.5394 19.1875 33.125 19.1875C32.7106 19.1875 32.3132 19.3521 32.0201 19.6451C31.7271 19.9382 31.5625 20.3356 31.5625 20.75V39.5C31.5625 39.9144 31.7271 40.3118 32.0201 40.6049C32.3132 40.8979 32.7106 41.0625 33.125 41.0625C33.5394 41.0625 33.9368 40.8979 34.2299 40.6049C34.5229 40.3118 34.6875 39.9144 34.6875 39.5V20.75Z"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M45.625 11.375C45.625 12.2038 45.2958 12.9987 44.7097 13.5847C44.1237 14.1708 43.3288 14.5 42.5 14.5H40.9375V42.625C40.9375 44.2826 40.279 45.8723 39.1069 47.0444C37.9348 48.2165 36.3451 48.875 34.6875 48.875H15.9375C14.2799 48.875 12.6902 48.2165 11.5181 47.0444C10.346 45.8723 9.6875 44.2826 9.6875 42.625V14.5H8.125C7.2962 14.5 6.50134 14.1708 5.91529 13.5847C5.32924 12.9987 5 12.2038 5 11.375V8.25C5 7.4212 5.32924 6.62634 5.91529 6.04029C6.50134 5.45424 7.2962 5.125 8.125 5.125H19.0625C19.0625 4.2962 19.3917 3.50134 19.9778 2.91529C20.5638 2.32924 21.3587 2 22.1875 2H28.4375C29.2663 2 30.0612 2.32924 30.6472 2.91529C31.2333 3.50134 31.5625 4.2962 31.5625 5.125H42.5C43.3288 5.125 44.1237 5.45424 44.7097 6.04029C45.2958 6.62634 45.625 7.4212 45.625 8.25V11.375ZM13.1813 14.5L12.8125 14.6844V42.625C12.8125 43.4538 13.1417 44.2487 13.7278 44.8347C14.3138 45.4208 15.1087 45.75 15.9375 45.75H34.6875C35.5163 45.75 36.3112 45.4208 36.8972 44.8347C37.4833 44.2487 37.8125 43.4538 37.8125 42.625V14.6844L37.4437 14.5H13.1813ZM8.125 11.375V8.25H42.5V11.375H8.125Z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <div
+                    class="cover-input-container flex-shrink-0 w-24 h-32 relative flex justify-center items-center bg-gray-100 text-gray-300 hover:bg-gray-200 hover:text-gray-400 rounded transition-all duration-300"
+                    :class="{ dropping: isDropping }"
+                    @dragover="isDropping = true"
+                    @drop="isDropping = false"
+                    @dragleave="isDropping = false"
+                  >
+                    <svg
+                      class="w-8 h-8"
+                      viewBox="0 0 50 50"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M37.5 27.0833H27.0834V37.5C27.0834 38.6458 26.1459 39.5833 25 39.5833C23.8542 39.5833 22.9167 38.6458 22.9167 37.5V27.0833H12.5C11.3542 27.0833 10.4167 26.1458 10.4167 25C10.4167 23.8541 11.3542 22.9166 12.5 22.9166H22.9167V12.5C22.9167 11.3541 23.8542 10.4166 25 10.4166C26.1459 10.4166 27.0834 11.3541 27.0834 12.5V22.9166H37.5C38.6459 22.9166 39.5834 23.8541 39.5834 25C39.5834 26.1458 38.6459 27.0833 37.5 27.0833Z"
+                      />
+                    </svg>
+                    <input
+                      ref="covers"
+                      class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      @change="inputCovers"
+                    />
+                  </div>
                 </div>
-                <div class="review">
-                  <textarea name="" id="" cols="30" rows="10"></textarea>
+              </div>
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-y-4 gap-x-6">
+                <div class="book-isbn space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">ISBN</span>
+                  </h2>
+                  <div class="px-2 py-1">
+                    <input
+                      class="w-full px-2 py-0.5 border text-sm rounded"
+                      type="number"
+                      v-model="isbn"
+                      placeholder="输入 ISBN 码"
+                    />
+                  </div>
+                </div>
+                <div class="book-press space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">出版社</span>
+                  </h2>
+                  <div class="px-2 py-1">
+                    <input
+                      class="w-full px-2 py-0.5 border text-sm rounded"
+                      type="text"
+                      v-model="press"
+                      placeholder="输入出版社"
+                    />
+                  </div>
+                </div>
+                <div class="book-date space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold"
+                      >出版日期</span
+                    >
+                  </h2>
+                  <div class="px-2 py-1">
+                    <input
+                      class="w-full px-2 py-0.5 border text-sm rounded"
+                      type="date"
+                      v-model="date"
+                    />
+                  </div>
+                </div>
+                <div class="book-stars space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">评分</span>
+                  </h2>
+                  <star-rating
+                    class="px-2"
+                    :rating="metadata.stars"
+                    :star-size="15"
+                    :show-rating="false"
+                    :active-color="'rgba(243, 238, 102, 1)'"
+                    :inactive-color="'#E5E7EB'"
+                    :clearable="true"
+                    @rating-selected="setStars"
+                  >
+                  </star-rating>
+                </div>
+                <div class="book-defaultCollections space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold"
+                      >默认收藏夹</span
+                    >
+                  </h2>
+                  <div class="px-2 py-1 space-x-1">
+                    <button
+                      v-for="item of defaultCollections"
+                      :key="item.name"
+                      :title="item.name"
+                      class="w-8 h-8 p-1 border border-gray-300 rounded"
+                      @click="toggleDefaultCollections(item.name)"
+                    >
+                      <img
+                        :class="{
+                          'opacity-60': item.active,
+                          'opacity-10': !item.active,
+                        }"
+                        :src="require(`@/assets/icons/${item.name}.svg`)"
+                        :alt="`${item.icon} icon`"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div></div>
+                <div class="book-description space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">简介</span>
+                  </h2>
+                  <div class="px-2 py-1">
+                    <textarea
+                      ref="description"
+                      class="w-full overflow-y-hidden p-2 border text-sm rounded"
+                      name="description"
+                      id="description"
+                      rows="1"
+                      v-model="description"
+                      placeholder="输入简介"
+                    ></textarea>
+                  </div>
+                </div>
+                <div class="book-review space-y-2">
+                  <h2>
+                    <span class="highlight pr-2 text-lg font-bold">短评</span>
+                  </h2>
+                  <div class="px-2 py-1">
+                    <textarea
+                      ref="review"
+                      class="w-full overflow-y-hidden p-2 border text-sm rounded"
+                      name="review"
+                      id="review"
+                      rows="1"
+                      v-model="review"
+                      placeholder="输入短评"
+                    ></textarea>
+                  </div>
                 </div>
               </div>
             </div>
@@ -153,45 +391,221 @@
 
 <script>
 import { VueTagsInput, createTags } from '@johmun/vue-tags-input';
+// import { SlickList, SlickItem } from 'vue-slicksort';
+import StarRating from 'vue-star-rating';
+
+function getText(arr) {
+  const tempArr = [];
+  arr.forEach((item) => {
+    tempArr.push(item.text);
+  });
+  return tempArr;
+}
 
 export default {
   props: ['metadata'],
   components: {
     VueTagsInput,
+    // SlickList,
+    // SlickItem
+    StarRating,
   },
   data() {
     return {
+      isDropping: false,
       title: '',
       titles: createTags(this.metadata.titles) || [],
       author: '',
       authors: createTags(this.metadata.authors) || [],
       translator: '',
       translators: createTags(this.metadata.translators) || [],
-      defaultCollections: this.metadata.defaultCollections,
+      defaultCollections: [],
       collection: '',
       collections: createTags(this.metadata.collections) || [],
       tag: '',
       tags: createTags(this.metadata.tags) || [],
       sources: createTags(this.metadata.sources) || [],
-      links: [],
+      link: '',
+      links: createTags(this.metadata.links) || [],
       isbn: this.metadata.isbn,
       press: this.metadata.press,
       date: this.metadata.date || new Date(),
       description: this.metadata.description || '',
       review: this.metadata.review || '',
       stars: this.metadata.stars || 0,
-      covers: this.metadata.covers || [],
+      files: [],
+      coversTemp: [],
+      covers: [],
+      category: {},
     };
   },
   methods: {
     closeBookModalHandler(type) {
+      if (type === 'save') {
+        const removeCovers = [];
+        const addCovers = [];
+        this.metadata.covers.forEach((item) => {
+          if (!this.covers.includes(item)) removeCovers.push(item);
+        });
+        this.covers.forEach((cover) => {
+          const target = this.files.find((item) => item.name === cover);
+          if (target) addCovers.push(target);
+        });
+
+        const titles = getText(this.titles);
+        const authors = getText(this.authors);
+        const translators = getText(this.translators);
+        const collections = getText(this.collections);
+        const tags = getText(this.tags);
+        const sources = getText(this.sources);
+        const links = getText(this.links);
+
+        const payload = {
+          removeCovers,
+          addCovers,
+          metadata: {
+            titles,
+            authors,
+            translators,
+            covers: this.covers,
+            defaultCollections: this.defaultCollections,
+            collections,
+            tags,
+            sources,
+            links,
+            press: this.press,
+            isbn: this.isbn,
+            date: this.data,
+            description: this.description,
+            review: this.review,
+            category: this.category,
+          },
+        };
+        console.log('dispatch saving metadata');
+        // console.log(payload);
+        this.$store.dispatch('saveMetadata', payload);
+      }
       this.$emit('close-book-modal');
     },
     backToTopHandler(target) {
       this.$refs[target].scrollTop = 0;
     },
+    async inputCovers() {
+      // set name as id of each file and push them to array this.files
+      const temp = [];
+      this.$refs.covers.files.forEach((file) => {
+        const fileName = `${this.titles[0].text || 'book'}_${+new Date()}.${
+          file.name.split('.')[1]
+        }`;
+
+        this.files.push({
+          name: fileName,
+          file,
+        });
+
+        const result = this.readImg(fileName, file);
+
+        temp.push(result);
+      });
+
+      const arr = await Promise.all(temp);
+      this.coversTemp.push(...arr);
+      arr.forEach((item) => {
+        this.covers.push(item.name);
+      });
+    },
+    readImg(name, file) {
+      // async read each file data and push them to array this.filesTemp
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          resolve({
+            name,
+            data: event.target.result,
+          });
+        };
+      });
+    },
+    coverURL(cover) {
+      if (this.metadata.covers.includes(cover)) {
+        return `url(covers/${cover})`;
+      }
+      const index = this.coversTemp.findIndex((item) => item.name === cover);
+      return `url(${this.coversTemp[index].data})`;
+    },
+    deleteCover(cover) {
+      const index = this.covers.findIndex((item) => item === cover);
+      this.covers.splice(index, 1);
+    },
+    textareaResizeListener(target) {
+      const dom = this.$refs[target];
+      dom.style.height = `${dom.scrollHeight}px`;
+      dom.addEventListener('input', (e) => {
+        dom.style.height = `${dom.scrollHeight}px`;
+      });
+    },
+    toggleDefaultCollections(val) {
+      const index = this.defaultCollections.findIndex(
+        (item) => item.name === val,
+      );
+      const item = this.defaultCollections[index];
+      this.$set(this.defaultCollections, index, {
+        name: item.name,
+        active: !item.active,
+      });
+    },
+    setStars(stars) {
+      this.stars = stars;
+    },
   },
-  created() {},
+  mounted() {
+    this.textareaResizeListener('description');
+    this.textareaResizeListener('review');
+
+    let timer = null;
+
+    window.onresize = () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        this.textareaResizeListener('description');
+        this.textareaResizeListener('review');
+      }, 300);
+    };
+  },
+  created() {
+    this.defaultCollections = [
+      {
+        name: 'like',
+        active: false,
+      },
+      {
+        name: 'reading',
+        active: false,
+      },
+      {
+        name: 'read-it-later',
+        active: false,
+      },
+      {
+        name: 'buy',
+        active: false,
+      },
+    ];
+    this.metadata.defaultCollections.forEach((item) => {
+      const target = this.defaultCollections.find(
+        (collection) => item.name === collection.name,
+      );
+      target.active = item.active;
+    });
+    this.covers = [...this.metadata.covers];
+    this.category = this.metadata.category || {
+      name: 'root',
+      children: [],
+    };
+  },
 };
 </script>
 
@@ -213,13 +627,17 @@ export default {
 
   .highlight {
     text-decoration: none;
-    box-shadow: inset 0 -0.5em 0 rgba(243, 238, 102, 1);
+    box-shadow: inset 0 -0.5em 0 rgba(243, 238, 102, 0.8);
     color: inherit;
   }
 
   .tooltip {
     &:hover::after {
       content: "第一个元素显示在页面上";
+      position: absolute;
+      bottom: 0;
+      left: 4.3rem;
+      z-index: 999;
       margin-left: 0.25rem;
       font-size: 0.75rem;
       line-height: 1rem;
@@ -228,6 +646,38 @@ export default {
       border-radius: 0.25rem;
       opacity: 70%;
     }
+  }
+
+  .covers {
+    .dropping {
+      background: #e5e7eb;
+      color: #9ca3af;
+    }
+    .cover:hover {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(249, 250, 251, 0.8);
+      }
+      .delete-cover-btn {
+        display: block;
+      }
+    }
+  }
+
+  .book-description,
+  .book-review {
+    textarea {
+      resize: none;
+    }
+  }
+
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
   }
 }
 </style>
@@ -239,7 +689,6 @@ export default {
     border: none;
   }
   .ti-tags {
-    flex-direction: column;
     .ti-tag {
       width: fit-content;
       padding: 0.5rem;
@@ -251,18 +700,28 @@ export default {
       &:hover {
         background: #e5e7eb;
       }
+      .ti-tag-left {
+        flex-shrink: 0;
+      }
     }
     .ti-deletion-mark {
       background: #fca5a5;
       color: white;
     }
     .ti-new-tag-input-wrapper {
+      width: 100%;
       input {
         border-bottom: 1.5px solid #d1d5db;
         &:focus {
           border-bottom: 1.5px solid #000000;
         }
       }
+    }
+  }
+
+  .book-titles {
+    .ti-tags {
+      flex-direction: column;
     }
   }
 }

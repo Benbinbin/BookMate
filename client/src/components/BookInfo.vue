@@ -118,7 +118,7 @@
       <vue-tags-input
         v-show="showCollectionsInput"
         v-model="collection"
-        placeholder="添加标签"
+        placeholder="添加收藏夹"
         :tags="collections"
         :autocomplete-items="suggestionCollections"
         :add-on-blur="false"
@@ -182,9 +182,6 @@
       >
         <div
           slot="tag-left"
-          slot-scope="props"
-          class="my-tag-left"
-          @click="props.performOpenEdit(props.index)"
         >
           #
         </div>

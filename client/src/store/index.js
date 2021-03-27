@@ -52,6 +52,9 @@ export default new Vuex.Store({
     SET_STARS(state, payload) {
       state.book.metadata.stars = payload;
     },
+    SAVE_METADATA(state, payload) {
+      console.log(payload);
+    },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
@@ -194,6 +197,9 @@ export default new Vuex.Store({
     setStars(context, payload) {
       context.commit('SET_STARS', payload);
     },
+    saveMetadata(context, payload) {
+      context.commit('SAVE_METADATA', payload);
+    },
     // quote and summary status
     changeQuotesMode(context, payload) {
       context.commit('CHANGE_QUOTES_MODE', payload);
@@ -222,6 +228,7 @@ export default new Vuex.Store({
 
     // quote content
     activeQuoteEditing(context, payload) {
+      //
       context.commit('ACTIVE_QUOTE_EDITING', payload);
     },
     cancelQuoteEditing(context) {
