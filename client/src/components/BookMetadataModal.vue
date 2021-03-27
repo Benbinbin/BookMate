@@ -208,7 +208,7 @@
                     @end="drag = false"
                     :animation="200"
                     :disabled="false"
-                    ghost-class="ghost"
+                    :ghostClass="'ghost'"
                   >
                     <transition-group
                       class="flex space-x-2"
