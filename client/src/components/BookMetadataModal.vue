@@ -52,6 +52,55 @@
         >
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
           <hr class="w-1/2 mx-auto border-gray-300 mb-4" />
+
+          <div class="tree-container" @click="cancelSelect">
+            <v-jstree
+              ref="tree"
+              :data="category.children"
+              v-model="selected"
+              draggable
+              multiple
+              :no-dots="true"
+              :collapse="true"
+            >
+              <template v-slot="_">
+                <div class="flex items-center">
+                  <button
+                    v-if="_.model.children.length > 0"
+                    :class="{ 'rotate-90': _.model.opened }"
+                    class="transform"
+                    @click="toggleChildren(_.model)"
+                  >
+                    <svg
+                      class="w-6 h-6"
+                      viewBox="0 0 50 50"
+                      fill="currentcolor"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M19.3958 13.9792C19.2027 14.1719 19.0495 14.4009 18.9449 14.6529C18.8404 14.9049 18.7866 15.1751 18.7866 15.4479C18.7866 15.7208 18.8404 15.991 18.9449 16.243C19.0495 16.495 19.2027 16.724 19.3958 16.9167L27.4791 25L19.3958 33.0834C19.0063 33.4729 18.7874 34.0012 18.7874 34.5521C18.7874 35.103 19.0063 35.6313 19.3958 36.0209C19.7854 36.4104 20.3137 36.6292 20.8646 36.6292C21.4155 36.6292 21.9438 36.4104 22.3333 36.0209L31.8958 26.4584C32.089 26.2656 32.2422 26.0367 32.3467 25.7847C32.4513 25.5326 32.5051 25.2625 32.5051 24.9896C32.5051 24.7168 32.4513 24.4466 32.3467 24.1946C32.2422 23.9425 32.089 23.7136 31.8958 23.5209L22.3333 13.9584C21.5417 13.1667 20.2083 13.1667 19.3958 13.9792Z"
+                      />
+                    </svg>
+                  </button>
+                  <svg
+                    v-if="!_.model.children || _.model.children.length === 0"
+                    class="w-6 h-6 flex-shrink-0"
+                    viewBox="0 0 50 50"
+                    fill="currentcolor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M25 29.6875C26.2432 29.6875 27.4355 29.1936 28.3146 28.3146C29.1936 27.4355 29.6875 26.2432 29.6875 25C29.6875 23.7568 29.1936 22.5645 28.3146 21.6854C27.4355 20.8064 26.2432 20.3125 25 20.3125C23.7568 20.3125 22.5645 20.8064 21.6854 21.6854C20.8064 22.5645 20.3125 23.7568 20.3125 25C20.3125 26.2432 20.8064 27.4355 21.6854 28.3146C22.5645 29.1936 23.7568 29.6875 25 29.6875Z"
+                      fill="black"
+                    />
+                  </svg>
+                  {{ _.model.name }}
+                </div>
+              </template>
+            </v-jstree>
+          </div>
         </div>
         <div ref="right" class="right flex-grow rounded-br-lg">
           <div class="content-container flex w-full">
@@ -419,6 +468,7 @@
 <script>
 import { VueTagsInput, createTags } from '@johmun/vue-tags-input';
 import draggable from 'vuedraggable';
+import VJstree from 'vue-jstree';
 import StarRating from 'vue-star-rating';
 
 function getText(arr) {
@@ -434,6 +484,7 @@ export default {
   components: {
     VueTagsInput,
     draggable,
+    VJstree,
     StarRating,
   },
   data() {
@@ -464,6 +515,7 @@ export default {
       covers: [],
       drag: false,
       category: {},
+      selected: [],
     };
   },
   methods: {
@@ -585,6 +637,35 @@ export default {
     setStars(stars) {
       this.stars = stars;
     },
+    cancelSelect(event) {
+      let clickNode = false;
+
+      let dom = event.target;
+      while (dom.className !== 'tree-container') {
+        if (dom.classList.contains('tree-anchor')) {
+          clickNode = true;
+          break;
+        }
+        dom = dom.parentNode;
+      }
+      if (!clickNode) {
+        this.$refs.tree.handleRecursionNodeChilds(this.$refs.tree, (target) => {
+          if (target.model && target.model.selected) {
+            // eslint-disable-next-line no-param-reassign
+            target.model.selected = false;
+          }
+        });
+      }
+    },
+    toggleChildren(target) {
+      console.log(this.$refs.tree);
+
+      if (target.opened) {
+        target.closeChildren();
+      } else {
+        target.openChildren();
+      }
+    },
   },
   mounted() {
     this.textareaResizeListener('description');
@@ -603,7 +684,9 @@ export default {
     };
   },
   created() {
-    this.defaultCollections = [
+    this.defaultCollections = JSON.parse(
+      JSON.stringify(this.metadata.defaultCollections),
+    ) || [
       {
         name: 'like',
         active: false,
@@ -621,14 +704,8 @@ export default {
         active: false,
       },
     ];
-    this.metadata.defaultCollections.forEach((item) => {
-      const target = this.defaultCollections.find(
-        (collection) => item.name === collection.name,
-      );
-      target.active = item.active;
-    });
     this.covers = [...this.metadata.covers];
-    this.category = this.metadata.category || {
+    this.category = JSON.parse(JSON.stringify(this.metadata.category)) || {
       name: 'root',
       children: [],
     };
@@ -766,6 +843,12 @@ export default {
   }
   .ghost {
     opacity: 0;
+  }
+
+  .tree {
+    .tree-icon {
+      display: none;
+    }
   }
 }
 </style>
