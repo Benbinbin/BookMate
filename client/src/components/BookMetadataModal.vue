@@ -53,58 +53,55 @@
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
           <hr class="w-1/2 mx-auto border-gray-300 mb-4" />
 
-          <div class="tree-container" @click="cancelSelect">
-            <v-jstree
+          <div class="tree-container" @dblclick="editNode">
+            <TWTree
               ref="tree"
-              :data="category.children"
-              v-model="selected"
-              draggable
-              multiple
-              :no-dots="true"
-              :collapse="true"
+              class="tree"
+              :tree="categoryArr"
+              :animationDuration="'50ms'"
+              :defaultAttrs="attr"
+              :multiSelect="true"
+              @click="clickNode"
+              @move="customDropHandler"
+              @keydown="keyHandler"
             >
-              <template v-slot="_">
-                <div class="flex items-center">
-                  <button
-                    v-if="_.model.children.length > 0"
-                    :class="{ 'rotate-90': _.model.opened }"
-                    class="transform"
-                    @click="toggleChildren(_.model)"
-                  >
-                    <svg
-                      class="w-6 h-6"
-                      viewBox="0 0 50 50"
-                      fill="currentcolor"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M19.3958 13.9792C19.2027 14.1719 19.0495 14.4009 18.9449 14.6529C18.8404 14.9049 18.7866 15.1751 18.7866 15.4479C18.7866 15.7208 18.8404 15.991 18.9449 16.243C19.0495 16.495 19.2027 16.724 19.3958 16.9167L27.4791 25L19.3958 33.0834C19.0063 33.4729 18.7874 34.0012 18.7874 34.5521C18.7874 35.103 19.0063 35.6313 19.3958 36.0209C19.7854 36.4104 20.3137 36.6292 20.8646 36.6292C21.4155 36.6292 21.9438 36.4104 22.3333 36.0209L31.8958 26.4584C32.089 26.2656 32.2422 26.0367 32.3467 25.7847C32.4513 25.5326 32.5051 25.2625 32.5051 24.9896C32.5051 24.7168 32.4513 24.4466 32.3467 24.1946C32.2422 23.9425 32.089 23.7136 31.8958 23.5209L22.3333 13.9584C21.5417 13.1667 20.2083 13.1667 19.3958 13.9792Z"
-                      />
-                    </svg>
-                  </button>
-                  <svg
-                    v-if="!_.model.children || _.model.children.length === 0"
-                    class="w-6 h-6 flex-shrink-0"
-                    viewBox="0 0 50 50"
-                    fill="currentcolor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M25 29.6875C26.2432 29.6875 27.4355 29.1936 28.3146 28.3146C29.1936 27.4355 29.6875 26.2432 29.6875 25C29.6875 23.7568 29.1936 22.5645 28.3146 21.6854C27.4355 20.8064 26.2432 20.3125 25 20.3125C23.7568 20.3125 22.5645 20.8064 21.6854 21.6854C20.8064 22.5645 20.3125 23.7568 20.3125 25C20.3125 26.2432 20.8064 27.4355 21.6854 28.3146C22.5645 29.1936 23.7568 29.6875 25 29.6875Z"
-                      fill="black"
-                    />
-                  </svg>
-                  {{ _.model.name }}
-                </div>
+              <template v-slot:switcher="{ node }">
+                <svg
+                  v-if="node.hasChild"
+                  :class="{ 'rotate-90': node.directoryState === 'expanded' }"
+                  class="w-5 h-5 transform"
+                  viewBox="0 0 50 50"
+                  fill="currentcolor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19.3958 13.9792C19.2027 14.1719 19.0495 14.4009 18.9449 14.6529C18.8404 14.9049 18.7866 15.1751 18.7866 15.4479C18.7866 15.7208 18.8404 15.991 18.9449 16.243C19.0495 16.495 19.2027 16.724 19.3958 16.9167L27.4791 25L19.3958 33.0834C19.0063 33.4729 18.7874 34.0012 18.7874 34.5521C18.7874 35.103 19.0063 35.6313 19.3958 36.0209C19.7854 36.4104 20.3137 36.6292 20.8646 36.6292C21.4155 36.6292 21.9438 36.4104 22.3333 36.0209L31.8958 26.4584C32.089 26.2656 32.2422 26.0367 32.3467 25.7847C32.4513 25.5326 32.5051 25.2625 32.5051 24.9896C32.5051 24.7168 32.4513 24.4466 32.3467 24.1946C32.2422 23.9425 32.089 23.7136 31.8958 23.5209L22.3333 13.9584C21.5417 13.1667 20.2083 13.1667 19.3958 13.9792Z"
+                  />
+                </svg>
               </template>
-            </v-jstree>
+              <template v-slot:icon="{ node }">
+                <div v-if="node.hasChild"></div>
+                <svg
+                  v-if="!node.hasChild"
+                  class="w-5 h-5 inline"
+                  viewBox="0 0 50 50"
+                  fill="currentcolor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M25 29.6875C26.2432 29.6875 27.4355 29.1936 28.3146 28.3146C29.1936 27.4355 29.6875 26.2432 29.6875 25C29.6875 23.7568 29.1936 22.5645 28.3146 21.6854C27.4355 20.8064 26.2432 20.3125 25 20.3125C23.7568 20.3125 22.5645 20.8064 21.6854 21.6854C20.8064 22.5645 20.3125 23.7568 20.3125 25C20.3125 26.2432 20.8064 27.4355 21.6854 28.3146C22.5645 29.1936 23.7568 29.6875 25 29.6875Z"
+                    fill="black"
+                  />
+                </svg>
+              </template>
+            </TWTree>
           </div>
         </div>
         <div ref="right" class="right flex-grow rounded-br-lg">
           <div class="content-container flex w-full">
-            <div class="infomation-left p-4 space-y-4 w-4/12">
+            <div class="infomation-left px-8 py-4 space-y-4 w-4/12">
               <div class="book-titles space-y-2">
                 <div class="flex items-end relative">
                   <h2>
@@ -236,7 +233,7 @@
               </div>
             </div>
 
-            <div class="information-right p-4 w-8/12 space-y-4">
+            <div class="information-right px-8 py-4 w-8/12 space-y-4">
               <div class="book-covers space-y-2">
                 <div class="flex items-end relative">
                   <h2>
@@ -468,8 +465,8 @@
 <script>
 import { VueTagsInput, createTags } from '@johmun/vue-tags-input';
 import draggable from 'vuedraggable';
-import VJstree from 'vue-jstree';
 import StarRating from 'vue-star-rating';
+import TWTree from 'twtree';
 
 function getText(arr) {
   const tempArr = [];
@@ -479,13 +476,31 @@ function getText(arr) {
   return tempArr;
 }
 
+/* eslint-disable no-param-reassign */
+function setData(tree) {
+  if (tree && Array.isArray(tree)) {
+    tree.forEach((item) => {
+      setData(item);
+    });
+  } else if (tree && tree.children) {
+    // tree.id = tree.name;
+    tree.title = tree.name;
+    tree.hasChild = true;
+    setData(tree.children);
+  } else if (tree) {
+    // tree.id = tree.name;
+    tree.title = tree.name;
+  }
+}
+/* eslint-enable no-param-reassign */
+
 export default {
   props: ['metadata'],
   components: {
     VueTagsInput,
     draggable,
-    VJstree,
     StarRating,
+    TWTree,
   },
   data() {
     return {
@@ -514,8 +529,23 @@ export default {
       coversTemp: [],
       covers: [],
       drag: false,
-      category: {},
-      selected: [],
+      categoryArr: [],
+      tree: null,
+      attr: {
+        style: {
+          iconMarginRight: '0em',
+          fontSize: '0.875rem',
+          lineHeight: '1.25rem',
+          indent: '5px',
+          titleMaxWidth: '100%',
+          hoverBgColor: '#DBEAFE',
+          selectedBgColor: '#BFDBFE',
+        },
+      },
+      moveManual: true,
+      nodeEdting: false,
+      selectNodes: [],
+      titleTemp: '',
     };
   },
   methods: {
@@ -560,8 +590,6 @@ export default {
             category: this.category,
           },
         };
-        console.log('dispatch saving metadata');
-        // console.log(payload);
         this.$store.dispatch('saveMetadata', payload);
       }
       this.$emit('close-book-modal');
@@ -637,33 +665,57 @@ export default {
     setStars(stars) {
       this.stars = stars;
     },
-    cancelSelect(event) {
-      let clickNode = false;
-
-      let dom = event.target;
-      while (dom.className !== 'tree-container') {
-        if (dom.classList.contains('tree-anchor')) {
-          clickNode = true;
-          break;
+    clickNode(node, event) {
+      if (!event.ctrlKey && this.tree.getSelected().length) {
+        while (this.tree.getSelected().length > 0) {
+          const selectNode = this.tree.getSelected()[0];
+          this.tree.deselect(selectNode);
         }
-        dom = dom.parentNode;
       }
-      if (!clickNode) {
-        this.$refs.tree.handleRecursionNodeChilds(this.$refs.tree, (target) => {
-          if (target.model && target.model.selected) {
-            // eslint-disable-next-line no-param-reassign
-            target.model.selected = false;
+    },
+    customDropHandler(node, fromParent, fromPos, toParent, toPos) {
+      this.tree.select(node);
+
+      if (this.tree.getSelected().length > 1) {
+        const nodes = this.tree.getSelected();
+
+        let pos = toPos || 0;
+        nodes.forEach((item) => {
+          // eslint-disable-next-line no-underscore-dangle
+          if (item.__.parent === toParent && item.__.pos < toPos) {
+            pos -= 1;
           }
+        });
+        if (pos < 0) pos = 0;
+
+        nodes.forEach((item) => {
+          this.tree.remove(item);
+        });
+        nodes.forEach((item) => {
+          this.tree.create(item, toParent, pos);
+          pos += 1;
         });
       }
     },
-    toggleChildren(target) {
-      console.log(this.$refs.tree);
-
-      if (target.opened) {
-        target.closeChildren();
-      } else {
-        target.openChildren();
+    editNode(event) {
+      if (!this.nodeEdting && this.tree.getSelected().length === 1) {
+        const node = this.tree.getSelected()[0];
+        this.tree.edit(node);
+        this.titleTemp = node.title;
+        this.nodeEdting = true;
+      }
+    },
+    keyHandler(node, event) {
+      if (event.key === 'Escape') {
+        this.tree.setTitle(node, this.titleTemp);
+        this.tree.quitEdit(node);
+        this.nodeEdting = false;
+        this.titleTemp = '';
+      } else if (event.key === 'Enter') {
+        console.log(event);
+        this.tree.quitEdit(node);
+        this.nodeEdting = false;
+        this.titleTemp = '';
       }
     },
   },
@@ -682,6 +734,8 @@ export default {
         this.textareaResizeListener('review');
       }, 300);
     };
+
+    this.tree = this.$refs.tree;
   },
   created() {
     this.defaultCollections = JSON.parse(
@@ -705,10 +759,10 @@ export default {
       },
     ];
     this.covers = [...this.metadata.covers];
-    this.category = JSON.parse(JSON.stringify(this.metadata.category)) || {
-      name: 'root',
-      children: [],
-    };
+    const categoryClone = JSON.parse(JSON.stringify(this.metadata.category));
+    setData(categoryClone);
+    this.categoryArr = categoryClone.children;
+    // console.log(this.categoryArr);
   },
 };
 </script>
@@ -759,7 +813,7 @@ export default {
     }
     .cover {
       &:hover {
-        cursor: move;
+        cursor: grab;
       }
       &:focus-within {
         &::after {
@@ -845,10 +899,8 @@ export default {
     opacity: 0;
   }
 
-  .tree {
-    .tree-icon {
-      display: none;
-    }
-  }
+  // .twtree-icon-and-title {
+  //   display: flex !important;
+  // }
 }
 </style>
