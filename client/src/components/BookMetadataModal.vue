@@ -52,8 +52,63 @@
         >
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
           <hr class="w-1/2 mx-auto border-gray-300 mb-4" />
-
-          <div class="tree-container" @dblclick="editNode">
+          <div class="mb-2 flex justify-between items-center">
+            <button
+              class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/refresh.svg"
+                alt="refresh icon"
+                @click="refreshTree"
+              />
+            </button>
+            <button
+              class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/add-before.svg"
+                alt="add before icon"
+                @click="addNode('before')"
+              />
+            </button>
+            <button
+              class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/add.svg"
+                alt="add inside icon"
+                @click="addNode('inside')"
+              />
+            </button>
+            <button
+              class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/add-after.svg"
+                alt="add after icon"
+                @click="addNode('after')"
+              />
+            </button>
+            <button
+              class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/delete.svg"
+                alt="delete icon"
+                @click="deleteNode"
+              />
+            </button>
+          </div>
+          <div
+            class="tree-container"
+            @dblclick="editNode"
+            @keydown="treeKeyHandler"
+          >
             <TWTree
               ref="tree"
               class="tree"
@@ -63,7 +118,7 @@
               :multiSelect="true"
               @click="clickNode"
               @move="customDropHandler"
-              @keydown="keyHandler"
+              @keydown="editorKeyHandler"
             >
               <template v-slot:switcher="{ node }">
                 <svg
@@ -483,12 +538,12 @@ function setData(tree) {
       setData(item);
     });
   } else if (tree && tree.children) {
-    // tree.id = tree.name;
+    tree.id = tree.name;
     tree.title = tree.name;
     tree.hasChild = true;
     setData(tree.children);
   } else if (tree) {
-    // tree.id = tree.name;
+    tree.id = tree.name;
     tree.title = tree.name;
   }
 }
@@ -536,9 +591,8 @@ export default {
           iconMarginRight: '0em',
           fontSize: '0.875rem',
           lineHeight: '1.25rem',
-          indent: '5px',
           titleMaxWidth: '100%',
-          hoverBgColor: '#DBEAFE',
+          hoverBgColor: '#EFF6FF',
           selectedBgColor: '#BFDBFE',
         },
       },
@@ -665,6 +719,64 @@ export default {
     setStars(stars) {
       this.stars = stars;
     },
+    refreshTree() {
+      this.tree.reload();
+      this.nodeEdting = false;
+      this.titleTemp = '';
+      const root = this.tree.getById('__root__');
+      this.tree.setTitle(root, '根节点');
+    },
+    addNode(position) {
+      if (this.nodeEdting) return false;
+      const id = Date.now();
+      const title = '';
+      this.titleTemp = title;
+      this.nodeEdting = true;
+      const rootNode = this.tree.getById('__root__');
+
+      if (this.tree.getSelected().length === 0) {
+        this.tree.createAndEdit({ title, id }, rootNode);
+      } else if (this.tree.getSelected().length === 1) {
+        const targetNode = this.tree.getSelected()[0];
+        this.tree.deselect(targetNode);
+        if (targetNode.id === '__root__') {
+          // eslint-disable-next-line no-param-reassign
+          position = 'inside';
+        }
+        // eslint-disable-next-line no-underscore-dangle
+        const parentNode = targetNode.__.parent;
+        // eslint-disable-next-line no-underscore-dangle
+        let { pos } = targetNode.__;
+
+        switch (position) {
+          case 'inside':
+            this.tree.createAndEdit({ title, id }, targetNode);
+            break;
+          case 'before':
+            // pos -= 1;
+            if (pos < 0) pos = 0;
+            this.tree.createAndEdit({ title, id }, parentNode, pos);
+            break;
+          default:
+            pos += 1;
+            this.tree.createAndEdit({ title, id }, parentNode, pos);
+            break;
+        }
+      }
+
+      const newNode = this.tree.getById(id);
+      this.tree.select(newNode);
+      return id;
+    },
+    deleteNode() {
+      const nodes = this.tree.getSelected();
+      nodes.forEach((item) => {
+        this.tree.remove(item);
+      });
+
+      this.nodeEdting = false;
+      this.titleTemp = '';
+    },
     clickNode(node, event) {
       if (!event.ctrlKey && this.tree.getSelected().length) {
         while (this.tree.getSelected().length > 0) {
@@ -705,17 +817,45 @@ export default {
         this.nodeEdting = true;
       }
     },
-    keyHandler(node, event) {
+    editorKeyHandler(node, event) {
       if (event.key === 'Escape') {
         this.tree.setTitle(node, this.titleTemp);
         this.tree.quitEdit(node);
         this.nodeEdting = false;
         this.titleTemp = '';
+
+        if (this.titleTemp === '') {
+          this.$nextTick(() => {
+            this.tree.remove(node);
+          });
+        }
       } else if (event.key === 'Enter') {
-        console.log(event);
         this.tree.quitEdit(node);
         this.nodeEdting = false;
         this.titleTemp = '';
+      }
+    },
+    treeKeyHandler(event) {
+      if (!this.nodeEdting) {
+        //  remove selected nodes
+        if (event.key === 'Delete') {
+          this.deleteNode();
+        } else if (
+          event.key === 'Enter'
+          && this.tree.getSelected().length === 1
+        ) {
+          this.addNode('after');
+        } else if (
+          event.key === 'Tab'
+          && this.tree.getSelected().length === 1
+        ) {
+          const id = this.addNode('inside');
+          const newNode = this.tree.getById(id);
+          const timer = setTimeout(() => {
+            this.tree.focus(newNode);
+            clearTimeout(timer);
+          }, 0);
+        }
       }
     },
   },
@@ -736,6 +876,8 @@ export default {
     };
 
     this.tree = this.$refs.tree;
+    const root = this.tree.getById('__root__');
+    this.tree.setTitle(root, '根节点');
   },
   created() {
     this.defaultCollections = JSON.parse(
@@ -761,8 +903,7 @@ export default {
     this.covers = [...this.metadata.covers];
     const categoryClone = JSON.parse(JSON.stringify(this.metadata.category));
     setData(categoryClone);
-    this.categoryArr = categoryClone.children;
-    // console.log(this.categoryArr);
+    this.categoryArr = [categoryClone];
   },
 };
 </script>
