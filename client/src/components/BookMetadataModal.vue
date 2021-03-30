@@ -65,32 +65,32 @@
             </button>
             <button
               class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+              @click="addNewNode('before')"
             >
               <img
                 class="w-5 h-5"
                 src="@/assets/icons/add-before.svg"
                 alt="add before icon"
-                @click="addNode('before')"
               />
             </button>
             <button
               class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+              @click="addNewNode('inside')"
             >
               <img
                 class="w-5 h-5"
-                src="@/assets/icons/add.svg"
+                src="@/assets/icons/add-circle.svg"
                 alt="add inside icon"
-                @click="addNode('inside')"
               />
             </button>
             <button
               class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
+              @click="addNewNode('after')"
             >
               <img
                 class="w-5 h-5"
                 src="@/assets/icons/add-after.svg"
                 alt="add after icon"
-                @click="addNode('after')"
               />
             </button>
             <button
@@ -113,7 +113,7 @@
               ref="tree"
               class="tree"
               :tree="categoryArr"
-              :animationDuration="'50ms'"
+              :animationDuration="'10ms'"
               :defaultAttrs="attr"
               :multiSelect="true"
               @click="clickNode"
@@ -133,9 +133,6 @@
                     d="M19.3958 13.9792C19.2027 14.1719 19.0495 14.4009 18.9449 14.6529C18.8404 14.9049 18.7866 15.1751 18.7866 15.4479C18.7866 15.7208 18.8404 15.991 18.9449 16.243C19.0495 16.495 19.2027 16.724 19.3958 16.9167L27.4791 25L19.3958 33.0834C19.0063 33.4729 18.7874 34.0012 18.7874 34.5521C18.7874 35.103 19.0063 35.6313 19.3958 36.0209C19.7854 36.4104 20.3137 36.6292 20.8646 36.6292C21.4155 36.6292 21.9438 36.4104 22.3333 36.0209L31.8958 26.4584C32.089 26.2656 32.2422 26.0367 32.3467 25.7847C32.4513 25.5326 32.5051 25.2625 32.5051 24.9896C32.5051 24.7168 32.4513 24.4466 32.3467 24.1946C32.2422 23.9425 32.089 23.7136 31.8958 23.5209L22.3333 13.9584C21.5417 13.1667 20.2083 13.1667 19.3958 13.9792Z"
                   />
                 </svg>
-              </template>
-              <template v-slot:icon="{ node }">
-                <div v-if="node.hasChild"></div>
                 <svg
                   v-if="!node.hasChild"
                   class="w-5 h-5 inline"
@@ -150,6 +147,51 @@
                     fill="black"
                   />
                 </svg>
+              </template>
+              <template v-slot:contextmenu="{ node }">
+                <div
+                  class="flex flex-col rounded border border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md text-xs"
+                >
+                  <button
+                    class="p-2 flex justify-center items-center space-x-1 opacity-80 hover:opacity-100"
+                    @click="
+                      customPasteHandler({ target: node, position: 'before' })
+                    "
+                  >
+                    <img
+                      class="w-4 h-4"
+                      src="@/assets/icons/add-before.svg"
+                      alt="add before icon"
+                    />
+                    <span>粘贴到该节点前</span>
+                  </button>
+                  <button
+                    class="p-2 flex justify-center items-center space-x-1 opacity-80 hover:opacity-100"
+                    @click="
+                      customPasteHandler({ target: node, position: 'inside' })
+                    "
+                  >
+                    <img
+                      class="w-4 h-4"
+                      src="@/assets/icons/add-circle.svg"
+                      alt="add inside icon"
+                    />
+                    <span>粘贴到该节点内</span>
+                  </button>
+                  <button
+                    class="p-2 flex justify-center items-center space-x-1 opacity-80 hover:opacity-100"
+                    @click="
+                      customPasteHandler({ target: node, position: 'after' })
+                    "
+                  >
+                    <img
+                      class="w-4 h-4"
+                      src="@/assets/icons/add-after.svg"
+                      alt="add after icon"
+                    />
+                    <span>粘贴到该节点后</span>
+                  </button>
+                </div>
               </template>
             </TWTree>
           </div>
@@ -588,7 +630,8 @@ export default {
       tree: null,
       attr: {
         style: {
-          iconMarginRight: '0em',
+          showIcon: false,
+          switcherMarginRight: '0',
           fontSize: '0.875rem',
           lineHeight: '1.25rem',
           titleMaxWidth: '100%',
@@ -726,7 +769,7 @@ export default {
       const root = this.tree.getById('__root__');
       this.tree.setTitle(root, '根节点');
     },
-    addNode(position) {
+    addNewNode(position) {
       if (this.nodeEdting) return false;
       const id = Date.now();
       const title = '';
@@ -821,14 +864,13 @@ export default {
       if (event.key === 'Escape') {
         this.tree.setTitle(node, this.titleTemp);
         this.tree.quitEdit(node);
-        this.nodeEdting = false;
-        this.titleTemp = '';
-
         if (this.titleTemp === '') {
           this.$nextTick(() => {
             this.tree.remove(node);
           });
         }
+        this.nodeEdting = false;
+        this.titleTemp = '';
       } else if (event.key === 'Enter') {
         this.tree.quitEdit(node);
         this.nodeEdting = false;
@@ -844,18 +886,53 @@ export default {
           event.key === 'Enter'
           && this.tree.getSelected().length === 1
         ) {
-          this.addNode('after');
+          this.addNewNode('after');
         } else if (
           event.key === 'Tab'
           && this.tree.getSelected().length === 1
         ) {
-          const id = this.addNode('inside');
+          const id = this.addNewNode('inside');
           const newNode = this.tree.getById(id);
           const timer = setTimeout(() => {
             this.tree.focus(newNode);
             clearTimeout(timer);
           }, 0);
         }
+      }
+    },
+    async customPasteHandler({ target, position }) {
+      try {
+        const text = await navigator.clipboard.readText();
+        const arr = text.split('\n');
+        // eslint-disable-next-line no-underscore-dangle
+        const parentNode = target.__.parent;
+        console.log(target);
+        console.log(parentNode);
+        // eslint-disable-next-line no-underscore-dangle
+        let { pos } = target.__;
+        console.log(position);
+        switch (position) {
+          case 'before':
+            if (pos < 0) pos = 0;
+            arr.forEach((title) => {
+              this.tree.create({ title }, parentNode, pos);
+              pos += 1;
+            });
+            break;
+          case 'inside':
+            arr.forEach((title) => {
+              this.tree.create({ title }, target);
+            });
+            break;
+          default:
+            pos += 1;
+            arr.forEach((title) => {
+              this.tree.create({ title }, parentNode, pos);
+              pos += 1;
+            });
+        }
+      } catch (err) {
+        console.error('Failed to read clipboard contents: ', err);
       }
     },
   },
@@ -1039,9 +1116,5 @@ export default {
   .ghost {
     opacity: 0;
   }
-
-  // .twtree-icon-and-title {
-  //   display: flex !important;
-  // }
 }
 </style>
