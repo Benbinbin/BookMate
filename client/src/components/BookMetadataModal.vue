@@ -906,11 +906,15 @@ export default {
         const arr = text.split('\n');
         // eslint-disable-next-line no-underscore-dangle
         const parentNode = target.__.parent;
-        console.log(target);
-        console.log(parentNode);
         // eslint-disable-next-line no-underscore-dangle
         let { pos } = target.__;
         console.log(position);
+
+        if (target.id === '__root__') {
+          // eslint-disable-next-line no-param-reassign
+          position = 'inside';
+        }
+
         switch (position) {
           case 'before':
             if (pos < 0) pos = 0;
