@@ -53,7 +53,7 @@ export default new Vuex.Store({
       state.book.metadata.stars = payload;
     },
     SAVE_METADATA(state, payload) {
-      console.log(payload);
+      state.book.metadata = payload.metadata;
     },
     // quote and summary status
     CHANGE_QUOTES_MODE(state, payload) {

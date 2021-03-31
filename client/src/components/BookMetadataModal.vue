@@ -580,20 +580,33 @@ function getText(arr) {
 }
 
 /* eslint-disable no-param-reassign */
-function setData(tree) {
-  if (tree && Array.isArray(tree)) {
-    tree.forEach((item) => {
-      setData(item);
+function setTreeData(node) {
+  if (node && Array.isArray(node)) {
+    node.forEach((item) => {
+      setTreeData(item);
     });
-  } else if (tree && tree.children) {
-    tree.id = tree.name;
-    tree.title = tree.name;
-    tree.hasChild = true;
-    setData(tree.children);
-  } else if (tree) {
-    tree.id = tree.name;
-    tree.title = tree.name;
+  } else if (node && node.children) {
+    node.id = node.name;
+    node.title = node.name;
+    node.hasChild = true;
+    setTreeData(node.children);
+  } else if (node) {
+    node.id = node.name;
+    node.title = node.name;
   }
+}
+
+function getCategoryData(node) {
+  let name = node.title || 'node';
+  if (name === '根节点') name = '__root__';
+  if (node.children && node.children.length > 0) {
+    const children = [];
+    node.children.forEach((item) => {
+      children.push(getCategoryData(item));
+    });
+    return { name, children };
+  }
+  return { name };
 }
 /* eslint-enable no-param-reassign */
 
@@ -672,6 +685,9 @@ export default {
         const sources = getText(this.sources);
         const links = getText(this.links);
 
+        // const categoryTree = this.tree.getNestedTree();
+        const category = getCategoryData(this.tree.getNestedTree()[0]);
+
         const payload = {
           removeCovers,
           addCovers,
@@ -690,9 +706,12 @@ export default {
             date: this.data,
             description: this.description,
             review: this.review,
-            category: this.category,
+            category,
+            createdDate: this.metadata.createdDate,
+            stars: this.stars,
           },
         };
+        // console.log(payload);
         this.$store.dispatch('saveMetadata', payload);
       }
       this.$emit('close-book-modal');
@@ -755,7 +774,6 @@ export default {
       this.covers.splice(index, 1);
     },
     textareaResize(target) {
-      console.log('resizing');
       const dom = this.$refs[target];
       dom.style.height = 'auto';
       dom.style.height = `${dom.scrollHeight}px`;
@@ -1014,7 +1032,7 @@ export default {
     ];
     this.covers = [...this.metadata.covers];
     const categoryClone = JSON.parse(JSON.stringify(this.metadata.category));
-    setData(categoryClone);
+    setTreeData(categoryClone);
     this.categoryArr = [categoryClone];
   },
 };

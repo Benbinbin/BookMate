@@ -33,7 +33,7 @@
           <p v-if="metadata.isbn">ISBN：{{ metadata.isbn }}</p>
         </div>
         <button
-          class="flex justify-center items-center p-1 rounded text-white hover:bg-blue-500"
+          class="flex justify-center items-center px-2 py-1 rounded text-white hover:bg-blue-500"
           :class="{
             'bg-blue-300': !showCategory,
             'bg-blue-500': showCategory,
@@ -65,7 +65,7 @@
               d="M41.7916 12.5H16.5416C15.4601 12.5 14.5833 13.3768 14.5833 14.4583V14.7083C14.5833 15.7899 15.4601 16.6667 16.5416 16.6667H41.7916C42.8732 16.6667 43.75 15.7899 43.75 14.7083V14.4583C43.75 13.3768 42.8732 12.5 41.7916 12.5Z"
             />
           </svg>
-          <span class="text-xs ml-1.5">目录</span>
+          <span class=" ml-1.5 text-sm">目录</span>
         </button>
         <div class="space-x-1">
           <button
