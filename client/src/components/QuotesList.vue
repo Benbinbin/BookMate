@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-full flex-grow flex flex-col">
-    <nav class="flex-shrink-0 h-16 px-6 border-b-2 border-gray-100">
+    <nav class="flex-shrink-0 h-16 px-6 relative border-b-2 border-gray-100">
       <div
         v-if="!editingQuote"
         class="default w-full h-full flex justify-between items-center"
@@ -16,7 +16,10 @@
           />
         </button>
         <h2 class="text-xl font-bold">书摘</h2>
-        <button class="flex items-center opacity-30 hover:opacity-80">
+        <button
+          class="flex items-center opacity-30 hover:opacity-80"
+          @click="showMoreModal = !showMoreModal"
+        >
           <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
         </button>
       </div>
@@ -25,6 +28,13 @@
         :editor="editor"
         @inactive-editor="inactiveEditor"
       ></quote-editor-menu>
+      <div
+        v-show="showMoreModal"
+        class="more-modal absolute top-12 right-6 z-10 flex flex-col  rounded bg-gray-100 shadow-md"
+      >
+        <button class="px-4 py-2 text-sm hover:bg-gray-200  rounded" @click="showImportQuotesModal">导入书摘</button>
+        <button class="px-4 py-2 text-sm hover:bg-gray-200 rounded">导asfdsf入书摘</button>
+      </div>
     </nav>
     <div
       ref="quotesList"
@@ -556,6 +566,7 @@ export default {
   },
   data() {
     return {
+      showMoreModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
@@ -637,6 +648,10 @@ export default {
     },
   },
   methods: {
+    showImportQuotesModal() {
+      this.$emit('show-import-quotes-modal');
+      this.showMoreModal = false;
+    },
     categoryNormalizer(node) {
       return {
         id: node.name,

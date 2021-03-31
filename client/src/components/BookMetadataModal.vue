@@ -48,7 +48,7 @@
       >
         <div
           ref="left"
-          id="left"
+          id="body-left"
           class="flex flex-col rounded-bl-lg bg-gray-50"
         >
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
@@ -197,7 +197,7 @@
             </TWTree>
           </div>
         </div>
-        <div ref="right" id="right" class="flex-grow rounded-br-lg">
+        <div ref="right" id="body-right" class="flex-grow rounded-br-lg">
           <div
             class="content-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max w-full"
           >
@@ -1015,7 +1015,7 @@ export default {
     },
   },
   mounted() {
-    Split(['#left', '#right'], {
+    Split(['#body-left', '#body-right'], {
       sizes: [20, 80],
       minSize: 100,
       expandToMin: true,
@@ -1084,7 +1084,7 @@ export default {
 
 <style lang="scss" scoped>
 .book-modal-body {
-  #left {
+  #body-left {
     .tree-container {
       overflow: overlay;
 
@@ -1096,7 +1096,7 @@ export default {
       }
     }
   }
-  #right {
+  #body-right {
     overflow-y: overlay;
 
     &::-webkit-scrollbar-thumb {
@@ -1209,7 +1209,7 @@ export default {
   .ti-autocomplete {
     border-radius: 0.25rem;
     background: #f3f4f6;
-    border: 1px solid rgba(209, 213, 219, 1) !important;
+    border: none !important;
     box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, 0 0 #0000,
       0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 

@@ -57,7 +57,7 @@
         >
           <button
             class="flex items-center opacity-30 hover:opacity-80"
-            @click="showBookModal = true"
+            @click="showBookMetadataModal = true"
           >
             <img
               class="w-6 h-6"
@@ -105,15 +105,22 @@
           :category="book.metadata.category.children"
           :quotes="book.quotes"
           :quotes-chapters="chaptersWithQuotes"
+          @show-import-quotes-modal="showImportQuotesModal=true"
         ></quotes-list>
       </div>
     </div>
     <book-metadata-modal
-      v-if="book && book.metadata && showBookModal"
+      v-if="book && book.metadata && showBookMetadataModal"
       class="fixed w-screen h-screen inset-0"
       :metadata="book.metadata"
-      @close-book-modal="showBookModal = false"
+      @close-book-modal="showBookMetadataModal = false"
     ></book-metadata-modal>
+    <import-quotes-modal
+      v-if="book && book.metadata && showImportQuotesModal"
+      class="fixed w-screen h-screen inset-0"
+      :metadata="book.metadata"
+      @close-book-modal="showImportQuotesModal = false"
+    ></import-quotes-modal>
   </div>
 </template>
 
@@ -124,6 +131,7 @@ import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';
 import BookMetadataModal from '../components/BookMetadataModal.vue';
+import ImportQuotesModal from '../components/ImportQuotesModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -144,6 +152,7 @@ export default {
     QuotesList,
     SummariesList,
     BookMetadataModal,
+    ImportQuotesModal,
   },
   data() {
     return {
@@ -172,7 +181,8 @@ export default {
       ],
       spliter: null,
       containersArr: ['#split-left', '#split-middle', '#split-right'],
-      showBookModal: false,
+      showBookMetadataModal: false,
+      showImportQuotesModal: false,
     };
   },
   computed: {

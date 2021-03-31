@@ -53,10 +53,10 @@
             v-show="showHeadingsModal"
           >
             <div
-              class="headings-modal flex flex-col space-y-1 rounded bg-gray-100 shadow-md"
+              class="headings-modal flex flex-col  rounded bg-gray-100 shadow-md"
             >
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 1 }) }"
                 @click="markHeading(1)"
               >
@@ -67,7 +67,7 @@
                 />
               </button>
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 2 }) }"
                 @click="markHeading(2)"
               >
@@ -78,7 +78,7 @@
                 />
               </button>
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 3 }) }"
                 @click="markHeading(3)"
               >
@@ -89,7 +89,7 @@
                 />
               </button>
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 4 }) }"
                 @click="markHeading(4)"
               >
@@ -100,7 +100,7 @@
                 />
               </button>
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 5 }) }"
                 @click="markHeading(5)"
               >
@@ -111,7 +111,7 @@
                 />
               </button>
               <button
-                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded"
+                class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
                 :class="{ 'is-active': isActive.heading({ level: 6 }) }"
                 @click="markHeading(6)"
               >
