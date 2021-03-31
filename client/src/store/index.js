@@ -151,7 +151,7 @@ export default new Vuex.Store({
       if (state.candidateQuote) state.insertQuote = true;
     },
     CLEAR_INSERT_QUOTE(state) {
-      console.log('clearing quote');
+      // console.log('clearing quote');
       state.insertQuote = false;
       state.candidateQuote = null;
     },
