@@ -48,11 +48,12 @@
       >
         <div
           ref="left"
-          class="left w-1/5 flex-shrink-0 rounded-bl-lg bg-gray-50 p-2"
+          id="left"
+          class="flex flex-col rounded-bl-lg bg-gray-50"
         >
           <h2 class="font-bold text-center m-2 text-lg">目录</h2>
           <hr class="w-1/2 mx-auto border-gray-300 mb-4" />
-          <div class="mb-2 flex justify-between items-center">
+          <div class="m-2 flex justify-between items-center">
             <button
               class="flex-grow flex justify-center p-1 hover:bg-gray-200 rounded"
             >
@@ -105,7 +106,7 @@
             </button>
           </div>
           <div
-            class="tree-container"
+            class="tree-container px-2 flex-grow"
             @dblclick="editNode"
             @keydown="treeKeyHandler"
           >
@@ -196,9 +197,11 @@
             </TWTree>
           </div>
         </div>
-        <div ref="right" class="right flex-grow rounded-br-lg">
-          <div class="content-container flex w-full">
-            <div class="infomation-left px-8 py-4 space-y-4 w-4/12">
+        <div ref="right" id="right" class="flex-grow rounded-br-lg">
+          <div
+            class="content-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max w-full"
+          >
+            <div class="infomation-left col-span-1 px-8 py-4 space-y-4">
               <div class="book-titles space-y-2">
                 <div class="flex items-end relative">
                   <h2>
@@ -330,7 +333,9 @@
               </div>
             </div>
 
-            <div class="information-right px-8 py-4 w-8/12 space-y-4">
+            <div
+              class="information-right col-span-1 lg:col-span-2 px-8 py-4 space-y-4"
+            >
               <div class="book-covers space-y-2">
                 <div class="flex items-end relative">
                   <h2>
@@ -560,6 +565,7 @@
 </template>
 
 <script>
+import Split from 'split.js';
 import { VueTagsInput, createTags } from '@johmun/vue-tags-input';
 import draggable from 'vuedraggable';
 import StarRating from 'vue-star-rating';
@@ -697,20 +703,25 @@ export default {
     async inputCovers() {
       // set name as id of each file and push them to array this.files
       const temp = [];
-      this.$refs.covers.files.forEach((file) => {
-        const fileName = `${this.titles[0].text || 'book'}_${+new Date()}.${
+      const filesArr = this.$refs.covers.files;
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < filesArr.length; i++) {
+        const file = filesArr[i];
+        const fileName = `${
+          this.titles[0].text || 'book'
+        }_${Date.now()}${Math.floor(Math.random() * 100)}.${
           file.name.split('.')[1]
         }`;
+        const originName = file.name.split('.')[0];
 
         this.files.push({
+          originName,
           name: fileName,
           file,
         });
 
-        const result = this.readImg(fileName, file);
-
-        temp.push(result);
-      });
+        temp.push(this.readImg(originName, fileName, file));
+      }
 
       const arr = await Promise.all(temp);
       this.coversTemp.push(...arr);
@@ -718,13 +729,14 @@ export default {
         this.covers.push(item.name);
       });
     },
-    readImg(name, file) {
+    readImg(originName, name, file) {
       // async read each file data and push them to array this.filesTemp
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (event) => {
           resolve({
+            originName,
             name,
             data: event.target.result,
           });
@@ -742,12 +754,11 @@ export default {
       const index = this.covers.findIndex((item) => item === cover);
       this.covers.splice(index, 1);
     },
-    textareaResizeListener(target) {
+    textareaResize(target) {
+      console.log('resizing');
       const dom = this.$refs[target];
+      dom.style.height = 'auto';
       dom.style.height = `${dom.scrollHeight}px`;
-      dom.addEventListener('input', (e) => {
-        dom.style.height = `${dom.scrollHeight}px`;
-      });
     },
     toggleDefaultCollections(val) {
       const index = this.defaultCollections.findIndex(
@@ -814,6 +825,7 @@ export default {
     deleteNode() {
       const nodes = this.tree.getSelected();
       nodes.forEach((item) => {
+        if (item.id === '__root__') return;
         this.tree.remove(item);
       });
 
@@ -833,6 +845,7 @@ export default {
 
       if (this.tree.getSelected().length > 1) {
         const nodes = this.tree.getSelected();
+        if (nodes.includes(toParent)) return;
 
         let pos = toPos || 0;
         nodes.forEach((item) => {
@@ -908,7 +921,6 @@ export default {
         const parentNode = target.__.parent;
         // eslint-disable-next-line no-underscore-dangle
         let { pos } = target.__;
-        console.log(position);
 
         if (target.id === '__root__') {
           // eslint-disable-next-line no-param-reassign
@@ -941,18 +953,37 @@ export default {
     },
   },
   mounted() {
-    this.textareaResizeListener('description');
-    this.textareaResizeListener('review');
+    Split(['#left', '#right'], {
+      sizes: [20, 80],
+      minSize: 100,
+      expandToMin: true,
+      gutterSize: 5,
+      snapOffset: 0,
+      onDragEnd: () => {
+        this.textareaResize('description');
+        this.textareaResize('review');
+      },
+    });
+    this.textareaResize('description');
+    this.textareaResize('review');
+
+    const { description } = this.$refs;
+    const { review } = this.$refs;
+    description.addEventListener('input', () => {
+      this.textareaResize('description');
+    });
+    review.addEventListener('input', () => {
+      this.textareaResize('review');
+    });
 
     let timer = null;
-
     window.onresize = () => {
       if (timer) {
         clearTimeout(timer);
       }
       timer = setTimeout(() => {
-        this.textareaResizeListener('description');
-        this.textareaResizeListener('review');
+        this.textareaResize('description');
+        this.textareaResize('review');
       }, 300);
     };
 
@@ -991,12 +1022,21 @@ export default {
 
 <style lang="scss" scoped>
 .book-modal-body {
-  .left,
-  .right {
-    overflow-y: overlay;
-  }
+  #left {
+    .tree-container {
+      overflow: overlay;
 
-  .left {
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0);
+      }
+      &:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+      }
+    }
+  }
+  #right {
+    overflow-y: overlay;
+
     &::-webkit-scrollbar-thumb {
       background-color: rgba(156, 163, 175, 0);
     }

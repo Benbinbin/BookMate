@@ -1,5 +1,5 @@
 <template>
-  <div class="note-container h-screen w-screen flex relative">
+  <div class="note-container h-screen w-screen flex">
     <aside
       class="w-16 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
     >
@@ -110,7 +110,7 @@
     </div>
     <book-metadata-modal
       v-if="book && book.metadata && showBookModal"
-      class="absolute inset-0"
+      class="fixed w-screen h-screen inset-0"
       :metadata="book.metadata"
       @close-book-modal="showBookModal = false"
     ></book-metadata-modal>
