@@ -119,7 +119,7 @@
       v-if="book && book.metadata && showImportQuotesModal"
       class="fixed w-screen h-screen inset-0"
       :metadata="book.metadata"
-      @close-book-modal="showImportQuotesModal = false"
+      @close-import-quotes-modal="showImportQuotesModal = false"
     ></import-quotes-modal>
   </div>
 </template>

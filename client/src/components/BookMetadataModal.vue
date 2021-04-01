@@ -4,7 +4,7 @@
       class="book-modal-container w-11/12 h-4/5 flex flex-col rounded-lg bg-white"
     >
       <div
-        class="book-modal-header px-1 flex justify-between items-center border-b-2 border-gray-100"
+        class="modal-header px-1 flex justify-between items-center border-b-2 border-gray-100"
       >
         <button
           class="left w-8 h-8 flex items-center rounded-full p-1 text-red-300 opacity-60 hover:opacity-100"
@@ -43,7 +43,7 @@
         </button>
       </div>
       <div
-        class="book-modal-body w-full flex-grow flex"
+        class="modal-body w-full flex-grow flex"
         style="max-height: calc(100% - 34px)"
       >
         <div
@@ -1083,7 +1083,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.book-modal-body {
+.book-modal-container {
   #body-left {
     .tree-container {
       overflow: overlay;
@@ -1170,7 +1170,7 @@ export default {
 </style>
 
 <style lang="scss">
-.book-modal-body {
+.book-modal-container {
   .ti-input {
     overflow-x: overlay;
     border: none;
