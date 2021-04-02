@@ -38,7 +38,7 @@
       </button>
       <div v-show="showHelp" class="help-information text-sm">
         <ol class="m-4 list-decimal list-inside space-y-2">
-          <li>从 Kindle 移动端 App 导出笔记，并发送到指定的邮箱</li>
+          <li>从 Kindle 移动端 App <strong class="text-blue-500">导出笔记</strong>，并发送到指定的邮箱</li>
           <li>
             将从邮箱附件下载<code
               class="mx-1 px-1 py-0.5 text-sm bg-yellow-200 rounded"
@@ -46,12 +46,12 @@
             >后缀的文档，并拖拽笔记到上方输入框中（或点击上方输入框添加）
           </li>
           <li>
-            程序会自动匹配书库已存在的书籍，书摘笔记将会归类到该书籍之下，也可手动修改指定的书籍
+            程序会自动<strong class="text-blue-500">匹配</strong>书库已存在的<strong class="text-blue-500">书籍</strong>，书摘笔记将会归类到该书籍之下，也可手动修改指定的书籍
           </li>
           <li>
-            避免重复笔记的导入，程序会将待导入的笔记与已导入的笔记进行比对，可以调节参数以筛选出合适的书摘笔记
+            避免重复笔记的导入，程序会将待导入的笔记与已导入的笔记进行比对，可以调节参数以<strong class="text-blue-500">筛选</strong>出合适的<strong class="text-blue-500">书摘笔记</strong>
           </li>
-          <li>在导入前可以对书摘笔记进行修改</li>
+          <li>在导入前可以对书摘笔记进行<strong class="text-blue-500">修改</strong></li>
           <li>
             筛选出合适书摘笔记卡片后，点击<span
               class="mx-1 px-2 py-0.5 text-xs font-bold text-white bg-green-300 rounded"

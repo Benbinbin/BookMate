@@ -33,17 +33,17 @@
       >
         <div class="tabs-list flex justify-center space-x-4 p-4">
           <button
-            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50  hover:bg-gray-200 "
+            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200"
             :class="{ 'bg-gray-200': tab === 'kindle-notes-parse' }"
-            @click="tab='kindle-notes-parse'"
+            @click="tab = 'kindle-notes-parse'"
           >
             <img class="w-8" src="apps/kindle.png" alt="kindle app icon" />
             <span class="ml-2 text-sm text-gray-800">Kindle</span>
           </button>
           <button
-            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200 "
+            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200"
             :class="{ 'bg-gray-200': tab === 'duokan-notes-parse' }"
-            @click="tab='duokan-notes-parse'"
+            @click="tab = 'duokan-notes-parse'"
           >
             <img class="w-8" src="apps/duokan.png" alt="duokan app icon" />
             <span class="ml-2 text-sm text-gray-800">多看阅读</span>
@@ -59,14 +59,191 @@
             </h3>
             <div class="source-files flex items-start space-x-2 py-1">
               <button
-                class="py-2 px-3 flex-shrink-0 truncate bg-gray-50 hover:bg-gray-200 rounded"
-                :class="{ 'bg-gray-200': currentFile === item.fileName }"
                 v-for="item of result"
                 :key="item.fileName"
-                @click="currentFile = item.fileName"
+                class="py-2 px-3 flex-shrink-0 flex items-center truncate bg-gray-50 hover:bg-gray-200 rounded"
+                :class="{ 'bg-gray-200': currentFile === item.fileName }"
+                @click="
+                  currentFileName === item.fileName
+                    ? (currentFileName = '')
+                    : (currentFileName = item.fileName)
+                "
               >
-                <span class="text-xs"> {{ item.fileName }}</span>
+                <span class="source-file-name text-xs truncate">
+                  {{ item.fileName }}</span
+                >
+                <button
+                  class="delete-file w-5 h-5 ml-1 opacity-60 hover:opacity-100"
+                  @click="deleteFile(item.fileName)"
+                >
+                  <img
+                    src="@/assets/icons/close-circle.svg"
+                    alt="delete icon"
+                  />
+                </button>
               </button>
+            </div>
+          </div>
+          <div v-if="currentFile">
+            <div class="my-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="match-book-container flex-grow">
+                <div class="header flex items-center">
+                  <h3 class="text-lg font-bold my-4">
+                    <span class="highlight">匹配书籍</span>
+                  </h3>
+                  <div
+                    v-show="!currentFile.matchBook && !currentFile.cover"
+                    class="search-bar-container ml-4 flex items-center relative"
+                  >
+                    <input
+                      v-show="showSearchInput"
+                      ref="search-input"
+                      type="search"
+                      class="px-2 py-1 w-40 bg-gray-200 text-xs rounded focus:outline-none"
+                      placeholder="搜索已存书籍"
+                      v-model="keyword"
+                    />
+                    <button class="p-1" @click="showSearchInputHandler">
+                      <img
+                        class="w-4 h-4"
+                        src="@/assets/icons/search.svg"
+                        alt="search button"
+                      />
+                    </button>
+                    <div
+                      v-show="showSearchInput && suggestionBooks.length > 0"
+                      class="suggestion-books-modal w-40 absolute top-7 left-0 bg-gray-100 shadow rounded"
+                    >
+                      <ul class="suggestion-books-list">
+                        <li
+                          v-for="book of suggestionBooks"
+                          :key="book._id.$oid"
+                          class="suggestion-book w-full"
+                        >
+                          <button
+                            class="flex w-full items-center p-2 space-x-1 hover:bg-gray-200 rounded"
+                            @click="setMatchBook(book)"
+                          >
+                            <div
+                              class="cover w-7 h-8 bg-center bg-no-repeat bg-contain"
+                              :style="{
+                                backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+                              }"
+                            ></div>
+                            <span class="text-xs font-bold text-gray-500">{{
+                              book.metadata.titles[0]
+                            }}</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-show="currentFile.matchBook || currentFile.cover"
+                  class="match-book flex flex-col space-y-2"
+                >
+                  <div
+                    class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
+                    :style="{
+                      backgroundImage: `url(covers/${currentFile.cover})`,
+                    }"
+                    tabindex="0"
+                  >
+                    <button
+                      class="delete-cover-btn w-5 h-5 hidden absolute top-1 right-1 z-10 text-red-500 opacity-80 hover:opacity-100"
+                      @click="deleteCover"
+                    >
+                      <svg
+                        viewBox="0 0 50 50"
+                        fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M17.5 19.1875C17.9144 19.1875 18.3118 19.3521 18.6049 19.6451C18.8979 19.9382 19.0625 20.3356 19.0625 20.75V39.5C19.0625 39.9144 18.8979 40.3118 18.6049 40.6049C18.3118 40.8979 17.9144 41.0625 17.5 41.0625C17.0856 41.0625 16.6882 40.8979 16.3951 40.6049C16.1021 40.3118 15.9375 39.9144 15.9375 39.5V20.75C15.9375 20.3356 16.1021 19.9382 16.3951 19.6451C16.6882 19.3521 17.0856 19.1875 17.5 19.1875V19.1875ZM25.3125 19.1875C25.7269 19.1875 26.1243 19.3521 26.4174 19.6451C26.7104 19.9382 26.875 20.3356 26.875 20.75V39.5C26.875 39.9144 26.7104 40.3118 26.4174 40.6049C26.1243 40.8979 25.7269 41.0625 25.3125 41.0625C24.8981 41.0625 24.5007 40.8979 24.2076 40.6049C23.9146 40.3118 23.75 39.9144 23.75 39.5V20.75C23.75 20.3356 23.9146 19.9382 24.2076 19.6451C24.5007 19.3521 24.8981 19.1875 25.3125 19.1875V19.1875ZM34.6875 20.75C34.6875 20.3356 34.5229 19.9382 34.2299 19.6451C33.9368 19.3521 33.5394 19.1875 33.125 19.1875C32.7106 19.1875 32.3132 19.3521 32.0201 19.6451C31.7271 19.9382 31.5625 20.3356 31.5625 20.75V39.5C31.5625 39.9144 31.7271 40.3118 32.0201 40.6049C32.3132 40.8979 32.7106 41.0625 33.125 41.0625C33.5394 41.0625 33.9368 40.8979 34.2299 40.6049C34.5229 40.3118 34.6875 39.9144 34.6875 39.5V20.75Z"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M45.625 11.375C45.625 12.2038 45.2958 12.9987 44.7097 13.5847C44.1237 14.1708 43.3288 14.5 42.5 14.5H40.9375V42.625C40.9375 44.2826 40.279 45.8723 39.1069 47.0444C37.9348 48.2165 36.3451 48.875 34.6875 48.875H15.9375C14.2799 48.875 12.6902 48.2165 11.5181 47.0444C10.346 45.8723 9.6875 44.2826 9.6875 42.625V14.5H8.125C7.2962 14.5 6.50134 14.1708 5.91529 13.5847C5.32924 12.9987 5 12.2038 5 11.375V8.25C5 7.4212 5.32924 6.62634 5.91529 6.04029C6.50134 5.45424 7.2962 5.125 8.125 5.125H19.0625C19.0625 4.2962 19.3917 3.50134 19.9778 2.91529C20.5638 2.32924 21.3587 2 22.1875 2H28.4375C29.2663 2 30.0612 2.32924 30.6472 2.91529C31.2333 3.50134 31.5625 4.2962 31.5625 5.125H42.5C43.3288 5.125 44.1237 5.45424 44.7097 6.04029C45.2958 6.62634 45.625 7.4212 45.625 8.25V11.375ZM13.1813 14.5L12.8125 14.6844V42.625C12.8125 43.4538 13.1417 44.2487 13.7278 44.8347C14.3138 45.4208 15.1087 45.75 15.9375 45.75H34.6875C35.5163 45.75 36.3112 45.4208 36.8972 44.8347C37.4833 44.2487 37.8125 43.4538 37.8125 42.625V14.6844L37.4437 14.5H13.1813ZM8.125 11.375V8.25H42.5V11.375H8.125Z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <h4
+                    class="title w-24 text-xs font-bold text-center text-gray-500"
+                  >
+                    {{ currentFile.matchBook }}
+                  </h4>
+                </div>
+
+                <button
+                  v-show="!currentFile.matchBook && !currentFile.acover"
+                  class="add-cover w-24 h-32 flex-shrink-0 flex justify-center items-center bg-gray-100 text-gray-300 hover:bg-gray-200 hover:text-white rounded"
+                >
+                  <svg
+                    class="w-8 h-8"
+                    viewBox="0 0 50 50"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M37.5 27.0833H27.0834V37.5C27.0834 38.6458 26.1459 39.5833 25 39.5833C23.8542 39.5833 22.9167 38.6458 22.9167 37.5V27.0833H12.5C11.3542 27.0833 10.4167 26.1458 10.4167 25C10.4167 23.8541 11.3542 22.9166 12.5 22.9166H22.9167V12.5C22.9167 11.3541 23.8542 10.4166 25 10.4166C26.1459 10.4166 27.0834 11.3541 27.0834 12.5V22.9166H37.5C38.6459 22.9166 39.5834 23.8541 39.5834 25C39.5834 26.1458 38.6459 27.0833 37.5 27.0833Z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="settings-container flex-grow">
+                <h3 class="text-lg font-bold my-4">
+                  <span class="highlight">设置</span>
+                </h3>
+              </div>
+            </div>
+            <div class="quotes-container my-8">
+              <h3 class="text-lg font-bold my-4">
+                <span class="highlight">书摘笔记</span>
+              </h3>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="uncommit-quotes">
+                  <h4 class="text-sm font-bold text-center text-gray-600 my-4">
+                    待导入
+                  </h4>
+                  <div class="quotes-list space-y-3">
+                    <div
+                      v-for="(quote, index) of currentFile.notes"
+                      :key="index"
+                      class="quote"
+                    >
+                      <p
+                        class="quote-content bg-white border px-8 py-6"
+                        :class="{
+                          'rounded-lg': !quote.comment,
+                          'rounded-t-lg': quote.comment,
+                        }"
+                      >
+                        {{ quote.content }}
+                      </p>
+                      <p
+                        v-if="quote.comment"
+                        class="quote-comment bg-gray-200 text-blue-900 rounded-b-lg px-8 py-6"
+                      >
+                        {{ quote.comment }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="diff-quotes">
+                  <h4 class="text-sm font-bold text-center text-gray-200 my-4">
+                    比较
+                  </h4>
+                </div>
+                <div class="committed-quotes">
+                  <h4 class="text-sm font-bold text-center text-gray-600 my-4">
+                    已导入
+                  </h4>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -87,6 +264,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import KindleNotesParse from './KindleNotesParse.vue';
 import DuokanNotesParse from './DuokanNotesParse.vue';
 
@@ -95,19 +273,109 @@ export default {
     KindleNotesParse,
     DuokanNotesParse,
   },
+  props: ['metadata'],
   data() {
     return {
       tab: 'kindle-notes-parse',
       result: [],
-      currentFile: '',
+      showSearchInput: false,
+      keyword: '',
+      currentFileName: '',
     };
+  },
+  computed: {
+    ...mapState(['booksList']),
+    currentFile() {
+      const index = this.result.findIndex(
+        (item) => this.currentFileName === item.fileName,
+      );
+      if (index !== -1) {
+        return this.result[index];
+      }
+      return null;
+    },
+    suggestionBooks() {
+      return this.booksList.filter((item) => {
+        const result = item.metadata.titles.find((title) => {
+          const regexp = new RegExp(this.keyword);
+          return regexp.test(title);
+        });
+        if (result) {
+          return true;
+        }
+        return false;
+      });
+    },
   },
   methods: {
     backToTopHandler() {
       this.$refs['modal-body'].scrollTop = 0;
     },
     setResult(arr) {
-      this.result.push(...arr);
+      arr.forEach((item) => {
+        const { matchBook, cover } = this.setInitMatchBook(item.metadata.title);
+        this.result.push({
+          matchBook,
+          cover,
+          ...item,
+        });
+      });
+    },
+    setInitMatchBook(bookName) {
+      let matchBook = '';
+      let cover = '';
+
+      if (this.metadata && this.metadata.titles.length > 0) {
+        [matchBook] = this.metadata.titles;
+        if (this.metadata.covers.length > 0) [cover] = this.metadata.covers;
+      } else {
+        const target = this.booksList.find((item) => {
+          const result = item.metadata.titles.find((title) => {
+            const regexp = new RegExp(title);
+            return regexp.test(bookName);
+          });
+          if (result) {
+            return true;
+          }
+          return false;
+        });
+        if (target) {
+          [matchBook] = this.metadata.titles;
+          if (this.metadata.covers.length > 0) [cover] = this.metadata.covers;
+        }
+      }
+      return {
+        matchBook,
+        cover,
+      };
+    },
+    setMatchBook(book) {
+      [this.currentFile.matchBook] = book.metadata.titles;
+      if (book.metadata.covers.length > 0) [this.currentFile.cover] = book.metadata.covers;
+    },
+    deleteFile(fileName) {
+      const index = this.result.findIndex((item) => item.fileName === fileName);
+
+      if (fileName === this.currentFileName) {
+        this.currentFileName = '';
+      }
+      if (index !== -1) {
+        this.result.splice(index, 1);
+      }
+    },
+    deleteCover() {
+      this.currentFile.matchBook = '';
+      this.currentFile.cover = '';
+    },
+    showSearchInputHandler() {
+      this.showSearchInput = !this.showSearchInput;
+      if (this.showSearchInput) {
+        const input = this.$refs['search-input'];
+        console.log(input);
+        this.$nextTick(() => {
+          input.focus();
+        });
+      }
     },
   },
 };
@@ -132,11 +400,40 @@ export default {
   }
 
   .source-files-container {
-    button {
+    .source-files {
+      overflow-y: overlay;
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0);
+      }
+      &:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+      }
+    }
+    .source-file-name {
       max-width: 8rem;
     }
-
-    .source-files {
+  }
+  .match-book-container {
+    .cover {
+      &:focus-within {
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: rgba(249, 250, 251, 0.8);
+        }
+        .delete-cover-btn {
+          display: block;
+        }
+      }
+    }
+  }
+  .suggestion-books-modal {
+    .suggestion-books-list {
+      max-height: 8rem;
       overflow-y: overlay;
       &::-webkit-scrollbar-thumb {
         background-color: rgba(156, 163, 175, 0);

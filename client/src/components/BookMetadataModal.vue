@@ -1219,9 +1219,9 @@ export default {
       font-size: 0.75rem;
       line-height: 1rem;
     }
-    // .ti-selected-item {
-    //   background: #3b82f6;
-    // }
+    .ti-selected-item {
+      background: #D1D5DB;
+    }
   }
 
   .book-titles {
