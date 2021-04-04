@@ -62,7 +62,7 @@
                 v-for="item of result"
                 :key="item.fileName"
                 class="py-2 px-3 flex-shrink-0 flex items-center truncate bg-gray-50 hover:bg-gray-200 rounded"
-                :class="{ 'bg-gray-200': currentFile === item.fileName }"
+                :class="{ 'bg-gray-200': currentFileName === item.fileName }"
                 @click="
                   currentFileName === item.fileName
                     ? (currentFileName = '')
@@ -73,7 +73,7 @@
                   {{ item.fileName }}</span
                 >
                 <button
-                  class="delete-file w-5 h-5 ml-1 opacity-60 hover:opacity-100"
+                  class="delete-file w-5 h-5 ml-1 opacity-80 hover:opacity-100"
                   @click="deleteFile(item.fileName)"
                 >
                   <img
@@ -92,7 +92,9 @@
                     <span class="highlight">匹配书籍</span>
                   </h3>
                   <div
-                    v-show="!currentFile.matchBook && !currentFile.cover"
+                    v-show="
+                      !currentFile.matchBookTitle && !currentFile.matchBookCover
+                    "
                     class="search-bar-container ml-4 flex items-center relative"
                   >
                     <input
@@ -141,13 +143,15 @@
                 </div>
 
                 <div
-                  v-show="currentFile.matchBook || currentFile.cover"
+                  v-show="
+                    currentFile.matchBookTitle || currentFile.matchBookCover
+                  "
                   class="match-book flex flex-col space-y-2"
                 >
                   <div
                     class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
                     :style="{
-                      backgroundImage: `url(covers/${currentFile.cover})`,
+                      backgroundImage: `url(covers/${currentFile.matchBookCover})`,
                     }"
                     tabindex="0"
                   >
@@ -174,12 +178,14 @@
                   <h4
                     class="title w-24 text-xs font-bold text-center text-gray-500"
                   >
-                    {{ currentFile.matchBook }}
+                    {{ currentFile.matchBookTitle }}
                   </h4>
                 </div>
 
                 <button
-                  v-show="!currentFile.matchBook && !currentFile.acover"
+                  v-show="
+                    !currentFile.matchBookTitle && !currentFile.matchBookCover
+                  "
                   class="add-cover w-24 h-32 flex-shrink-0 flex justify-center items-center bg-gray-100 text-gray-300 hover:bg-gray-200 hover:text-white rounded"
                 >
                   <svg
@@ -204,44 +210,175 @@
               <h3 class="text-lg font-bold my-4">
                 <span class="highlight">书摘笔记</span>
               </h3>
-              <div class="grid grid-cols-3 gap-2">
-                <div class="uncommit-quotes">
-                  <h4 class="text-sm font-bold text-center text-gray-600 my-4">
+              <div class="quotes-header grid grid-cols-3 gap-2 my-4">
+                <div>
+                  <h4 class="font-bold text-center text-gray-600 my-2">
                     待导入
                   </h4>
-                  <div class="quotes-list space-y-3">
-                    <div
-                      v-for="(quote, index) of currentFile.notes"
-                      :key="index"
-                      class="quote"
+                  <div class="flex justify-center items-center space-x-2">
+                    <span class="text-xs text-gray-500"
+                      >共有：{{ currentFile.notes.length }}</span
                     >
-                      <p
-                        class="quote-content bg-white border px-8 py-6"
-                        :class="{
-                          'rounded-lg': !quote.comment,
-                          'rounded-t-lg': quote.comment,
-                        }"
-                      >
-                        {{ quote.content }}
-                      </p>
-                      <p
-                        v-if="quote.comment"
-                        class="quote-comment bg-gray-200 text-blue-900 rounded-b-lg px-8 py-6"
-                      >
-                        {{ quote.comment }}
-                      </p>
-                    </div>
+                    <span class="text-xs text-gray-500"
+                      >选中：{{ currentFile.notes.length }}</span
+                    >
                   </div>
                 </div>
-                <div class="diff-quotes">
-                  <h4 class="text-sm font-bold text-center text-gray-200 my-4">
-                    比较
-                  </h4>
+                <div>
+                  <h4 class="font-bold text-center text-gray-300 my-2">比较</h4>
+                  <div class="flex justify-center items-center space-x-2">
+                    <span
+                      class="px-1 text-xs underline text-green-500 bg-green-100 rounded"
+                      >新增</span
+                    >
+
+                    <span class="px-1 text-xs bg-gray-100 rounded">相同</span>
+                    <span
+                      class="px-1 text-xs line-through text-red-500 bg-red-100 rounded"
+                      >删除</span
+                    >
+                  </div>
                 </div>
-                <div class="committed-quotes">
-                  <h4 class="text-sm font-bold text-center text-gray-600 my-4">
+                <div>
+                  <h4 class="font-bold text-center text-gray-600 my-2">
                     已导入
                   </h4>
+                  <div class="flex justify-center items-center">
+                    <span class="text-xs text-gray-500">重复：{{ 0 }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="quotes-body space-y-4">
+                <div
+                  v-for="(quote, index) of currentFile.notes"
+                  :key="index"
+                  class="quote grid grid-cols-3 gap-2"
+                >
+                  <div class="uncommit-quote">
+                    <p
+                      class="quote-content bg-white border px-8 py-6"
+                      :class="{
+                        'rounded-lg': !quote.comment,
+                        'rounded-t-lg': quote.comment,
+                      }"
+                    >
+                      {{ quote.content }}
+                    </p>
+                    <p
+                      v-if="quote.comment"
+                      class="quote-comment bg-gray-200 text-blue-900 rounded-b-lg px-8 py-6"
+                    >
+                      {{ quote.comment }}
+                    </p>
+                  </div>
+                  <div class="diff-container">
+                    <div
+                      v-if="
+                        currentFile.similarQuotes[index].quote &&
+                        currentFile.similarQuotes[index].quote.contentOrigin
+                      "
+                      class="quote-diff bg-white border px-8 py-6"
+                    >
+                      <div class="quote-diff-body">
+                        <p
+                          class="text-sm leading-6"
+                          :class="{
+                            'rounded-lg': !quote.comment,
+                            'rounded-t-lg': quote.comment,
+                          }"
+                          v-html="
+                            diffContent(
+                              quote.content,
+                              currentFile.similarQuotes[index].quote
+                                .contentOrigin
+                            )
+                          "
+                        ></p>
+                      </div>
+                      <div class="quote-diff-footer mt-4 flex justify-between">
+                        <div class="left flex items-center">
+                          <span class="text-xs text-gray-400">相似度：</span>
+                          <div
+                            class="similarity-bar w-12 h-2.5 flex bg-gray-200 rounded-full"
+                          >
+                            <span
+                              class="h-2.5 rounded-full"
+                              :class="{
+                                'bg-green-300':
+                                  currentFile.similarQuotes[index].similarity <
+                                  0.8,
+                                'bg-red-300':
+                                  currentFile.similarQuotes[index].similarity >=
+                                  0.8,
+                              }"
+                              :style="{
+                                width: `${Math.round(
+                                  currentFile.similarQuotes[index].similarity *
+                                    100
+                                )}%`,
+                              }"
+                            ></span>
+                          </div>
+                          <span class="text-xs text-gray-400 ml-1">{{
+                            `${Math.round(
+                              currentFile.similarQuotes[index].similarity * 100
+                            )}%`
+                          }}</span>
+                        </div>
+                        <div class="right flex space-x-1">
+                          <button
+                            class="px-2 py-1 flex-shrink-0 text-xs text-white opacity-50 hover:opacity-100 bg-gray-500 rounded"
+                          >
+                            合并
+                          </button>
+                          <button
+                            class="px-2 py-1 flex-shrink-0 text-xs text-white opacity-50 hover:opacity-100 bg-gray-500 rounded"
+                          >
+                            覆盖
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="committed-quotes">
+                    <p
+                      v-if="
+                        currentFile.similarQuotes[index].quote &&
+                        currentFile.similarQuotes[index].quote.contentOrigin
+                      "
+                      class="quote-content h-auto bg-white border px-8 py-6"
+                      :class="{
+                        'rounded-lg': !quote.comment,
+                        'rounded-t-lg': quote.comment,
+                      }"
+                    >
+                      {{
+                        currentFile.similarQuotes[index].quote
+                          ? currentFile.similarQuotes[index].quote.contentOrigin
+                          : "no matching quote"
+                      }}
+                      <span
+                        class="font-bold"
+                        :class="{
+                          'text-green-500':
+                            currentFile.similarQuotes[index].similarity < 0.8,
+                          'text-red-500':
+                            currentFile.similarQuotes[index].similarity >= 0.8,
+                        }"
+                        >{{ currentFile.similarQuotes[index].similarity }}</span
+                      >
+                    </p>
+                    <p
+                      v-if="
+                        currentFile.similarQuotes[index].quote &&
+                        currentFile.similarQuotes[index].quote.commentOrigin
+                      "
+                      class="quote-comment bg-gray-200 text-blue-900 rounded-b-lg px-8 py-6"
+                    >
+                      {{ currentFile.similarQuotes[index].quote.commentOrigin }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -264,9 +401,23 @@
 </template>
 
 <script>
+import * as Diff from 'diff';
 import { mapState } from 'vuex';
 import KindleNotesParse from './KindleNotesParse.vue';
 import DuokanNotesParse from './DuokanNotesParse.vue';
+
+function flatten(root, arr) {
+  if (root && Array.isArray(root)) {
+    root.forEach((item) => {
+      flatten(item, arr);
+    });
+  } else if (root && root.children) {
+    if (root.name !== '__root__') arr.push(root.name);
+    flatten(root.children, arr);
+  } else if (root) {
+    if (root.name !== '__root__') arr.push(root.name);
+  }
+}
 
 export default {
   components: {
@@ -294,6 +445,7 @@ export default {
       }
       return null;
     },
+
     suggestionBooks() {
       return this.booksList.filter((item) => {
         const result = item.metadata.titles.find((title) => {
@@ -313,23 +465,54 @@ export default {
     },
     setResult(arr) {
       arr.forEach((item) => {
-        const { matchBook, cover } = this.setInitMatchBook(item.metadata.title);
+        let matchBookTitle = '';
+        let matchBookCover = '';
+        const {
+          titles, covers, quotes, category,
+        } = this.setInitMatchBook(
+          item.metadata.title,
+        );
+        const quotesSorted = this.SortQuotesByChapter(quotes);
+        const categoryFlatten = [];
+        flatten(category, categoryFlatten);
+
+        if (titles && titles.length > 0) {
+          [matchBookTitle] = titles;
+        }
+        if (covers && covers.length > 0) {
+          [matchBookCover] = covers;
+        }
+        const { notes } = item;
+        const similarQuotes = [];
+
+        notes.forEach((quote) => {
+          similarQuotes.push(
+            this.setInitSimilarQuote(
+              quote,
+              categoryFlatten,
+              quotes,
+              quotesSorted,
+            ),
+          );
+        });
+
         this.result.push({
-          matchBook,
-          cover,
+          matchBookTitle,
+          matchBookCover,
           ...item,
+          similarQuotes,
         });
       });
     },
     setInitMatchBook(bookName) {
-      let matchBook = '';
-      let cover = '';
-
-      if (this.metadata && this.metadata.titles.length > 0) {
-        [matchBook] = this.metadata.titles;
-        if (this.metadata.covers.length > 0) [cover] = this.metadata.covers;
+      let target = null;
+      if (this.metadata) {
+        const [title] = this.metadata.titles;
+        target = this.booksList.find(
+          (item) => item.metadata.titles[0] === title,
+        );
       } else {
-        const target = this.booksList.find((item) => {
+        target = this.booksList.find((item) => {
           const result = item.metadata.titles.find((title) => {
             const regexp = new RegExp(title);
             return regexp.test(bookName);
@@ -339,19 +522,17 @@ export default {
           }
           return false;
         });
-        if (target) {
-          [matchBook] = this.metadata.titles;
-          if (this.metadata.covers.length > 0) [cover] = this.metadata.covers;
-        }
       }
-      return {
-        matchBook,
-        cover,
-      };
+
+      return target || null;
     },
     setMatchBook(book) {
-      [this.currentFile.matchBook] = book.metadata.titles;
-      if (book.metadata.covers.length > 0) [this.currentFile.cover] = book.metadata.covers;
+      [this.currentFile.matchBookTitle] = book.metadata.titles;
+      if (book.metadata.covers.length > 0) {
+        [this.currentFile.matchBookCover] = book.metadata.covers;
+      } else {
+        this.currentFile.matchBookCover = '';
+      }
     },
     deleteFile(fileName) {
       const index = this.result.findIndex((item) => item.fileName === fileName);
@@ -364,20 +545,104 @@ export default {
       }
     },
     deleteCover() {
-      this.currentFile.matchBook = '';
-      this.currentFile.cover = '';
+      this.currentFile.matchBookTitle = '';
+      this.currentFile.matchBookCover = '';
     },
     showSearchInputHandler() {
       this.showSearchInput = !this.showSearchInput;
       if (this.showSearchInput) {
         const input = this.$refs['search-input'];
-        console.log(input);
         this.$nextTick(() => {
           input.focus();
         });
       }
     },
+    setInitSimilarQuote(quote, categoryFlatten, quotes, quotesSorted) {
+      const similarQuote = { similarity: 0, quote: null };
+      let comparedQuotes = quotes;
+      // 从特定章节寻找相似的书摘
+      const { chapter } = quote;
+      if (chapter) {
+        const targetChapter = categoryFlatten.find((item) => chapter === item);
+        if (targetChapter) {
+          const index = quotesSorted.findIndex(
+            (item) => item.chapter === targetChapter,
+          );
+          if (index !== -1) {
+            comparedQuotes = quotesSorted[index];
+          }
+        }
+      }
+
+      comparedQuotes.find((item) => {
+        const newStr = quote.content;
+        const oldStr = item.contentOrigin || '';
+        const diff = Diff.diffChars(oldStr, newStr);
+        // console.log(diff);
+        const len = Math.max(newStr.length, oldStr.length);
+        let unchangeLen = 0;
+        diff.forEach((el) => {
+          if (!el.added && !el.removed) {
+            unchangeLen += el.count;
+          }
+        });
+        const similarity = unchangeLen / len;
+        // console.log(similarity);
+        if (similarity >= 0.5) {
+          similarQuote.similarity = unchangeLen / len;
+          similarQuote.quote = item;
+          return true;
+        }
+        if (similarity > 0.3 && similarity > similarQuote.similarity) {
+          similarQuote.similarity = unchangeLen / len;
+          similarQuote.quote = item;
+          return false;
+        }
+        return false;
+      });
+      return similarQuote;
+    },
+    SortQuotesByChapter(quotes) {
+      const quotesSorted = [];
+      quotes.forEach((quote) => {
+        const index = quotesSorted.findIndex(
+          (item) => item.chapter === quote.chapter,
+        );
+        if (index === -1) {
+          quotesSorted.push({
+            chapter: quote.chapter || '未分类(NoChapter)',
+            quotes: [quote],
+          });
+        } else {
+          quotesSorted[index].quotes.push(quote);
+        }
+      });
+      return quotesSorted;
+    },
+    diffContent(newStr, oldStr) {
+      // console.log(newStr);
+      // console.log(oldStr);
+      // eslint-disable-next-line no-param-reassign
+      if (!oldStr) oldStr = '';
+      const diff = Diff.diffChars(oldStr, newStr);
+      console.log(diff);
+      let diffHTML = '';
+
+      diff.forEach((el) => {
+        if (!el.added && !el.removed) {
+          // unchangeLen += el.count;
+          diffHTML += `<span class=" px-1 bg-gray-100 rounded">${el.value}</span>`;
+        } else if (el.removed) {
+          diffHTML += `<span class="px-1 line-through text-red-500 bg-red-100 rounded">${el.value}</span>`;
+        } else if (el.added) {
+          diffHTML += `<span class=" px-1 underline text-green-500 bg-green-100 rounded">${el.value}</span>`;
+        }
+      });
+      // console.log(diffHTML);
+      return diffHTML;
+    },
   },
+  mounted() {},
 };
 </script>
 

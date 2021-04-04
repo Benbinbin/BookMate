@@ -12,6 +12,7 @@
     "@riophae/vue-treeselect": "^0.4.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "diff": "^5.0.0",
     "highlight.js": "^10.6.0",
     "prosemirror-model": "^1.13.3",
     "split.js": "^1.6.2",

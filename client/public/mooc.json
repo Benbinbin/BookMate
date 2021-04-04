@@ -119,6 +119,7 @@
         "id": "first",
         "type": "annotation",
         "location": "4",
+        "contentOrigin": "只能通过期待中的电话传来，打电话的还得是你已经认识的人，她不想成为那种人。",
         "content": {
           "type": "doc",
           "content": [
@@ -139,6 +140,7 @@
         "chapter": "《待宰的羔羊》",
         "type": "question",
         "location": "9",
+        "contentOrigin": "我每年见他三次，还不够称他是朋友。而每次见到他，他都是想卖什么东西给我",
         "content": {
           "type": "doc",
           "content": [
@@ -159,6 +161,7 @@
         "chapter": "《待宰的羔羊》",
         "type": "deep-reading",
         "location": "16",
+        "contentOrigin": "很可能已经有人告诉过他， A. J.只浏览电子邮件，从来不接电话。举办过葬礼吗？倒不是说 A. J.知道的话就会参加，他几乎不怎么了解哈维•罗兹。这显而易见。",
         "content": {
           "type": "doc",
           "content": [
@@ -179,6 +182,7 @@
         "chapter": "《待宰的羔羊》",
         "type": "inspiration",
         "location": "16",
+        "contentOrigin": "加了部分文字用刀割，压平，摞起来。",
         "content": {
           "type": "doc",
           "content": [
@@ -199,6 +203,7 @@
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
         "location": "16",
+        "contentOrigin": "找到一个跟你阅读兴趣相同的人又何其难得啊？",
         "content": {
           "type": "doc",
           "content": [
@@ -213,6 +218,7 @@
             }
           ]
         },
+        "commentOrigin": "知音难遇",
         "comment": {
           "type": "doc",
           "content": [

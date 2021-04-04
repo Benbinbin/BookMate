@@ -72,7 +72,7 @@ export default {
     return {
       isDropping: false,
       showHelp: false,
-      files: [],
+      // files: [],
       result: [],
     };
   },
@@ -112,7 +112,7 @@ export default {
       const temp = [];
       event.target.files.forEach((file) => {
         temp.push(this.readFile(file));
-        this.files.push(file.name);
+        // this.files.push(file.name);
       });
       const arr = await Promise.all(temp);
       // this.result.push(...arr);
