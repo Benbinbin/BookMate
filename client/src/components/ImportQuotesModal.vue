@@ -210,7 +210,7 @@
               <h3 class="text-lg font-bold my-4">
                 <span class="highlight">书摘笔记</span>
               </h3>
-              <div class="quotes-header grid grid-cols-3 gap-2 my-4">
+              <div class="quotes-header grid grid-cols-3 gap-6 my-4">
                 <div>
                   <h4 class="font-bold text-center text-gray-600 my-2">
                     待导入
@@ -249,15 +249,15 @@
                 </div>
               </div>
 
-              <div class="quotes-body space-y-4">
+              <div class="quotes-body space-y-6">
                 <div
                   v-for="(quote, index) of currentFile.notes"
                   :key="index"
-                  class="quote grid grid-cols-3 gap-2"
+                  class="quote grid grid-cols-3 gap-6 items-stretch"
                 >
-                  <div class="uncommit-quote">
+                  <div class="uncommit-container flex flex-col">
                     <p
-                      class="quote-content bg-white border px-8 py-6"
+                      class="quote-content flex-grow bg-white border px-8 py-6"
                       :class="{
                         'rounded-lg': !quote.comment,
                         'rounded-t-lg': quote.comment,
@@ -272,27 +272,27 @@
                       {{ quote.comment }}
                     </p>
                   </div>
-                  <div class="diff-container">
+                  <div class="diff-container flex flex-col">
                     <div
                       v-if="
                         currentFile.similarQuotes[index].quote &&
                         currentFile.similarQuotes[index].quote.contentOrigin
                       "
-                      class="quote-diff bg-white border px-8 py-6"
+                      class="quote-diff flex-grow bg-white border px-8 py-6"
+                      :class="{
+                        'rounded-lg': !quote.comment,
+                        'rounded-t-lg': quote.comment,
+                      }"
                     >
                       <div class="quote-diff-body">
                         <p
                           class="text-sm leading-6"
-                          :class="{
-                            'rounded-lg': !quote.comment,
-                            'rounded-t-lg': quote.comment,
-                          }"
                           v-html="
                             diffContent(
                               quote.content,
                               currentFile.similarQuotes[index].quote
                                 .contentOrigin
-                            )
+                            ).diffHTML
                           "
                         ></p>
                       </div>
@@ -328,26 +328,124 @@
                         </div>
                         <div class="right flex space-x-1">
                           <button
-                            class="px-2 py-1 flex-shrink-0 text-xs text-white opacity-50 hover:opacity-100 bg-gray-500 rounded"
+                            class="px-2 py-1 flex-shrink-0 text-xs text-white bg-gray-500 rounded"
+                            :disabled="
+                              currentFile.similarQuotes[index].similarity === 1
+                            "
+                            :class="{
+                              'opacity-10':
+                                currentFile.similarQuotes[index].similarity ===
+                                1,
+                              'opacity-50 hover:opacity-100':
+                                currentFile.similarQuotes[index].similarity !==
+                                1,
+                            }"
                           >
                             合并
                           </button>
                           <button
-                            class="px-2 py-1 flex-shrink-0 text-xs text-white opacity-50 hover:opacity-100 bg-gray-500 rounded"
+                            class="px-2 py-1 flex-shrink-0 text-xs text-white bg-gray-500 rounded"
+                            :disabled="
+                              currentFile.similarQuotes[index].similarity === 1
+                            "
+                            :class="{
+                              'opacity-10':
+                                currentFile.similarQuotes[index].similarity ===
+                                1,
+                              'opacity-50 hover:opacity-100':
+                                currentFile.similarQuotes[index].similarity !==
+                                1,
+                            }"
                           >
                             覆盖
                           </button>
                         </div>
                       </div>
                     </div>
+                    <div
+                      v-if="
+                        currentFile.similarQuotes[index].quote &&
+                        currentFile.similarQuotes[index].quote.commentOrigin
+                      "
+                      class="comment-diff px-8 py-6 bg-gray-200 text-blue-900 rounded-b-lg"
+                    >
+                      <div class="comment-diff-body">
+                        <p
+                          class="text-sm leading-6"
+                          v-html="
+                            diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).diffHTML
+                          "
+                        ></p>
+                      </div>
+                      <div
+                        class="comment-diff-footer mt-4 flex justify-end space-x-1"
+                      >
+                        <button
+                          class="px-2 py-1 flex-shrink-0 text-xs text-white  bg-gray-500 rounded"
+                          :disabled="
+                              diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity === 1
+                            "
+                            :class="{
+                              'opacity-10':
+                                diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity === 1,
+                              'opacity-50 hover:opacity-100':
+                                diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity !== 1,
+                            }"
+                        >
+                          合并
+                        </button>
+                        <button
+                          class="px-2 py-1 flex-shrink-0 text-xs text-white bg-gray-500 rounded"
+                          :disabled="
+                              diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity === 1
+                            "
+                            :class="{
+                              'opacity-10':
+                                diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity === 1,
+                              'opacity-50 hover:opacity-100':
+                                diffContent(
+                              quote.comment,
+                              currentFile.similarQuotes[index].quote
+                                .commentOrigin
+                            ).similarity !== 1,
+                            }"
+                        >
+                          覆盖
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div class="committed-quotes">
+                  <div class="committed-container flex flex-col">
                     <p
                       v-if="
                         currentFile.similarQuotes[index].quote &&
                         currentFile.similarQuotes[index].quote.contentOrigin
                       "
-                      class="quote-content h-auto bg-white border px-8 py-6"
+                      class="quote-content flex-grow h-auto bg-white border px-8 py-6"
                       :class="{
                         'rounded-lg': !quote.comment,
                         'rounded-t-lg': quote.comment,
@@ -358,16 +456,6 @@
                           ? currentFile.similarQuotes[index].quote.contentOrigin
                           : "no matching quote"
                       }}
-                      <span
-                        class="font-bold"
-                        :class="{
-                          'text-green-500':
-                            currentFile.similarQuotes[index].similarity < 0.8,
-                          'text-red-500':
-                            currentFile.similarQuotes[index].similarity >= 0.8,
-                        }"
-                        >{{ currentFile.similarQuotes[index].similarity }}</span
-                      >
                     </p>
                     <p
                       v-if="
@@ -578,7 +666,6 @@ export default {
         const newStr = quote.content;
         const oldStr = item.contentOrigin || '';
         const diff = Diff.diffChars(oldStr, newStr);
-        // console.log(diff);
         const len = Math.max(newStr.length, oldStr.length);
         let unchangeLen = 0;
         diff.forEach((el) => {
@@ -587,7 +674,6 @@ export default {
           }
         });
         const similarity = unchangeLen / len;
-        // console.log(similarity);
         if (similarity >= 0.5) {
           similarQuote.similarity = unchangeLen / len;
           similarQuote.quote = item;
@@ -620,17 +706,16 @@ export default {
       return quotesSorted;
     },
     diffContent(newStr, oldStr) {
-      // console.log(newStr);
-      // console.log(oldStr);
       // eslint-disable-next-line no-param-reassign
       if (!oldStr) oldStr = '';
       const diff = Diff.diffChars(oldStr, newStr);
-      console.log(diff);
       let diffHTML = '';
+      const len = Math.max(newStr.length, oldStr.length);
+      let unchangeLen = 0;
 
       diff.forEach((el) => {
         if (!el.added && !el.removed) {
-          // unchangeLen += el.count;
+          unchangeLen += el.count;
           diffHTML += `<span class=" px-1 bg-gray-100 rounded">${el.value}</span>`;
         } else if (el.removed) {
           diffHTML += `<span class="px-1 line-through text-red-500 bg-red-100 rounded">${el.value}</span>`;
@@ -638,8 +723,8 @@ export default {
           diffHTML += `<span class=" px-1 underline text-green-500 bg-green-100 rounded">${el.value}</span>`;
         }
       });
-      // console.log(diffHTML);
-      return diffHTML;
+      const similarity = unchangeLen / len;
+      return { diffHTML, similarity };
     },
   },
   mounted() {},
