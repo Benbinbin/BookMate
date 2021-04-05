@@ -241,7 +241,10 @@ export default new Vuex.Store({
     addQuote(context, payload) {
     },
     setContentOrigin(context, payload) {
-      context.commit('SET_CONTENT_ORIGIN', payload);
+      return new Promise((resolve, reject) => {
+        context.commit('SET_CONTENT_ORIGIN', payload);
+        resolve('set origin content');
+      });
     },
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
