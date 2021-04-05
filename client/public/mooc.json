@@ -218,7 +218,7 @@
             }
           ]
         },
-        "commentOrigin": "知音难遇",
+        "commentOrigin": "知音",
         "comment": {
           "type": "doc",
           "content": [
@@ -227,7 +227,7 @@
               "content": [
                 {
                   "type": "text",
-                  "text": "知音难遇"
+                  "text": "知音"
                 }
               ]
             }

@@ -56,6 +56,18 @@ export default new Vuex.Store({
       state.book.metadata = payload.metadata;
     },
     // quote and summary status
+    SET_CONTENT_ORIGIN(state, payload) {
+      const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
+      if (book) {
+        const index = book.quotes.findIndex((quote) => quote.id === payload.id);
+        if (index === -1) return;
+        if (payload.type === 'quote') {
+          book.quotes[index].contentOrigin = payload.content;
+        } else if (payload.type === 'comment') {
+          book.quotes[index].commentOrigin = payload.content;
+        }
+      }
+    },
     CHANGE_QUOTES_MODE(state, payload) {
       state.quotesListMode = payload;
     },
@@ -151,7 +163,6 @@ export default new Vuex.Store({
       if (state.candidateQuote) state.insertQuote = true;
     },
     CLEAR_INSERT_QUOTE(state) {
-      // console.log('clearing quote');
       state.insertQuote = false;
       state.candidateQuote = null;
     },
@@ -227,8 +238,12 @@ export default new Vuex.Store({
     },
 
     // quote content
+    addQuote(context, payload) {
+    },
+    setContentOrigin(context, payload) {
+      context.commit('SET_CONTENT_ORIGIN', payload);
+    },
     activeQuoteEditing(context, payload) {
-      //
       context.commit('ACTIVE_QUOTE_EDITING', payload);
     },
     cancelQuoteEditing(context) {

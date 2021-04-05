@@ -340,6 +340,17 @@
                                 currentFile.similarQuotes[index].similarity !==
                                 1,
                             }"
+                            @click="
+                              diffHandler({
+                                id: currentFile.similarQuotes[index].quote.id,
+                                content: diffContent(
+                                  quote.content,
+                                  currentFile.similarQuotes[index].quote
+                                    .contentOrigin
+                                ).diffText,
+                                type: 'quote',
+                              })
+                            "
                           >
                             合并
                           </button>
@@ -356,6 +367,13 @@
                                 currentFile.similarQuotes[index].similarity !==
                                 1,
                             }"
+                            @click="
+                              diffHandler({
+                                id: currentFile.similarQuotes[index].quote.id,
+                                content: quote.content,
+                                type: 'quote',
+                              })
+                            "
                           >
                             覆盖
                           </button>
@@ -385,54 +403,72 @@
                         class="comment-diff-footer mt-4 flex justify-end space-x-1"
                       >
                         <button
-                          class="px-2 py-1 flex-shrink-0 text-xs text-white  bg-gray-500 rounded"
+                          class="px-2 py-1 flex-shrink-0 text-xs text-white bg-gray-500 rounded"
                           :disabled="
-                              diffContent(
+                            diffContent(
                               quote.comment,
                               currentFile.similarQuotes[index].quote
                                 .commentOrigin
                             ).similarity === 1
-                            "
-                            :class="{
-                              'opacity-10':
-                                diffContent(
-                              quote.comment,
-                              currentFile.similarQuotes[index].quote
-                                .commentOrigin
-                            ).similarity === 1,
-                              'opacity-50 hover:opacity-100':
-                                diffContent(
-                              quote.comment,
-                              currentFile.similarQuotes[index].quote
-                                .commentOrigin
-                            ).similarity !== 1,
-                            }"
+                          "
+                          :class="{
+                            'opacity-10':
+                              diffContent(
+                                quote.comment,
+                                currentFile.similarQuotes[index].quote
+                                  .commentOrigin
+                              ).similarity === 1,
+                            'opacity-50 hover:opacity-100':
+                              diffContent(
+                                quote.comment,
+                                currentFile.similarQuotes[index].quote
+                                  .commentOrigin
+                              ).similarity !== 1,
+                          }"
+                          @click="
+                            diffHandler({
+                              id: currentFile.similarQuotes[index].quote.id,
+                              content: diffContent(
+                                quote.comment,
+                                currentFile.similarQuotes[index].quote
+                                  .commentOrigin
+                              ).diffText,
+                              type: 'comment',
+                            })
+                          "
                         >
                           合并
                         </button>
                         <button
                           class="px-2 py-1 flex-shrink-0 text-xs text-white bg-gray-500 rounded"
                           :disabled="
-                              diffContent(
+                            diffContent(
                               quote.comment,
                               currentFile.similarQuotes[index].quote
                                 .commentOrigin
                             ).similarity === 1
-                            "
-                            :class="{
-                              'opacity-10':
-                                diffContent(
-                              quote.comment,
-                              currentFile.similarQuotes[index].quote
-                                .commentOrigin
-                            ).similarity === 1,
-                              'opacity-50 hover:opacity-100':
-                                diffContent(
-                              quote.comment,
-                              currentFile.similarQuotes[index].quote
-                                .commentOrigin
-                            ).similarity !== 1,
-                            }"
+                          "
+                          :class="{
+                            'opacity-10':
+                              diffContent(
+                                quote.comment,
+                                currentFile.similarQuotes[index].quote
+                                  .commentOrigin
+                              ).similarity === 1,
+                            'opacity-50 hover:opacity-100':
+                              diffContent(
+                                quote.comment,
+                                currentFile.similarQuotes[index].quote
+                                  .commentOrigin
+                              ).similarity !== 1,
+                          }"
+                          @click="
+                            diffHandler({
+                              id: currentFile.similarQuotes[index].quote.id,
+                              content: quote.comment,
+                              type: 'comment',
+                            })
+                          "
                         >
                           覆盖
                         </button>
@@ -555,15 +591,11 @@ export default {
       arr.forEach((item) => {
         let matchBookTitle = '';
         let matchBookCover = '';
-        const {
-          titles, covers, quotes, category,
-        } = this.setInitMatchBook(
-          item.metadata.title,
-        );
+        const { metadata, quotes } = this.setInitMatchBook(item.metadata.title);
+        const { titles, covers, category } = metadata;
         const quotesSorted = this.SortQuotesByChapter(quotes);
         const categoryFlatten = [];
         flatten(category, categoryFlatten);
-
         if (titles && titles.length > 0) {
           [matchBookTitle] = titles;
         }
@@ -657,11 +689,10 @@ export default {
             (item) => item.chapter === targetChapter,
           );
           if (index !== -1) {
-            comparedQuotes = quotesSorted[index];
+            comparedQuotes = quotesSorted[index].quotes;
           }
         }
       }
-
       comparedQuotes.find((item) => {
         const newStr = quote.content;
         const oldStr = item.contentOrigin || '';
@@ -710,10 +741,12 @@ export default {
       if (!oldStr) oldStr = '';
       const diff = Diff.diffChars(oldStr, newStr);
       let diffHTML = '';
+      let diffText = '';
       const len = Math.max(newStr.length, oldStr.length);
       let unchangeLen = 0;
 
       diff.forEach((el) => {
+        diffText += `${el.value}`;
         if (!el.added && !el.removed) {
           unchangeLen += el.count;
           diffHTML += `<span class=" px-1 bg-gray-100 rounded">${el.value}</span>`;
@@ -724,7 +757,11 @@ export default {
         }
       });
       const similarity = unchangeLen / len;
-      return { diffHTML, similarity };
+      return { diffText, diffHTML, similarity };
+    },
+    diffHandler(payload) {
+      const bookTitle = this.currentFile.matchBookTitle;
+      this.$store.dispatch('setContentOrigin', { bookTitle, ...payload });
     },
   },
   mounted() {},
