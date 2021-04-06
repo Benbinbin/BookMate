@@ -86,62 +86,60 @@
           </div>
           <div v-if="currentFile">
             <div class="my-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="match-book-container flex-grow">
+              <div class="match-book-container h-48 flex-grow">
                 <div class="header flex items-center">
                   <h3 class="text-lg font-bold my-4">
                     <span class="highlight">匹配书籍</span>
                   </h3>
-                  <div
-                    v-show="
-                      !currentFile.matchBookTitle && !currentFile.matchBookCover
-                    "
-                    class="search-bar-container ml-4 flex items-center relative"
-                  >
-                    <input
-                      v-show="showSearchInput"
-                      ref="search-input"
-                      type="search"
-                      class="px-2 py-1 w-40 bg-gray-200 text-xs rounded focus:outline-none"
-                      placeholder="搜索已存书籍"
-                      v-model="keyword"
+                </div>
+                <div
+                  v-show="
+                    !currentFile.matchBookTitle && !currentFile.matchBookCover
+                  "
+                  class="search-bar-container flex items-start relative"
+                >
+                  <input
+                    ref="search-input"
+                    type="search"
+                    class="px-2 py-1 w-40 bg-gray-200 text-xs rounded focus:outline-none"
+                    placeholder="搜索并选择已存书籍"
+                    v-model="keyword"
+                  />
+                  <button class="p-1">
+                    <img
+                      class="w-4 h-4"
+                      src="@/assets/icons/search.svg"
+                      alt="search button"
                     />
-                    <button class="p-1" @click="showSearchInputHandler">
-                      <img
-                        class="w-4 h-4"
-                        src="@/assets/icons/search.svg"
-                        alt="search button"
-                      />
-                    </button>
-                    <div
-                      v-show="showSearchInput && suggestionBooks.length > 0"
-                      class="suggestion-books-modal w-40 absolute top-7 left-0 bg-gray-100 shadow rounded"
-                    >
-                      <ul class="suggestion-books-list">
-                        <li
-                          v-for="book of suggestionBooks"
-                          :key="book._id.$oid"
-                          class="suggestion-book w-full"
+                  </button>
+                  <div
+                    v-show="suggestionBooks.length > 0"
+                    class="suggestion-books-modal w-40 absolute top-7 left-0 bg-gray-100 shadow rounded"
+                  >
+                    <ul class="suggestion-books-list">
+                      <li
+                        v-for="book of suggestionBooks"
+                        :key="book._id.$oid"
+                        class="suggestion-book w-full"
+                      >
+                        <button
+                          class="flex w-full items-center p-2 space-x-1 hover:bg-gray-200 rounded"
+                          @click="setMatchBook(book)"
                         >
-                          <button
-                            class="flex w-full items-center p-2 space-x-1 hover:bg-gray-200 rounded"
-                            @click="setMatchBook(book)"
-                          >
-                            <div
-                              class="cover w-7 h-8 bg-center bg-no-repeat bg-contain"
-                              :style="{
-                                backgroundImage: `url(covers/${book.metadata.covers[0]})`,
-                              }"
-                            ></div>
-                            <span class="text-xs font-bold text-gray-500">{{
-                              book.metadata.titles[0]
-                            }}</span>
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
+                          <div
+                            class="cover w-7 h-8 bg-center bg-no-repeat bg-contain"
+                            :style="{
+                              backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+                            }"
+                          ></div>
+                          <span class="text-xs font-bold text-gray-500">{{
+                            book.metadata.titles[0]
+                          }}</span>
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 </div>
-
                 <div
                   v-show="
                     currentFile.matchBookTitle || currentFile.matchBookCover
@@ -181,24 +179,6 @@
                     {{ currentFile.matchBookTitle }}
                   </h4>
                 </div>
-
-                <button
-                  v-show="
-                    !currentFile.matchBookTitle && !currentFile.matchBookCover
-                  "
-                  class="add-cover w-24 h-32 flex-shrink-0 flex justify-center items-center bg-gray-100 text-gray-300 hover:bg-gray-200 hover:text-white rounded"
-                >
-                  <svg
-                    class="w-8 h-8"
-                    viewBox="0 0 50 50"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M37.5 27.0833H27.0834V37.5C27.0834 38.6458 26.1459 39.5833 25 39.5833C23.8542 39.5833 22.9167 38.6458 22.9167 37.5V27.0833H12.5C11.3542 27.0833 10.4167 26.1458 10.4167 25C10.4167 23.8541 11.3542 22.9166 12.5 22.9166H22.9167V12.5C22.9167 11.3541 23.8542 10.4166 25 10.4166C26.1459 10.4166 27.0834 11.3541 27.0834 12.5V22.9166H37.5C38.6459 22.9166 39.5834 23.8541 39.5834 25C39.5834 26.1458 38.6459 27.0833 37.5 27.0833Z"
-                    />
-                  </svg>
-                </button>
               </div>
               <div class="settings-container flex-grow">
                 <h3 class="text-lg font-bold my-4">
@@ -221,9 +201,35 @@
                   </div>
                   <div class="flex space-x-2">
                     <button
-                      class="p-2 flex-shrink-0 text-sm text-white bg-green-500 opacity-80 hover:opacity-100 rounded"
+                      class="p-2 flex-shrink-0 text-sm text-white bg-green-500 rounded"
+                      :class="{
+                        'opacity-80 hover:opacity-100':
+                          selectedQuotes.find(
+                            (item) => item.fileName === currentFileName
+                          ).quotesIndex.length !== 0 &&
+                          (currentFile.matchBookTitle ||
+                            currentFile.matchBookCover),
+                        'opacity-10':
+                          selectedQuotes.find(
+                            (item) => item.fileName === currentFileName
+                          ).quotesIndex.length === 0 ||
+                          !(
+                            currentFile.matchBookTitle ||
+                            currentFile.matchBookCover
+                          ),
+                      }"
+                      :disabled="
+                        selectedQuotes.find(
+                          (item) => item.fileName === currentFileName
+                        ).quotesIndex.length === 0 ||
+                        !(
+                          currentFile.matchBookTitle ||
+                          currentFile.matchBookCover
+                        )
+                      "
+                      @click="importSelectQuotes"
                     >
-                      导入选中
+                      导入（选中）
                     </button>
                     <button
                       class="p-2 flex-shrink-0 text-sm text-white bg-green-500 opacity-80 hover:opacity-100 rounded"
@@ -596,7 +602,6 @@ export default {
     return {
       tab: 'kindle-notes-parse',
       result: [],
-      showSearchInput: false,
       keyword: '',
       currentFileName: '',
       selectedQuotes: [],
@@ -633,6 +638,7 @@ export default {
     },
     setResult(arr) {
       arr.forEach((item) => {
+        if (this.result.find((file) => file.fileName === item.fileName)) return;
         let matchBookTitle = '';
         let matchBookCover = '';
         const { metadata, quotes } = this.setInitMatchBook(item.metadata.title);
@@ -704,12 +710,17 @@ export default {
     },
     deleteFile(fileName) {
       const index = this.result.findIndex((item) => item.fileName === fileName);
+      if (index !== -1) {
+        this.result.splice(index, 1);
+      }
+
+      const i = this.selectedQuotes.findIndex((item) => item.fileName === fileName);
+      if (i !== -1) {
+        this.selectedQuotes.splice(i, 1);
+      }
 
       if (fileName === this.currentFileName) {
         this.currentFileName = '';
-      }
-      if (index !== -1) {
-        this.result.splice(index, 1);
       }
     },
     deleteCover() {
@@ -873,6 +884,13 @@ export default {
       this.selectedQuotes.find(
         (item) => item.fileName === this.currentFileName,
       ).quotesIndex = [];
+    },
+    importSelectQuotes() {
+      console.log(
+        this.selectedQuotes.find(
+          (item) => item.fileName === this.currentFileName,
+        ).quotesIndex,
+      );
     },
   },
   mounted() {},
