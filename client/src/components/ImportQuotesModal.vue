@@ -851,7 +851,12 @@ export default {
       }
     },
     selectAll() {
-      const arr = [];
+      this.selectedQuotes.find(
+        (item) => item.fileName === this.currentFileName,
+      ).quotesIndex = [];
+      const arr = this.selectedQuotes.find(
+        (item) => item.fileName === this.currentFileName,
+      ).quotesIndex;
       for (
         let i = 0;
         i < this.currentFile.similarQuotes.length;
@@ -863,18 +868,11 @@ export default {
           arr.push(i);
         }
       }
-      const index = this.selectedQuotes.findIndex(
-        (item) => item.fileName === this.currentFileName,
-      );
-      const { fileName } = this.selectedQuotes[index];
-      this.$set(this.selectedQuotes, index, { fileName, quotesIndex: arr });
     },
     unselectAll() {
-      const index = this.selectedQuotes.findIndex(
+      this.selectedQuotes.find(
         (item) => item.fileName === this.currentFileName,
-      );
-      const { fileName } = this.selectedQuotes[index];
-      this.$set(this.selectedQuotes, index, { fileName, quotesIndex: [] });
+      ).quotesIndex = [];
     },
   },
   mounted() {},
