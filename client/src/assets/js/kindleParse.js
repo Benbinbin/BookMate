@@ -93,6 +93,39 @@ function getNotes(dom) {
     }
     // console.log(color);
 
+    let type = '';
+
+    switch (color) {
+      case 'yellow':
+        type = 'annotation';
+        break;
+      case '黄色':
+        type = 'annotation';
+        break;
+
+      case 'blue':
+        type = 'deep-reading';
+        break;
+
+      case '蓝色':
+        type = 'deep-reading';
+        break;
+      case 'pink':
+        type = 'question';
+        break;
+      case '粉色':
+        type = 'question';
+        break;
+      case 'orange':
+        type = 'inspiration';
+        break;
+      case '橙色':
+        type = 'inspiration';
+        break;
+      default:
+        type = 'annotation';
+    }
+
     // location
     let location = 0;
     const result = heading.textContent.trim().match(/\s(\d*)$/i);
@@ -113,7 +146,7 @@ function getNotes(dom) {
       // console.log(content);
       notes.push({
         chapter,
-        color,
+        type,
         location,
         content,
       });

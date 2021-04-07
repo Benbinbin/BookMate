@@ -657,7 +657,9 @@
     "quotes": [
       {
         "type": "annotation",
+        "id": 1,
         "location": "4",
+        "contentOrigin": "有种人认为好消息只能通过期待中的电话传来，打电话的还得是你已经认识的人，她不想成为那种人。",
         "content": {
           "type": "doc",
           "content": [
@@ -676,7 +678,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "question",
+        "id": 2,
         "location": "9",
+        "contentOrigin": "我每年见他三次，还不够称他是朋友。而每次见到他，他都是想卖什么东西给我。这不是友谊。”",
         "content": {
           "type": "doc",
           "content": [
@@ -695,7 +699,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "deep-reading",
+        "id": 3,
         "location": "16",
+        "contentOrigin":"从来不接电话。举办过葬礼吗？倒不是说 A. J.知道的话就会参加，他几乎不怎么了解哈维•罗兹。这显而易见。添加其他文字",
         "content": {
           "type": "doc",
           "content": [
@@ -714,7 +720,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "inspiration",
+        "id": 4,
         "location": "16",
+        "contentOrigin":"用刀割，压平，摞起来。",
         "content": {
           "type": "doc",
           "content": [
@@ -733,7 +741,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
+        "id": 5,
         "location": "16",
+        "contentOrigin":"找到一个跟你阅读兴趣相同的人又何其难得啊？",
         "content": {
           "type": "doc",
           "content": [
@@ -748,6 +758,7 @@
             }
           ]
         },
+        "commentOrigin": "加了一些文字，知音难遇",
         "comment": {
           "type": "doc",
           "content": [
@@ -766,7 +777,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
+        "id": 6,
         "location": "17",
+        "contentOrigin":"“《无尽的玩笑》是在比赛忍耐力。你好不容易读完了，你别无选择，只能说你喜欢这本书。否则，你就得面对浪费了自己生命中几个星期的事实，” A. J.反驳道，“有风格，无实质，我的朋友。”",
         "content": {
           "type": "doc",
           "content": [
@@ -781,6 +794,7 @@
             }
           ]
         },
+        "commentOrigin": "好有趣的想法",
         "comment": {
           "type": "doc",
           "content": [
@@ -799,7 +813,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
+        "id": 7,
         "location": "17",
+        "contentOrigin": "独自生活的难处，在于不管弄出什么样的烂摊子，都不得不自己清理。不，独自生活的真正难处在于没人在乎你是否心烦意乱。",
         "content": {
           "type": "doc",
           "content": [
@@ -818,7 +834,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
+        "id": 8,
         "location": "18",
+        "contentOrigin": "打开一个恒温的玻璃盒，拿出了《帖木儿》[ 14]。",
         "content": {
           "type": "doc",
           "content": [
@@ -837,7 +855,9 @@
       {
         "chapter": "《待宰的羔羊》",
         "type": "annotation",
+        "id": 9,
         "location": "18",
+        "contentOrigin": "最糟糕的莫过于鳏夫矫揉造作的回忆录，特别是如果你自己就是一个鳏夫，就像 A. J.在过去二十一个月的时间里那样。",
         "content": {
           "type": "doc",
           "content": [
@@ -856,7 +876,9 @@
       {
         "chapter": "《像里兹饭店那样大的钻石》",
         "type": "annotation",
+        "id": 10,
         "location": "25",
+        "contentOrigin": "如果你最后进了一所常春藤联盟大学*，很可能会遇到这种人。用知识来武装自己以对付这帮傲慢的家伙。",
         "content": {
           "type": "doc",
           "content": [
@@ -875,7 +897,9 @@
       {
         "chapter": "《像里兹饭店那样大的钻石》",
         "type": "annotation",
+        "id": 11,
         "location": "26",
+        "contentOrigin": "那部长篇小说有些地方写得过于雕琢，就像花园里修剪过的灌木。对他来说，短篇小说发挥空间更大，可以写得更凌乱一点。",
         "content": {
           "type": "doc",
           "content": [
@@ -894,7 +918,9 @@
       {
         "chapter": "《咆哮营的幸运儿》",
         "type": "annotation",
+        "id": 12,
         "location": "39",
+        "contentOrigin": "依我看是人到中年变得更多愁善感了。不过我觉得我后来的反应也说明了读小说需要在适合它的人生阶段去读。记住，玛雅：我们在二十岁有共鸣的东西到了四十岁的时候不一定能产生共鸣，反之亦然。书本如此，生活亦如此。",
         "content": {
           "type": "doc",
           "content": [
@@ -913,7 +939,9 @@
       {
         "chapter": "《好人难寻》",
         "type": "annotation",
+        "id": 13,
         "location": "85",
+        "contentOrigin": "关于政治、上帝和爱，人们都讲些无聊的谎话。想要了解一个人，你只需问一个问题：“你最喜欢哪本书？”",
         "content": {
           "type": "doc",
           "content": [
@@ -932,7 +960,9 @@
       {
         "chapter": "《卡拉维拉县驰名的跳蛙》",
         "type": "annotation",
+        "id": 14,
         "location": "139",
+        "contentOrigin": "“嗯……事实上有很多原因。准确说来，你的爸爸并不抢手。”玛雅笑了起来。“你真傻。”",
         "content": {
           "type": "doc",
           "content": [
@@ -951,7 +981,9 @@
       {
         "chapter": "《卡拉维拉县驰名的跳蛙》",
         "type": "annotation",
+        "id": 15,
         "location": "152",
+        "contentOrigin": "没有人会漫无目的地旅行，那些迷路者是希望迷路。”",
         "content": {
           "type": "doc",
           "content": [
@@ -970,7 +1002,9 @@
       {
         "chapter": "《穿夏裙的女孩》",
         "type": "annotation",
+        "id": 16,
         "location": "164",
+        "contentOrigin": "会很容易的，伊斯梅想。你走出去，游一阵子，游得太远了，不去努力游回来，你的肺里全是水，会难受一会儿，可是随后一切都结束了，哪里都不会再疼，意识一片空白。",
         "content": {
           "type": "doc",
           "content": [
@@ -989,7 +1023,9 @@
       {
         "chapter": "《书店老板》",
         "type": "annotation",
+        "id": 17,
         "location": "250",
+        "contentOrigin": "兰比亚斯是个了不起的销售，特别是在犯罪小说和青少年小说方面。帕里什——她以前负责学校里的戏剧俱乐部——可以指望她举办一流的作者活动。这家书店里有个咖啡角、一个舞台，网上销售的表现也很不错。所有这些，都建立在 A. J.费克里所打下的基础上，这位前老板的品位倾向于文学类。这家书店里仍然有很多文学小说，但是他们不会进卖不动的书。我全心全意地爱着小岛书店。",
         "content": {
           "type": "doc",
           "content": [
@@ -1008,7 +1044,9 @@
       {
         "chapter": "《书店老板》",
         "type": "annotation",
+        "id": 18,
         "location": "253",
+        "contentOrigin": "我的父亲，理查德•泽文，为我买了第一本有章节的图书《大森林里的小木屋》[ 121]；因为我喜欢这本书，后来父亲又买了约千本书，对我而言是一份快乐的礼物。我的母亲，埃兰•泽文，以前常利用工作时的午休时间开车带我去书店，所以我最喜欢的作者新书第一天开售，我便能入手。外公迈耶•萨斯曼和外婆阿黛尔•萨斯曼几乎每次见面都会送书给我。我读十一年级的时候，英语老师朱迪思•拜纳在我可塑性极强的年龄，介绍我读当代虚构文学。",
         "content": {
           "type": "doc",
           "content": [
@@ -1023,6 +1061,7 @@
             }
           ]
         },
+        "commentOrigin": "很幸运且幸福的人。",
         "comment": {
           "type": "doc",
           "content": [
@@ -1041,7 +1080,9 @@
       {
         "chapter": "《书店老板》",
         "type": "annotation",
+        "id": 19,
         "location": "256",
+        "contentOrigin": "Let’ s Go系列旅行指南，是最省钱的旅行指南。这个系列的足迹已经遍布各大洲，每一个地方的省钱攻略都被参透、分享。它的最大优势是每年都在更新。",
         "content": {
           "type": "doc",
           "content": [

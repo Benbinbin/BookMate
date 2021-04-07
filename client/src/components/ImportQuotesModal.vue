@@ -51,13 +51,13 @@
         </div>
         <component :is="tab" @add-files="setResult"></component>
         <hr class="w-1/2 mx-auto my-8" />
-        <div class="result-container m-4 md:mx-10 lg:mx-20">
+        <div class="result-container m-4 md:mx-10 lg:mx-20 space-y-4">
           <h2 class="text-center m-8 text-2xl font-bold">结果</h2>
           <div class="source-files-container">
             <h3 class="text-lg font-bold my-4">
               <span class="highlight">源文件</span>
             </h3>
-            <div class="source-files flex items-start space-x-2 py-1">
+            <div class="source-files flex items-start space-x-2">
               <button
                 v-for="item of result"
                 :key="item.fileName"
@@ -85,8 +85,8 @@
             </div>
           </div>
           <div v-if="currentFile">
-            <div class="my-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="match-book-container h-48 flex-grow">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="match-book-container h-60 flex-grow">
                 <div class="header flex items-center">
                   <h3 class="text-lg font-bold my-4">
                     <span class="highlight">匹配书籍</span>
@@ -109,7 +109,7 @@
                     <img
                       class="w-4 h-4"
                       src="@/assets/icons/search.svg"
-                      alt="search button"
+                      alt="search icon"
                     />
                   </button>
                   <div
@@ -201,6 +201,7 @@
                   </div>
                   <div class="flex space-x-2">
                     <button
+                      v-show="!loading"
                       class="p-2 flex-shrink-0 text-sm text-white bg-green-500 rounded"
                       :class="{
                         'opacity-80 hover:opacity-100':
@@ -231,7 +232,13 @@
                     >
                       导入（选中）
                     </button>
-                    <button
+                    <div
+                      v-show="loading"
+                      class="p-2 flex-shrink-0 text-sm text-white bg-green-500 opacity-60 rounded"
+                    >
+                      导入中...
+                    </div>
+                    <!-- <button
                       class="p-2 flex-shrink-0 text-sm text-white bg-green-500 opacity-80 hover:opacity-100 rounded"
                     >
                       合并（所有重复）
@@ -240,12 +247,12 @@
                       class="p-2 flex-shrink-0 text-sm text-white bg-green-500 opacity-80 hover:opacity-100 rounded"
                     >
                       覆盖（所有重复）
-                    </button>
+                    </button> -->
                   </div>
                 </div>
               </div>
             </div>
-            <div class="quotes-container my-8">
+            <div class="quotes-container">
               <h3 class="text-lg font-bold my-4">
                 <span class="highlight">书摘笔记</span>
               </h3>
@@ -254,24 +261,28 @@
                   <h4 class="font-bold text-center text-gray-600 my-2">
                     待导入
                   </h4>
-                  <div class="flex justify-center items-center space-x-2">
+                  <div class="my-2 flex justify-center items-center">
                     <span class="text-xs text-gray-500"
-                      >共有：{{ currentFile.notes.length }}</span
+                      >共有 {{ currentFile.notes.length }}</span
                     >
-                    <span class="text-xs text-gray-500"
-                      >选中：{{
-                        selectedQuotes.find(
-                          (item) => item.fileName === currentFileName
-                        ).quotesIndex.length
-                      }}</span
+                  </div>
+                  <div class="my-2 flex justify-center items-center">
+                    <span
+                      class="px-1 text-xs text-gray-500 ring rounded-lg ring-blue-300"
+                      >选中</span
                     >
+                    <span class="ml-2 text-xs text-gray-500">{{
+                      selectedQuotes.find(
+                        (item) => item.fileName === currentFileName
+                      ).quotesIndex.length
+                    }}</span>
                   </div>
                 </div>
                 <div>
                   <h4 class="font-bold text-center text-gray-300 my-2">
                     比较（重复）
                   </h4>
-                  <div class="flex justify-center items-center space-x-2">
+                  <div class="my-2 flex justify-center items-center space-x-2">
                     <span
                       class="px-1 text-xs underline text-green-500 bg-green-100 rounded"
                       >新增</span
@@ -283,19 +294,50 @@
                       >删除</span
                     >
                   </div>
+                  <div class="my-2 flex justify-center items-center">
+                    <span
+                      class="px-1 text-xs text-gray-500 ring rounded-lg ring-red-300"
+                      >未处理冲突</span
+                    >
+                    <span class="ml-2 text-xs text-gray-500">
+                      {{
+                        currentFile.similarQuotes.reduce((sum, item) => {
+                          if (
+                            item.quote &&
+                            (item.diff.quote.similarity !== 1 ||
+                              (item.diff.comment &&
+                                item.diff.comment.similarity !== 1))
+                          )
+                            sum += 1;
+                          return sum;
+                        }, 0)
+                      }}
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <h4 class="font-bold text-center text-gray-600 my-2">
                     已导入
                   </h4>
                   <div class="flex justify-center items-center">
-                    <span class="text-xs text-gray-500">重复：{{ 0 }}</span>
+                    <span class="text-xs text-gray-500"
+                      >重复：{{
+                        currentFile.similarQuotes.reduce((sum, item) => {
+                          if (item.quote) sum += 1;
+                          return sum;
+                        }, 0)
+                      }}</span
+                    >
                   </div>
                 </div>
               </div>
 
               <div class="quotes-body space-y-6">
+                <div v-show="loading" class="my-20">
+                  <p class="text-center text-gray-400 text-xs">解析中...</p>
+                </div>
                 <div
+                  v-show="!loading"
                   v-for="(quote, index) of currentFile.notes"
                   :key="index"
                   class="quote grid grid-cols-3 gap-6 items-stretch"
@@ -303,7 +345,7 @@
                   <div
                     class="uncommit-container flex flex-col relative"
                     :class="{
-                      'ring-2 rounded-lg ring-blue-300': selectedQuotes
+                      'ring-4 rounded-lg ring-blue-300': selectedQuotes
                         .find((item) => item.fileName === currentFileName)
                         .quotesIndex.includes(index),
                     }"
@@ -329,7 +371,18 @@
                       {{ quote.comment }}
                     </p>
                   </div>
-                  <div class="diff-container flex flex-col">
+                  <div
+                    class="diff-container flex flex-col"
+                    :class="{
+                      'ring-4 rounded-lg ring-red-300':
+                        currentFile.similarQuotes[index].quote &&
+                        (currentFile.similarQuotes[index].diff.quote
+                          .similarity !== 1 ||
+                          (currentFile.similarQuotes[index].diff.comment &&
+                            currentFile.similarQuotes[index].diff.comment
+                              .similarity !== 1)),
+                    }"
+                  >
                     <div
                       v-if="currentFile.similarQuotes[index].quote"
                       class="quote-diff flex-grow bg-white border px-8 py-6"
@@ -347,7 +400,7 @@
                         ></p>
                       </div>
                       <div
-                        class="quote-diff-footer mt-4 flex flex-col lg:flex-row justify-between items-center"
+                        class="quote-diff-footer mt-4 flex flex-col space-y-2 lg:space-y-0 lg:flex-row justify-between items-center"
                       >
                         <div class="left flex items-center">
                           <span class="text-xs text-gray-400">相似度：</span>
@@ -576,6 +629,7 @@
 <script>
 import * as Diff from 'diff';
 import { mapState } from 'vuex';
+import { Editor } from 'tiptap';
 import KindleNotesParse from './KindleNotesParse.vue';
 import DuokanNotesParse from './DuokanNotesParse.vue';
 
@@ -601,10 +655,13 @@ export default {
   data() {
     return {
       tab: 'kindle-notes-parse',
+      loading: false,
       result: [],
       keyword: '',
       currentFileName: '',
       selectedQuotes: [],
+      convertor: null,
+      JSONtemp: null,
     };
   },
   computed: {
@@ -636,14 +693,69 @@ export default {
     backToTopHandler() {
       this.$refs['modal-body'].scrollTop = 0;
     },
+
+    deleteFile(fileName) {
+      const index = this.result.findIndex((item) => item.fileName === fileName);
+      if (index !== -1) {
+        this.result.splice(index, 1);
+      }
+
+      const i = this.selectedQuotes.findIndex(
+        (item) => item.fileName === fileName,
+      );
+      if (i !== -1) {
+        this.selectedQuotes.splice(i, 1);
+      }
+
+      if (fileName === this.currentFileName) {
+        this.currentFileName = '';
+      }
+    },
+    deleteCover() {
+      this.currentFile.matchBookTitle = '';
+      this.currentFile.matchBookCover = '';
+      this.currentFile.similarQuotes = [];
+      this.currentFile.notes.forEach(() => {
+        this.currentFile.similarQuotes.push({
+          quote: null,
+          diff: { quote: { similarity: 0 } },
+        });
+      });
+      this.selectedQuotes.find(
+        (item) => item.fileName === this.currentFileName,
+      ).quotesIndex = [];
+      const input = this.$refs['search-input'];
+      this.$nextTick(() => {
+        input.focus();
+      });
+    },
+    SortQuotesByChapter(quotes) {
+      const quotesSorted = [];
+      quotes.forEach((quote) => {
+        const index = quotesSorted.findIndex(
+          (item) => item.chapter === quote.chapter,
+        );
+        if (index === -1) {
+          quotesSorted.push({
+            chapter: quote.chapter || '未分类(NoChapter)',
+            quotes: [quote],
+          });
+        } else {
+          quotesSorted[index].quotes.push(quote);
+        }
+      });
+      return quotesSorted;
+    },
     setResult(arr) {
       arr.forEach((item) => {
         if (this.result.find((file) => file.fileName === item.fileName)) return;
         let matchBookTitle = '';
         let matchBookCover = '';
-        const { metadata, quotes } = this.setInitMatchBook(item.metadata.title);
+        const { metadata } = this.setInitMatchBook(item.metadata.title);
         const { titles, covers, category } = metadata;
-        const quotesSorted = this.SortQuotesByChapter(quotes);
+        const matchBookQuotes = this.setInitMatchBook(item.metadata.title)
+          .quotes;
+        const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
         const categoryFlatten = [];
         flatten(category, categoryFlatten);
         if (titles && titles.length > 0) {
@@ -652,29 +764,24 @@ export default {
         if (covers && covers.length > 0) {
           [matchBookCover] = covers;
         }
-        const { notes } = item;
-        const similarQuotes = [];
+        const inputQuotes = item.notes;
 
-        notes.forEach((quote) => {
-          similarQuotes.push(
-            this.setInitSimilarQuote(
-              quote,
-              categoryFlatten,
-              quotes,
-              quotesSorted,
-            ),
-          );
-        });
-
-        this.result.push({
-          matchBookTitle,
-          matchBookCover,
-          ...item,
-          similarQuotes,
-        });
-        this.selectedQuotes.push({
-          fileName: item.fileName,
-          quotesIndex: [],
+        this.setSimilarQuotes(
+          inputQuotes,
+          categoryFlatten,
+          matchBookQuotes,
+          matchBookQuotesSorted,
+        ).then((similarQuotes) => {
+          this.result.push({
+            matchBookTitle,
+            matchBookCover,
+            ...item,
+            similarQuotes,
+          });
+          this.selectedQuotes.push({
+            fileName: item.fileName,
+            quotesIndex: [],
+          });
         });
       });
     },
@@ -701,104 +808,116 @@ export default {
       return target || null;
     },
     setMatchBook(book) {
-      [this.currentFile.matchBookTitle] = book.metadata.titles;
-      if (book.metadata.covers.length > 0) {
-        [this.currentFile.matchBookCover] = book.metadata.covers;
-      } else {
-        this.currentFile.matchBookCover = '';
-      }
-    },
-    deleteFile(fileName) {
-      const index = this.result.findIndex((item) => item.fileName === fileName);
-      if (index !== -1) {
-        this.result.splice(index, 1);
-      }
+      this.keyword = '';
+      this.loading = true;
+      const { metadata } = book;
+      const { titles, covers, category } = metadata;
+      const matchBookQuotes = book.quotes;
+      const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
+      const categoryFlatten = [];
+      flatten(category, categoryFlatten);
 
-      const i = this.selectedQuotes.findIndex((item) => item.fileName === fileName);
-      if (i !== -1) {
-        this.selectedQuotes.splice(i, 1);
+      [this.currentFile.matchBookTitle] = titles;
+      if (covers.length > 0) {
+        [this.currentFile.matchBookCover] = covers;
       }
-
-      if (fileName === this.currentFileName) {
-        this.currentFileName = '';
-      }
-    },
-    deleteCover() {
-      this.currentFile.matchBookTitle = '';
-      this.currentFile.matchBookCover = '';
-    },
-    showSearchInputHandler() {
-      this.showSearchInput = !this.showSearchInput;
-      if (this.showSearchInput) {
-        const input = this.$refs['search-input'];
-        this.$nextTick(() => {
-          input.focus();
+      const delaySetMatchBookTimer = setTimeout(() => {
+        this.setSimilarQuotes(
+          this.currentFile.notes,
+          categoryFlatten,
+          matchBookQuotes,
+          matchBookQuotesSorted,
+        ).then((similarQuotes) => {
+          this.currentFile.similarQuotes = similarQuotes;
+          this.loading = false;
         });
-      }
+        clearTimeout(delaySetMatchBookTimer);
+      }, 0);
+
+      // const delayTimer = setTimeout(() => {
+      //   const arr = [];
+      //   this.currentFile.notes.forEach((quote) => {
+      //     arr.push(
+      //       this.setSimilarQuote(quote, categoryFlatten, quotes, quotesSorted)
+      //     );
+      //   });
+      //   Promise.all(arr).then((result) => {
+      //     this.currentFile.similarQuotes = result;
+      //     this.loading = false;
+      //     clearTimeout(delayTimer);
+      //   });
+      // }, 0);
     },
-    SortQuotesByChapter(quotes) {
-      const quotesSorted = [];
-      quotes.forEach((quote) => {
-        const index = quotesSorted.findIndex(
-          (item) => item.chapter === quote.chapter,
-        );
-        if (index === -1) {
-          quotesSorted.push({
-            chapter: quote.chapter || '未分类(NoChapter)',
-            quotes: [quote],
-          });
-        } else {
-          quotesSorted[index].quotes.push(quote);
-        }
-      });
-      return quotesSorted;
-    },
-    setInitSimilarQuote(quote, categoryFlatten, quotes, quotesSorted) {
-      const similarQuote = { quote: null, diff: {} };
-      let comparedQuotes = quotes;
-      // 从特定章节寻找相似的书摘
-      const { chapter } = quote;
-      if (chapter) {
-        const targetChapter = categoryFlatten.find((item) => chapter === item);
-        if (targetChapter) {
-          const index = quotesSorted.findIndex(
-            (item) => item.chapter === targetChapter,
-          );
-          if (index !== -1) {
-            comparedQuotes = quotesSorted[index].quotes;
+    setSimilarQuotes(
+      inputQuotes,
+      categoryFlatten,
+      matchBookQuotes,
+      matchBookQuotesSorted,
+    ) {
+      return new Promise((resolve, reject) => {
+        const similarQuotes = [];
+
+        inputQuotes.forEach((quote) => {
+          const similarQuote = {
+            quote: null,
+            diff: { quote: { similarity: 0 } },
+          };
+
+          let comparedQuotes = matchBookQuotes;
+          // 从特定章节寻找相似的书摘
+          const { chapter } = quote;
+          if (chapter) {
+            const targetChapter = categoryFlatten.find(
+              (item) => chapter === item,
+            );
+            if (targetChapter) {
+              const index = matchBookQuotesSorted.findIndex(
+                (item) => item.chapter === targetChapter,
+              );
+              if (index !== -1) {
+                comparedQuotes = matchBookQuotesSorted[index].quotes;
+              }
+            }
           }
-        }
-      }
-      comparedQuotes.find((item) => {
-        const newQuote = quote.content;
-        const oldQuote = item.contentOrigin || '';
+          comparedQuotes.find((item) => {
+            const newQuote = quote.content;
+            const oldQuote = item.contentOrigin || '';
 
-        const quoteDiff = this.diffContent(oldQuote, newQuote);
-        const { similarity } = quoteDiff;
+            const quoteDiff = this.diffContent(oldQuote, newQuote);
+            const { similarity } = quoteDiff;
 
-        if (similarity >= 0.5) {
-          similarQuote.diff.quote = quoteDiff;
-          similarQuote.quote = item;
-          return true;
-        }
-        if (similarity > 0.3 && similarity > similarQuote.similarity) {
-          similarQuote.diff.quote = quoteDiff;
-          similarQuote.quote = item;
-          return false;
-        }
-        return false;
+            if (similarity >= 0.5) {
+              similarQuote.diff.quote = quoteDiff;
+              similarQuote.quote = item;
+              return true;
+            }
+            if (
+              similarity > 0.3
+              && similarity > similarQuote.diff.quote.similarity
+            ) {
+              similarQuote.diff.quote = quoteDiff;
+              similarQuote.quote = item;
+              return false;
+            }
+            return false;
+          });
+          if (
+            similarQuote.quote
+            && (similarQuote.quote.commentOrigin || quote.comment)
+          ) {
+            const newComment = quote.comment || '';
+            const oldComment = similarQuote.quote.commentOrigin || '';
+            similarQuote.diff.comment = this.diffContent(
+              oldComment,
+              newComment,
+            );
+          }
+          similarQuotes.push(similarQuote);
+        });
+
+        resolve(similarQuotes);
       });
-      if (
-        similarQuote.quote
-        && (similarQuote.quote.commentOrigin || quote.comment)
-      ) {
-        const newComment = quote.comment || '';
-        const oldComment = similarQuote.quote.commentOrigin || '';
-        similarQuote.diff.comment = this.diffContent(oldComment, newComment);
-      }
-      return similarQuote;
     },
-
     diffContent(oldStr, newStr) {
       // eslint-disable-next-line no-param-reassign
       if (!oldStr) oldStr = '';
@@ -886,14 +1005,84 @@ export default {
       ).quotesIndex = [];
     },
     importSelectQuotes() {
-      console.log(
+      this.loading = true;
+      const indexArr = this.selectedQuotes.find(
+        (item) => item.fileName === this.currentFileName,
+      ).quotesIndex;
+      const quotes = [];
+      indexArr.forEach((index) => {
+        const id = `${Date.now()}${index}`;
+        const { location, type, chapter } = this.currentFile.notes[index];
+        const contentOrigin = this.currentFile.notes[index].content;
+        this.convertor.setContent(contentOrigin, true);
+        const content = this.JSONtemp;
+        if (this.currentFile.notes[index].comment) {
+          const commentOrigin = this.currentFile.notes[index].comment;
+          this.convertor.setContent(commentOrigin, true);
+          const comment = this.JSONtemp;
+          quotes.push({
+            id,
+            chapter,
+            type,
+            location,
+            contentOrigin,
+            content,
+            commentOrigin,
+            comment,
+          });
+        } else {
+          quotes.push({
+            id,
+            chapter,
+            type,
+            location,
+            contentOrigin,
+            content,
+          });
+        }
+      });
+      const { matchBookTitle } = this.currentFile;
+      // console.log(matchBookTitle);
+      // console.log(quotes);
+      this.$store.dispatch('addQuotes', { quotes, matchBookTitle }).then(() => {
         this.selectedQuotes.find(
           (item) => item.fileName === this.currentFileName,
-        ).quotesIndex,
-      );
+        ).quotesIndex = [];
+        // refesh
+        const book = this.booksList.find(
+          (item) => item.metadata.titles[0] === this.currentFile.matchBookTitle,
+        );
+        const { metadata } = book;
+        const matchBookQuotes = book.quotes;
+        const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
+        const { category } = metadata;
+        const categoryFlatten = [];
+        flatten(category, categoryFlatten);
+        const delayImportSelectQuotesTimer = setTimeout(() => {
+          this.setSimilarQuotes(
+            this.currentFile.notes,
+            categoryFlatten,
+            matchBookQuotes,
+            matchBookQuotesSorted,
+          ).then((similarQuotes) => {
+            this.currentFile.similarQuotes = similarQuotes;
+            this.loading = false;
+          });
+          clearTimeout(delayImportSelectQuotesTimer);
+        }, 0);
+      });
     },
   },
-  mounted() {},
+  created() {
+    this.convertor = new Editor({
+      onUpdate: ({ getJSON }) => {
+        this.JSONtemp = getJSON();
+      },
+    });
+  },
+  beforeDestroy() {
+    this.convertor.destroy();
+  },
 };
 </script>
 

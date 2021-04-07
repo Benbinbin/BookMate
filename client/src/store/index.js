@@ -56,6 +56,13 @@ export default new Vuex.Store({
       state.book.metadata = payload.metadata;
     },
     // quote and summary status
+    ADD_QUOTES(state, payload) {
+      console.log('ADD_QUOTES');
+      const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
+      if (book) {
+        book.quotes.push(...payload.quotes);
+      }
+    },
     SET_CONTENT_ORIGIN(state, payload) {
       const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
       if (book) {
@@ -238,7 +245,11 @@ export default new Vuex.Store({
     },
 
     // quote content
-    addQuote(context, payload) {
+    addQuotes(context, payload) {
+      return new Promise((resolve, reject) => {
+        context.commit('ADD_QUOTES', payload);
+        resolve('add quotes');
+      });
     },
     setContentOrigin(context, payload) {
       return new Promise((resolve, reject) => {
