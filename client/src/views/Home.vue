@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container flex h-screen w-screen">
+  <div class="home-container h-screen w-screen flex">
     <aside class="flex flex-col bg-gray-100 min-w-max">
       <div
         class="profile flex-shrink-0 border-b-2 h-20 lg:h-24 flex justify-center items-center"
@@ -30,6 +30,19 @@
         class="add flex-shrink-0 border-t-2 h-20 relative flex items-center px-4 xl:px-14"
       >
         <button
+          class="flex items-center justify-center px-4 py-3 rounded-lg w-full text-gray-800 bg-gray-200 opacity-60 hover:opacity-100"
+          @click="showAddBookModalHandler('customAddBook')"
+        >
+          <img src="@/assets/icons/add.svg" alt="add" class="w-8 h-8" />
+          <p class="font-bold">添加书籍</p>
+          <img
+            src="@/assets/icons/close-circle.svg"
+            alt="close"
+            class="w-8 h-8"
+            v-show="showAddModal"
+          />
+        </button>
+        <!-- <button
           v-show="!showAddModal"
           class="flex items-center justify-center px-4 py-3 rounded-lg w-full text-gray-800 bg-gray-200 opacity-60 hover:opacity-100"
           @click="showAddModal = true"
@@ -53,8 +66,8 @@
             alt="close"
             class="w-8 h-8"
           />
-        </button>
-        <div
+        </button> -->
+        <!-- <div
           class="modal-container absolute inset-x-0 bottom-16 z-10 mx-2"
           v-show="showAddModal"
         >
@@ -62,20 +75,40 @@
             class="modal flex flex-col rounded-xl border-2 border-gray-300 divide-y-2 divide-gray-300 bg-gray-100 shadow-md"
           >
             <button
-              v-for="item of addModalList"
-              :key="item.val"
               class="px-2 py-4 flex justify-center items-center font-bold opacity-40 hover:opacity-80"
-              @click="changeSelected(item.val)"
+              @click="showAddBookModalHandler('scanAddBook')"
             >
               <img
-                :src="require(`@/assets/icons/${item.icon}.svg`)"
-                :alt="item.icon"
+                src="@/assets/icons/scan.svg"
+                alt="scan ISBN add book"
                 class="w-6"
               />
-              <span class="ml-2">{{ item.name }}</span>
+              <span class="ml-2">扫描条形码</span>
+            </button>
+            <button
+              class="px-2 py-4 flex justify-center items-center font-bold opacity-40 hover:opacity-80"
+              @click="showAddBookModalHandler('searchAddBook')"
+            >
+              <img
+                src="@/assets/icons/search.svg"
+                alt="search ISBN add book"
+                class="w-6"
+              />
+              <span class="ml-2">搜索 ISBN</span>
+            </button>
+            <button
+              class="px-2 py-4 flex justify-center items-center font-bold opacity-40 hover:opacity-80"
+              @click="showAddBookModalHandler('customAddBook')"
+            >
+              <img
+                src="@/assets/icons/edit.svg"
+                alt="custom add book"
+                class="w-6"
+              />
+              <span class="ml-2">自定义输入</span>
             </button>
           </div>
-        </div>
+        </div> -->
       </div>
     </aside>
     <div class="flex-grow min-w-0 flex flex-col">
@@ -119,6 +152,12 @@
         </keep-alive>
       </main>
     </div>
+    <book-metadata-modal
+      v-if="showModal === 'customAddBook'"
+      class="fixed w-screen h-screen inset-0"
+      :metadata="newBookMetadata"
+      @close-book-modal="closeBookModalHandler"
+    ></book-metadata-modal>
   </div>
 </template>
 
@@ -127,6 +166,7 @@ import Bookshelf from '@/components/Bookshelf.vue';
 import NotesList from '@/components/NotesList.vue';
 import Mindmap from '@/components/Mindmap.vue';
 import DataAnalysis from '@/components/DataAnalysis.vue';
+import BookMetadataModal from '../components/BookMetadataModal.vue';
 
 export default {
   name: 'Home',
@@ -135,6 +175,7 @@ export default {
     NotesList,
     Mindmap,
     DataAnalysis,
+    BookMetadataModal,
   },
   data() {
     return {
@@ -169,23 +210,44 @@ export default {
         },
       ],
       showAddModal: false,
-      addModalList: [
-        {
-          icon: 'scan',
-          name: '扫描条形码',
-          val: 'scan',
+      showModal: '',
+      newBookMetadata: {
+        titles: [],
+        authors: [],
+        translators: [],
+        covers: [],
+        defaultCollections: [
+          {
+            name: 'like',
+            active: false,
+          },
+          {
+            name: 'reading',
+            active: false,
+          },
+          {
+            name: 'read-it-later',
+            active: false,
+          },
+          {
+            name: 'buy',
+            active: false,
+          },
+        ],
+        collections: [],
+        tags: [],
+        sources: [],
+        links: [],
+        press: '',
+        isbn: null,
+        date: '1970-01-01',
+        description: '',
+        review: '',
+        category: {
+          name: '__root__',
         },
-        {
-          icon: 'search',
-          name: '搜索 ISBN',
-          val: 'search',
-        },
-        {
-          icon: 'edit',
-          name: '自定义输入',
-          val: 'input',
-        },
-      ],
+        stars: 0,
+      },
     };
   },
   methods: {
@@ -200,10 +262,22 @@ export default {
     backToTopHandler() {
       this.$refs.main.scrollTop = 0;
     },
+    showAddBookModalHandler(type) {
+      this.showModal = type;
+      this.showAddModal = false;
+    },
+    closeBookModalHandler(payload) {
+      if (payload) {
+        this.$store.dispatch('addBookMetadata', payload);
+      }
+      this.showModal = '';
+    },
   },
   created() {
     this.avatar = require('@/assets/avatar.png');
     this.user = 'Ben';
+    const today = new Date().toISOString().substr(0, 10);
+    this.newBookMetadata.date = today;
   },
 };
 </script>

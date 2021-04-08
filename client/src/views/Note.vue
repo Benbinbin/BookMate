@@ -105,7 +105,7 @@
           :category="book.metadata.category.children"
           :quotes="book.quotes"
           :quotes-chapters="chaptersWithQuotes"
-          @show-import-quotes-modal="showImportQuotesModal=true"
+          @show-import-quotes-modal="showImportQuotesModal = true"
         ></quotes-list>
       </div>
     </div>
@@ -113,7 +113,7 @@
       v-if="book && book.metadata && showBookMetadataModal"
       class="fixed w-screen h-screen inset-0"
       :metadata="book.metadata"
-      @close-book-modal="showBookMetadataModal = false"
+      @close-book-modal="closeBookModalHandler"
     ></book-metadata-modal>
     <import-quotes-modal
       v-if="book && book.metadata && showImportQuotesModal"
@@ -278,6 +278,12 @@ export default {
         }
       });
       return chaptersSorted;
+    },
+    closeBookModalHandler(payload) {
+      if (payload) {
+        this.$store.dispatch('saveBookMetadata', payload);
+      }
+      this.showBookMetadataModal = false;
     },
   },
   mounted() {

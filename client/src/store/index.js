@@ -52,8 +52,18 @@ export default new Vuex.Store({
     SET_STARS(state, payload) {
       state.book.metadata.stars = payload;
     },
-    SAVE_METADATA(state, payload) {
+    SAVE_BOOK_METADATA(state, payload) {
       state.book.metadata = payload.metadata;
+    },
+    ADD_BOOK_METADATA(state, payload) {
+      state.booksList.push({
+        _id: {
+          $oid: Date.now(),
+        },
+        metadata: payload.metadata,
+        quotes: [],
+        summaries: [],
+      });
     },
     // quote and summary status
     ADD_QUOTES(state, payload) {
@@ -215,8 +225,11 @@ export default new Vuex.Store({
     setStars(context, payload) {
       context.commit('SET_STARS', payload);
     },
-    saveMetadata(context, payload) {
-      context.commit('SAVE_METADATA', payload);
+    saveBookMetadata(context, payload) {
+      context.commit('SAVE_BOOK_METADATA', payload);
+    },
+    addBookMetadata(context, payload) {
+      context.commit('ADD_BOOK_METADATA', payload);
     },
     // quote and summary status
     changeQuotesMode(context, payload) {

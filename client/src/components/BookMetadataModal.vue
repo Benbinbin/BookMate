@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-500 bg-opacity-50 flex justify-center items-center">
+  <div class="bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
     <div
       class="book-modal-container w-11/12 h-4/5 flex flex-col rounded-lg bg-white"
     >
@@ -25,7 +25,12 @@
         </button>
         <h1 class="font-bold text-sm text-gray-400">编辑元数据</h1>
         <button
-          class="right w-8 h-8 flex items-center rounded-full p-1 text-green-500 opacity-60 hover:opacity-100"
+          class="right w-8 h-8 flex items-center rounded-full p-1 text-green-500"
+          :class="{
+            'opacity-60 hover:opacity-100': titles.length > 0,
+            'opacity-10': titles.length === 0,
+          }"
+          :disabled="titles.length === 0"
           @click="closeBookModalHandler('save')"
         >
           <svg
@@ -669,7 +674,7 @@ export default {
       links: createTags(this.metadata.links) || [],
       isbn: this.metadata.isbn,
       press: this.metadata.press,
-      date: this.metadata.date || new Date(),
+      date: this.metadata.date || new Date().toISOString().substr(0, 10),
       description: this.metadata.description || '',
       review: this.metadata.review || '',
       stars: this.metadata.stars || 0,
@@ -731,7 +736,6 @@ export default {
 
         // const categoryTree = this.tree.getNestedTree();
         const category = getCategoryData(this.tree.getNestedTree()[0]);
-
         const payload = {
           removeCovers,
           addCovers,
@@ -747,18 +751,20 @@ export default {
             links,
             press: this.press,
             isbn: this.isbn,
-            date: this.data,
+            date: this.date,
             description: this.description,
             review: this.review,
             category,
-            createdDate: this.metadata.createdDate,
+            createdDate: this.metadata.createdDate || Date.now(),
             stars: this.stars,
           },
         };
         // console.log(payload);
-        this.$store.dispatch('saveMetadata', payload);
+        // this.$store.dispatch('saveBookMetadata', payload);
+        this.$emit('close-book-modal', payload);
+      } else {
+        this.$emit('close-book-modal');
       }
-      this.$emit('close-book-modal');
     },
     backToTopHandler(target) {
       this.$refs[target].scrollTop = 0;
@@ -1220,7 +1226,7 @@ export default {
       line-height: 1rem;
     }
     .ti-selected-item {
-      background: #D1D5DB;
+      background: #d1d5db;
     }
   }
 
