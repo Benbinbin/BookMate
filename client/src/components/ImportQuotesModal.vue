@@ -462,11 +462,11 @@
                               diffHandler({
                                 index: index,
                                 id: currentFile.similarQuotes[index].quote.id,
-                                newStr: quote.content,
                                 content:
                                   currentFile.similarQuotes[index].diff.quote
                                     .diffText,
                                 type: 'quote',
+                                action: 'merge',
                               })
                             "
                           >
@@ -490,9 +490,9 @@
                               diffHandler({
                                 index: index,
                                 id: currentFile.similarQuotes[index].quote.id,
-                                newStr: quote.content,
                                 content: quote.content,
                                 type: 'quote',
+                                action: 'override',
                               })
                             "
                           >
@@ -541,8 +541,8 @@
                               content:
                                 currentFile.similarQuotes[index].diff.comment
                                   .diffText,
-                              newStr: quote.comment,
                               type: 'comment',
+                              action: 'merge',
                             })
                           "
                         >
@@ -567,8 +567,8 @@
                               index: index,
                               id: currentFile.similarQuotes[index].quote.id,
                               content: quote.comment,
-                              newStr: quote.comment,
                               type: 'comment',
+                              action: 'override',
                             })
                           "
                         >
@@ -944,7 +944,7 @@ export default {
     diffHandler(payload) {
       const bookTitle = this.currentFile.matchBookTitle;
       const {
-        index, id, newStr, content, type,
+        index, id, content, type, action,
       } = payload;
       this.$store
         .dispatch('setContentOrigin', {
@@ -955,16 +955,22 @@ export default {
         })
         .then(() => {
           if (type === 'quote') {
+            if (action === 'merge') {
+              this.currentFile.notes[index].content = content;
+            }
             this.currentFile.similarQuotes[index].diff.quote = this.diffContent(
               this.currentFile.similarQuotes[index].quote.contentOrigin,
-              newStr,
+              this.currentFile.notes[index].content,
             );
           } else if (type === 'comment') {
+            if (action === 'merge') {
+              this.currentFile.notes[index].comment = content;
+            }
             this.currentFile.similarQuotes[
               index
             ].diff.comment = this.diffContent(
               this.currentFile.similarQuotes[index].quote.commentOrigin,
-              newStr,
+              this.currentFile.notes[index].comment,
             );
           }
         });
