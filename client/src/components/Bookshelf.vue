@@ -58,20 +58,20 @@
       >
         <li
           v-for="book of currentList.data"
-          :key="book._id.$oid"
+          :key="book._id"
           class="book flex-shrink-0 relative w-32 flex flex-col justify-start items-center"
         >
           <div
             class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
-              backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+              backgroundImage: `url(${coverBase}${book.metadata.covers[0]})`,
             }"
           ></div>
           <p class="mt-8 text-center font-bold">
             {{ book.metadata.titles[0] }}
           </p>
           <router-link
-            :to="`/note/${book.metadata.isbn}`"
+            :to="`/note/${book._id}`"
             class="absolute inset-0 z-10"
           ></router-link>
         </li>
@@ -84,20 +84,20 @@
       <ul class="collection">
         <li
           v-for="book of collection.data"
-          :key="book._id.$oid"
+          :key="book._id"
           class="book w-32 relative flex flex-col justify-start items-center"
         >
           <div
             class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
-              backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+              backgroundImage: `url(${coverBase}${book.metadata.covers[0]})`,
             }"
           ></div>
           <p class="mt-8 text-center font-bold">
             {{ book.metadata.titles[0] }}
           </p>
           <router-link
-            :to="`/note/${book.metadata.isbn}`"
+            :to="`/note/${book._id}`"
             class="absolute inset-0 z-10"
           ></router-link>
         </li>
@@ -127,12 +127,20 @@ const filterMap = {
   cartBooks: '待购',
 };
 
-function filterBooks(collectionType, key, source) {
-  if (!source.length) return [];
+function filterBooks(collectionType, key, books) {
+  if (!books.length) return [];
   const arr = [];
-  source.forEach((item) => {
-    if (item.metadata[collectionType].includes(key)) {
-      arr.push(item);
+  books.forEach((book) => {
+    if (
+      collectionType === 'defaultCollections'
+      && book.metadata[collectionType].find((item) => item.name === key).active
+    ) {
+      arr.push(book);
+    } else if (
+      collectionType === 'collections'
+      && book.metadata[collectionType].includes(key)
+    ) {
+      arr.push(book);
     }
   });
   return arr;
@@ -141,9 +149,15 @@ function filterBooks(collectionType, key, source) {
 export default {
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       selected: 'readingBooks',
       showMoreModal: false,
       moreModalList: [
+        {
+          icon: 'category',
+          name: '所有',
+          val: 'allBooks',
+        },
         {
           icon: 'reading',
           name: '在读',
@@ -178,6 +192,9 @@ export default {
         data: this[this.selected],
       };
     },
+    allBooks() {
+      return this.booksList;
+    },
     readingBooks() {
       return filterBooks('defaultCollections', 'reading', this.booksList);
     },
@@ -185,7 +202,7 @@ export default {
       return filterBooks('defaultCollections', 'later', this.booksList);
     },
     loveBooks() {
-      return filterBooks('defaultCollections', 'love', this.booksList);
+      return filterBooks('defaultCollections', 'like', this.booksList);
     },
     cartBooks() {
       return filterBooks('defaultCollections', 'cart', this.booksList);
@@ -208,7 +225,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('getBooksList');
+    this.$store.dispatch('getBooksList', { limit_field: 'metadata' });
   },
 };
 </script>

@@ -657,6 +657,7 @@ export default {
   },
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       isDropping: false,
       title: '',
       titles: createTags(this.metadata.titles) || [],
@@ -776,9 +777,11 @@ export default {
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < filesArr.length; i++) {
         const file = filesArr[i];
-        const fileName = `${
-          this.titles[0].text || 'book'
-        }_${Date.now()}${Math.floor(Math.random() * 100)}.${
+        let title = 'book';
+        if (this.titles[0]) {
+          title = this.titles[0].text;
+        }
+        const fileName = `${title}_${Date.now()}${Math.floor(Math.random() * 100)}.${
           file.name.split('.')[1]
         }`;
         const originName = file.name.split('.')[0];
@@ -814,7 +817,7 @@ export default {
     },
     coverURL(cover) {
       if (this.metadata.covers.includes(cover)) {
-        return `url(covers/${cover})`;
+        return `url(${this.coverBase}${cover})`;
       }
       const index = this.coversTemp.findIndex((item) => item.name === cover);
       return `url(${this.coversTemp[index].data})`;

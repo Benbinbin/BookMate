@@ -8,7 +8,7 @@
       </div>
       <img
         v-if="book"
-        :src="`covers/${book.metadata.covers[0]}`"
+        :src="`${coverBase}${book.metadata.covers[0]}`"
         alt="book cover"
         class="w-12 my-4"
       />
@@ -156,6 +156,7 @@ export default {
   },
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       avatar: require('@/assets/profile.png'),
       menuButtons: [
         {
@@ -296,11 +297,10 @@ export default {
     });
   },
   created() {
-    this.$store.dispatch('getBooksList');
     this.avatar = require('@/assets/avatar.png');
-    const isbn = Number(this.$route.params.id);
+    const { id } = this.$route.params;
     this.$store.dispatch('getBook', {
-      isbn,
+      id,
     });
   },
   destroyed() {

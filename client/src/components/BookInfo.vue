@@ -4,7 +4,7 @@
       <div
         class="cover bg-contain bg-no-repeat bg-top"
         :style="{
-          backgroundImage: `url(covers/${metadata.covers[0]})`,
+          backgroundImage: `url(${coverBase}${metadata.covers[0]})`,
         }"
       ></div>
       <div class="space-y-3">
@@ -261,6 +261,7 @@ export default {
   },
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       showCategory: false,
       showCollectionsInput: false,
       showTagsInput: false,
@@ -287,10 +288,10 @@ export default {
       this.$refs[el].scrollTop = 0;
     },
     setStars(stars) {
-      this.$store.dispatch('setStars', stars);
+      this.$store.dispatch('setStars', { stars });
     },
     toggleDefaultCollections(val) {
-      this.$store.dispatch('toggleDefaultCollections', val);
+      this.$store.dispatch('toggleDefaultCollections', { name: val });
     },
     activeEditCollections() {
       this.collections = createTags(this.metadata.collections);
@@ -308,7 +309,7 @@ export default {
       this.collections.forEach((collection) => {
         collections.push(collection.text);
       });
-      this.$store.dispatch('setCollections', collections);
+      this.$store.dispatch('setCollections', { collections });
       this.showCollectionsInput = false;
       this.collection = '';
       this.collections = [];
@@ -329,7 +330,7 @@ export default {
       this.tags.forEach((tag) => {
         tags.push(tag.text);
       });
-      this.$store.dispatch('setTags', tags);
+      this.$store.dispatch('setTags', { tags });
       this.showTagsInput = false;
       this.tag = '';
       this.tags = [];

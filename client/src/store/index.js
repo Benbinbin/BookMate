@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+const APIBASE = 'http://localhost:3000/api/';
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -39,9 +41,7 @@ export default new Vuex.Store({
     },
     // book metadata
     TOGGLE_DEFAULT_COLLECTIONS(state, payload) {
-      const index = state.book.metadata.defaultCollections.findIndex((item) => item.name === payload);
-      const item = state.book.metadata.defaultCollections[index];
-      item.active = !item.active;
+      state.book.metadata.defaultCollections = payload;
     },
     SET_COLLECTIONS(state, payload) {
       state.book.metadata.collections = payload;
@@ -53,17 +53,7 @@ export default new Vuex.Store({
       state.book.metadata.stars = payload;
     },
     SAVE_BOOK_METADATA(state, payload) {
-      state.book.metadata = payload.metadata;
-    },
-    ADD_BOOK_METADATA(state, payload) {
-      state.booksList.push({
-        _id: {
-          $oid: Date.now(),
-        },
-        metadata: payload.metadata,
-        quotes: [],
-        summaries: [],
-      });
+      state.book.metadata = payload;
     },
     // quote and summary status
     ADD_QUOTES(state, payload) {
@@ -186,27 +176,54 @@ export default new Vuex.Store({
   },
   actions: {
     // book
-    getBooksList(context) {
-      Vue.axios.get('mooc.json')
+    getBooksList(context, payload) {
+      // Vue.axios.get('mooc.json')
+      //   .then((res) => {
+      //     context.commit('SET_BOOKSLIST', res.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+      if (payload) {
+        Vue.axios.get(`${APIBASE}books?limit_field=${payload.limit_field}`)
+          .then((res) => {
+            context.commit('SET_BOOKSLIST', res.data);
+            // console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        Vue.axios.get(`${APIBASE}books`)
+          .then((res) => {
+            context.commit('SET_BOOKSLIST', res.data);
+            // console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+    getBook(context, payload) {
+      // Vue.axios.get('mooc.json')
+      //   .then((res) => {
+      //     const result = res.data.find((item) => {
+      //       if (item.metadata.isbn) {
+      //         return item.metadata.isbn === payload.isbn;
+      //       }
+      //       return false;
+      //     });
+      //     if (result) {
+      //       context.commit('SET_BOOK', result);
+      //     }
+      //   });
+      Vue.axios.get(`${APIBASE}books/${payload.id}`)
         .then((res) => {
-          context.commit('SET_BOOKSLIST', res.data);
+          context.commit('SET_BOOK', res.data);
+          // console.log(res.data);
         })
         .catch((error) => {
           console.log(error);
-        });
-    },
-    getBook(context, payload) {
-      Vue.axios.get('mooc.json')
-        .then((res) => {
-          const result = res.data.find((item) => {
-            if (item.metadata.isbn) {
-              return item.metadata.isbn === payload.isbn;
-            }
-            return false;
-          });
-          if (result) {
-            context.commit('SET_BOOK', result);
-          }
         });
     },
     clearBook(context) {
@@ -214,22 +231,115 @@ export default new Vuex.Store({
     },
     // book metadata
     toggleDefaultCollections(context, payload) {
-      context.commit('TOGGLE_DEFAULT_COLLECTIONS', payload);
+      const defaultCollectionsClone = JSON.parse(JSON.stringify(context.state.book.metadata.defaultCollections));
+      console.log(defaultCollectionsClone);
+      const target = defaultCollectionsClone.find((item) => item.name === payload.name);
+
+      target.active = !target.active;
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata/defaultCollections`, { defaultCollections: defaultCollectionsClone })
+        .then((res) => {
+          context.commit('TOGGLE_DEFAULT_COLLECTIONS', res.data.defaultCollections);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     setCollections(context, payload) {
-      context.commit('SET_COLLECTIONS', payload);
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata/collections`, { collections: payload.collections })
+        .then((res) => {
+          context.commit('SET_COLLECTIONS', res.data.collections);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     setTags(context, payload) {
-      context.commit('SET_TAGS', payload);
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata/tags`, { tags: payload.tags })
+        .then((res) => {
+          context.commit('SET_TAGS', res.data.tags);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     setStars(context, payload) {
-      context.commit('SET_STARS', payload);
+      console.log(payload.stars);
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata/stars`, { stars: payload.stars })
+        .then((res) => {
+          context.commit('SET_STARS', res.data.stars);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     saveBookMetadata(context, payload) {
-      context.commit('SAVE_BOOK_METADATA', payload);
+      // context.commit('SAVE_BOOK_METADATA', payload);
+
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata`, { metadata: payload.metadata })
+        .then((res) => {
+          context.commit('SAVE_BOOK_METADATA', res.data.metadata);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      if (payload.addCovers.length > 0) {
+        const formData = new FormData();
+
+        payload.addCovers.forEach((cover) => {
+          formData.append('cover', cover.file, cover.name);
+        });
+
+        Vue.axios.post(`${APIBASE}covers/add`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then((res) => { })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      if (payload.removeCovers.length > 0) {
+        Vue.axios.post(`${APIBASE}covers/remove`, { removeCovers: payload.removeCovers })
+          .then((res) => {
+
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     addBookMetadata(context, payload) {
-      context.commit('ADD_BOOK_METADATA', payload);
+      // context.commit('ADD_BOOK_METADATA', payload);
+      Vue.axios.post(`${APIBASE}books/new`, { metadata: payload.metadata })
+        .then((res) => {
+          console.log(res);
+          context.dispatch('getBooksList', { limit_field: 'metadata' });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      if (payload.addCovers.length > 0) {
+        const formData = new FormData();
+
+        payload.addCovers.forEach((cover) => {
+          formData.append('cover', cover.file, cover.name);
+        });
+
+        Vue.axios.post(`${APIBASE}covers/add`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then((res) => {
+          console.log(res);
+          context.dispatch('getBooksList', { limit_field: 'metadata' });
+        })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     },
     // quote and summary status
     changeQuotesMode(context, payload) {

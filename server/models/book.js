@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../db/mongoose');
 
 const bookSchema = new mongoose.Schema({
   metadata: {
@@ -12,7 +12,9 @@ const bookSchema = new mongoose.Schema({
     translators: Array,
     press: String,
     covers: Array,
-    pagination: Number,
+    // pagination: Number,
+    defaultCollections: Array,
+    collections: Array,
     description: String,
     review: String,
     tags: Array,
@@ -23,7 +25,7 @@ const bookSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     },
-    catalog: Object
+    category: Object
   },
   quotes: [{
     chapter: String,
@@ -32,7 +34,9 @@ const bookSchema = new mongoose.Schema({
       default: 'annotation'
     },
     location: Number,
+    contentOrigin: String,
     content: Object,
+    commentOrigin: String,
     comment: Object,
     createdDate: {
       type: Date,
