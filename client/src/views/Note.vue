@@ -118,7 +118,7 @@
     <import-quotes-modal
       v-if="book && book.metadata && showImportQuotesModal"
       class="fixed w-screen h-screen inset-0"
-      :metadata="book.metadata"
+      :book-id="book._id"
       @close-import-quotes-modal="showImportQuotesModal = false"
     ></import-quotes-modal>
   </div>
@@ -282,7 +282,7 @@ export default {
     },
     closeBookModalHandler(payload) {
       if (payload) {
-        this.$store.dispatch('saveBookMetadata', payload);
+        this.$store.dispatch('', payload);
       }
       this.showBookMetadataModal = false;
     },

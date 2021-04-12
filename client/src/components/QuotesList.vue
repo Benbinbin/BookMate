@@ -33,7 +33,6 @@
         class="more-modal absolute top-12 right-6 z-10 flex flex-col  rounded bg-gray-100 shadow-md"
       >
         <button class="px-4 py-2 text-sm hover:bg-gray-200  rounded" @click="showImportQuotesModal">导入书摘</button>
-        <button class="px-4 py-2 text-sm hover:bg-gray-200 rounded">导asfdsf入书摘</button>
       </div>
     </nav>
     <div

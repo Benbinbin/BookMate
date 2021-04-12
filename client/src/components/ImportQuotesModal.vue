@@ -93,9 +93,7 @@
                   </h3>
                 </div>
                 <div
-                  v-show="
-                    !currentFile.matchBookTitle && !currentFile.matchBookCover
-                  "
+                  v-if="!currentFile.matchBook"
                   class="search-bar-container flex items-start relative"
                 >
                   <input
@@ -129,7 +127,7 @@
                           <div
                             class="cover w-7 h-8 bg-center bg-no-repeat bg-contain"
                             :style="{
-                              backgroundImage: `url(covers/${book.metadata.covers[0]})`,
+                              backgroundImage: `url(${coverBase}${book.metadata.covers[0]})`,
                             }"
                           ></div>
                           <span class="text-xs font-bold text-gray-500">{{
@@ -141,15 +139,13 @@
                   </div>
                 </div>
                 <div
-                  v-show="
-                    currentFile.matchBookTitle || currentFile.matchBookCover
-                  "
+                  v-if="currentFile.matchBook"
                   class="match-book flex flex-col space-y-2"
                 >
                   <div
                     class="cover flex-shrink-0 relative w-24 h-32 bg-center bg-no-repeat bg-contain"
                     :style="{
-                      backgroundImage: `url(covers/${currentFile.matchBookCover})`,
+                      backgroundImage: `url(${coverBase}${currentFile.matchBook.metadata.covers[0]})`,
                     }"
                     tabindex="0"
                   >
@@ -176,7 +172,7 @@
                   <h4
                     class="title w-24 text-xs font-bold text-center text-gray-500"
                   >
-                    {{ currentFile.matchBookTitle }}
+                    {{ currentFile.matchBook.metadata.titles[0] }}
                   </h4>
                 </div>
               </div>
@@ -207,26 +203,16 @@
                         'opacity-80 hover:opacity-100':
                           selectedQuotes.find(
                             (item) => item.fileName === currentFileName
-                          ).quotesIndex.length !== 0 &&
-                          (currentFile.matchBookTitle ||
-                            currentFile.matchBookCover),
+                          ).quotesIndex.length !== 0 && currentFile.matchBook,
                         'opacity-10':
                           selectedQuotes.find(
                             (item) => item.fileName === currentFileName
-                          ).quotesIndex.length === 0 ||
-                          !(
-                            currentFile.matchBookTitle ||
-                            currentFile.matchBookCover
-                          ),
+                          ).quotesIndex.length === 0 || !currentFile.matchBook,
                       }"
                       :disabled="
                         selectedQuotes.find(
                           (item) => item.fileName === currentFileName
-                        ).quotesIndex.length === 0 ||
-                        !(
-                          currentFile.matchBookTitle ||
-                          currentFile.matchBookCover
-                        )
+                        ).quotesIndex.length === 0 || !currentFile.matchBook
                       "
                       @click="importSelectQuotes"
                     >
@@ -461,7 +447,8 @@
                             @click="
                               diffHandler({
                                 index: index,
-                                id: currentFile.similarQuotes[index].quote.id,
+                                quoteId:
+                                  currentFile.similarQuotes[index].quote._id,
                                 content:
                                   currentFile.similarQuotes[index].diff.quote
                                     .diffText,
@@ -489,7 +476,8 @@
                             @click="
                               diffHandler({
                                 index: index,
-                                id: currentFile.similarQuotes[index].quote.id,
+                                quoteId:
+                                  currentFile.similarQuotes[index].quote._id,
                                 content: quote.content,
                                 type: 'quote',
                                 action: 'override',
@@ -537,7 +525,8 @@
                           @click="
                             diffHandler({
                               index: index,
-                              id: currentFile.similarQuotes[index].quote.id,
+                              quoteid:
+                                currentFile.similarQuotes[index].quote._id,
                               content:
                                 currentFile.similarQuotes[index].diff.comment
                                   .diffText,
@@ -565,7 +554,8 @@
                           @click="
                             diffHandler({
                               index: index,
-                              id: currentFile.similarQuotes[index].quote.id,
+                              quoteId:
+                                currentFile.similarQuotes[index].quote._id,
                               content: quote.comment,
                               type: 'comment',
                               action: 'override',
@@ -651,9 +641,10 @@ export default {
     KindleNotesParse,
     DuokanNotesParse,
   },
-  props: ['metadata'],
+  props: ['bookId'],
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       tab: 'kindle-notes-parse',
       loading: false,
       result: [],
@@ -712,8 +703,9 @@ export default {
       }
     },
     deleteCover() {
-      this.currentFile.matchBookTitle = '';
-      this.currentFile.matchBookCover = '';
+      this.currentFile.matchBook = null;
+      // this.currentFile.matchBookTitle = "";
+      // this.currentFile.matchBookCover = "";
       this.currentFile.similarQuotes = [];
       this.currentFile.notes.forEach(() => {
         this.currentFile.similarQuotes.push({
@@ -724,8 +716,8 @@ export default {
       this.selectedQuotes.find(
         (item) => item.fileName === this.currentFileName,
       ).quotesIndex = [];
-      const input = this.$refs['search-input'];
       this.$nextTick(() => {
+        const input = this.$refs['search-input'];
         input.focus();
       });
     },
@@ -746,107 +738,136 @@ export default {
       });
       return quotesSorted;
     },
-    setResult(arr) {
+    async setResult(arr) {
+      const matchBooksTemp = [];
       arr.forEach((item) => {
         if (this.result.find((file) => file.fileName === item.fileName)) return;
-        let matchBookTitle = '';
-        let matchBookCover = '';
-        const { metadata } = this.setInitMatchBook(item.metadata.title);
-        const { titles, covers, category } = metadata;
-        const matchBookQuotes = this.setInitMatchBook(item.metadata.title)
-          .quotes;
-        const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
-        const categoryFlatten = [];
-        flatten(category, categoryFlatten);
-        if (titles && titles.length > 0) {
-          [matchBookTitle] = titles;
-        }
-        if (covers && covers.length > 0) {
-          [matchBookCover] = covers;
-        }
-        const inputQuotes = item.notes;
-
-        this.setSimilarQuotes(
-          inputQuotes,
-          categoryFlatten,
-          matchBookQuotes,
-          matchBookQuotesSorted,
-        ).then((similarQuotes) => {
-          this.result.push({
-            matchBookTitle,
-            matchBookCover,
-            ...item,
-            similarQuotes,
-          });
-          this.selectedQuotes.push({
-            fileName: item.fileName,
-            quotesIndex: [],
-          });
-        });
+        // let matchBookTitle = "";
+        // let matchBookCover = "";
+        matchBooksTemp.push(this.setInitMatchBook(item.metadata.title));
       });
+
+      const matchBooks = await Promise.all(matchBooksTemp);
+      // eslint-disable-next-line no-plusplus
+      for (let index = 0; index < arr.length; index++) {
+        const categoryFlatten = [];
+        let matchBookQuotes = [];
+        let matchBookQuotesSorted = [];
+        if (matchBooks[index]) {
+          const category = matchBooks[index].metadata;
+          flatten(category, categoryFlatten);
+          matchBookQuotes = matchBooks[index].quotes;
+          matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
+        }
+        const inputQuotes = arr[index].notes;
+
+        // this.setSimilarQuotes(
+        //   inputQuotes,
+        //   categoryFlatten,
+        //   matchBookQuotes,
+        //   matchBookQuotesSorted
+        // ).then((similarQuotes) => {
+        //   this.result.push({
+        //     matchBookTitle,
+        //     matchBookCover,
+        //     ...item,
+        //     similarQuotes,
+        //   });
+        // this.selectedQuotes.push({
+        //   fileName: item.fileName,
+        //   quotesIndex: [],
+        // });
+        // });
+
+        this.result.push({
+          ...arr[index],
+          matchBook: matchBooks[index],
+          similarQuotes: this.setSimilarQuotes(
+            inputQuotes,
+            categoryFlatten,
+            matchBookQuotes,
+            matchBookQuotesSorted,
+          ),
+        });
+        this.selectedQuotes.push({
+          fileName: arr[index].fileName,
+          quotesIndex: [],
+        });
+      }
     },
     setInitMatchBook(bookName) {
-      let target = null;
-      if (this.metadata) {
-        const [title] = this.metadata.titles;
-        target = this.booksList.find(
-          (item) => item.metadata.titles[0] === title,
-        );
-      } else {
-        target = this.booksList.find((item) => {
-          const result = item.metadata.titles.find((title) => {
-            const regexp = new RegExp(title);
-            return regexp.test(bookName);
+      return new Promise((resolve, reject) => {
+        if (this.bookId) {
+          // const [title] = this.bookId.titles;
+          this.$store
+            .dispatch('getMatchBook', { id: this.bookId })
+            .then((matchBook) => {
+              resolve(matchBook);
+            });
+        } else {
+          const target = this.booksList.find((item) => {
+            const result = item.metadata.titles.find((title) => {
+              const regexp = new RegExp(title);
+              return regexp.test(bookName);
+            });
+            if (result) {
+              return true;
+            }
+            return false;
           });
-          if (result) {
-            return true;
+          if (target) {
+            console.log(target);
+            this.$store
+              .dispatch('getMatchBook', { id: target._id })
+              .then((matchBook) => {
+                resolve(matchBook);
+              });
+          } else {
+            resolve(null);
           }
-          return false;
-        });
-      }
-
-      return target || null;
+        }
+      });
     },
     setMatchBook(book) {
-      this.keyword = '';
       this.loading = true;
-      const { metadata } = book;
-      const { titles, covers, category } = metadata;
-      const matchBookQuotes = book.quotes;
-      const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
-      const categoryFlatten = [];
-      flatten(category, categoryFlatten);
+      this.keyword = '';
+      this.$store
+        .dispatch('getMatchBook', { id: book._id })
+        .then((matchBook) => {
+          this.currentFile.matchBook = matchBook;
 
-      [this.currentFile.matchBookTitle] = titles;
-      if (covers.length > 0) {
-        [this.currentFile.matchBookCover] = covers;
-      }
-      const delaySetMatchBookTimer = setTimeout(() => {
-        this.setSimilarQuotes(
-          this.currentFile.notes,
-          categoryFlatten,
-          matchBookQuotes,
-          matchBookQuotesSorted,
-        ).then((similarQuotes) => {
-          this.currentFile.similarQuotes = similarQuotes;
+          const { category } = matchBook.metadata;
+          const categoryFlatten = [];
+          flatten(category, categoryFlatten);
+          const matchBookQuotes = matchBook.quotes;
+          const matchBookQuotesSorted = this.SortQuotesByChapter(
+            matchBookQuotes,
+          );
+
+          // [this.currentFile.matchBookTitle] = titles;
+          // if (covers.length > 0) {
+          //   [this.currentFile.matchBookCover] = covers;
+          // }
+          // const delaySetMatchBookTimer = setTimeout(() => {
+          //   this.setSimilarQuotes(
+          //     this.currentFile.notes,
+          //     categoryFlatten,
+          //     matchBookQuotes,
+          //     matchBookQuotesSorted
+          //   ).then((similarQuotes) => {
+          //     this.currentFile.similarQuotes = similarQuotes;
+          //     this.loading = false;
+          //   });
+          //   clearTimeout(delaySetMatchBookTimer);
+          // }, 0);
+          this.currentFile.similarQuotes = this.setSimilarQuotes(
+            this.currentFile.notes,
+            categoryFlatten,
+            matchBookQuotes,
+            matchBookQuotesSorted,
+          );
           this.loading = false;
         });
-        clearTimeout(delaySetMatchBookTimer);
-      }, 0);
-
-      // const delayTimer = setTimeout(() => {
-      //   const arr = [];
-      //   this.currentFile.notes.forEach((quote) => {
-      //     arr.push(
-      //       this.setSimilarQuote(quote, categoryFlatten, quotes, quotesSorted)
-      //     );
-      //   });
-      //   Promise.all(arr).then((result) => {
-      //     this.currentFile.similarQuotes = result;
-      //     this.loading = false;
-      //     clearTimeout(delayTimer);
-      //   });
-      // }, 0);
     },
     setSimilarQuotes(
       inputQuotes,
@@ -854,69 +875,64 @@ export default {
       matchBookQuotes,
       matchBookQuotesSorted,
     ) {
-      return new Promise((resolve, reject) => {
-        const similarQuotes = [];
+      const similarQuotes = [];
 
-        inputQuotes.forEach((quote) => {
-          const similarQuote = {
-            quote: null,
-            diff: { quote: { similarity: 0 } },
-          };
+      inputQuotes.forEach((quote) => {
+        const similarQuote = {
+          quote: null,
+          diff: { quote: { similarity: 0 } },
+        };
 
-          let comparedQuotes = matchBookQuotes;
-          // 从特定章节寻找相似的书摘
-          const { chapter } = quote;
-          if (chapter) {
-            const targetChapter = categoryFlatten.find(
-              (item) => chapter === item,
+        let comparedQuotes = matchBookQuotes;
+        // 从特定章节寻找相似的书摘
+        const { chapter } = quote;
+        if (chapter) {
+          const targetChapter = categoryFlatten.find(
+            (item) => chapter === item,
+          );
+          if (targetChapter) {
+            const index = matchBookQuotesSorted.findIndex(
+              (item) => item.chapter === targetChapter,
             );
-            if (targetChapter) {
-              const index = matchBookQuotesSorted.findIndex(
-                (item) => item.chapter === targetChapter,
-              );
-              if (index !== -1) {
-                comparedQuotes = matchBookQuotesSorted[index].quotes;
-              }
+            if (index !== -1) {
+              comparedQuotes = matchBookQuotesSorted[index].quotes;
             }
           }
-          comparedQuotes.find((item) => {
-            const newQuote = quote.content;
-            const oldQuote = item.contentOrigin || '';
+        }
+        comparedQuotes.find((item) => {
+          const newQuote = quote.content;
+          const oldQuote = item.contentOrigin || '';
 
-            const quoteDiff = this.diffContent(oldQuote, newQuote);
-            const { similarity } = quoteDiff;
+          const quoteDiff = this.diffContent(oldQuote, newQuote);
+          const { similarity } = quoteDiff;
 
-            if (similarity >= 0.5) {
-              similarQuote.diff.quote = quoteDiff;
-              similarQuote.quote = item;
-              return true;
-            }
-            if (
-              similarity > 0.3
-              && similarity > similarQuote.diff.quote.similarity
-            ) {
-              similarQuote.diff.quote = quoteDiff;
-              similarQuote.quote = item;
-              return false;
-            }
-            return false;
-          });
+          if (similarity >= 0.5) {
+            similarQuote.diff.quote = quoteDiff;
+            similarQuote.quote = item;
+            return true;
+          }
           if (
-            similarQuote.quote
-            && (similarQuote.quote.commentOrigin || quote.comment)
+            similarity > 0.3
+            && similarity > similarQuote.diff.quote.similarity
           ) {
-            const newComment = quote.comment || '';
-            const oldComment = similarQuote.quote.commentOrigin || '';
-            similarQuote.diff.comment = this.diffContent(
-              oldComment,
-              newComment,
-            );
+            similarQuote.diff.quote = quoteDiff;
+            similarQuote.quote = item;
+            return false;
           }
-          similarQuotes.push(similarQuote);
+          return false;
         });
 
-        resolve(similarQuotes);
+        if (
+          similarQuote.quote
+          && (similarQuote.quote.commentOrigin || quote.comment)
+        ) {
+          const newComment = quote.comment || '';
+          const oldComment = similarQuote.quote.commentOrigin || '';
+          similarQuote.diff.comment = this.diffContent(oldComment, newComment);
+        }
+        similarQuotes.push(similarQuote);
       });
+      return similarQuotes;
     },
     diffContent(oldStr, newStr) {
       // eslint-disable-next-line no-param-reassign
@@ -942,29 +958,39 @@ export default {
       return { diffText, diffHTML, similarity };
     },
     diffHandler(payload) {
-      const bookTitle = this.currentFile.matchBookTitle;
+      const matchBookId = this.currentFile.matchBook._id;
       const {
-        index, id, content, type, action,
+        index, quoteId, content, type, action,
       } = payload;
       this.$store
         .dispatch('setContentOrigin', {
-          bookTitle,
-          id,
+          matchBookId,
+          quoteId,
           content,
           type,
         })
-        .then(() => {
+        .then((data) => {
+          console.log(data);
           if (type === 'quote') {
+            const quote = this.currentFile.matchBook.quotes.find(
+              (item) => item._id === quoteId,
+            );
+            quote.contentOrigin = data;
+
             if (action === 'merge') {
-              this.currentFile.notes[index].content = content;
+              this.currentFile.notes[index].content = data;
             }
             this.currentFile.similarQuotes[index].diff.quote = this.diffContent(
               this.currentFile.similarQuotes[index].quote.contentOrigin,
               this.currentFile.notes[index].content,
             );
           } else if (type === 'comment') {
+            const quote = this.currentFile.matchBook.quotes.find(
+              (item) => item._id === quoteId,
+            );
+            quote.commentOrigin = data;
             if (action === 'merge') {
-              this.currentFile.notes[index].comment = content;
+              this.currentFile.notes[index].comment = data;
             }
             this.currentFile.similarQuotes[
               index
@@ -1017,7 +1043,7 @@ export default {
       ).quotesIndex;
       const quotes = [];
       indexArr.forEach((index) => {
-        const id = `${Date.now()}${index}`;
+        // const id = `${Date.now()}${index}`;
         const { location, type, chapter } = this.currentFile.notes[index];
         const contentOrigin = this.currentFile.notes[index].content;
         this.convertor.setContent(contentOrigin, true);
@@ -1027,7 +1053,7 @@ export default {
           this.convertor.setContent(commentOrigin, true);
           const comment = this.JSONtemp;
           quotes.push({
-            id,
+            // id,
             chapter,
             type,
             location,
@@ -1038,7 +1064,7 @@ export default {
           });
         } else {
           quotes.push({
-            id,
+            // id,
             chapter,
             type,
             location,
@@ -1047,36 +1073,49 @@ export default {
           });
         }
       });
-      const { matchBookTitle } = this.currentFile;
+      const matchBookId = this.currentFile.matchBook._id;
       // console.log(matchBookTitle);
       // console.log(quotes);
-      this.$store.dispatch('addQuotes', { quotes, matchBookTitle }).then(() => {
-        this.selectedQuotes.find(
-          (item) => item.fileName === this.currentFileName,
-        ).quotesIndex = [];
-        // refesh
-        const book = this.booksList.find(
-          (item) => item.metadata.titles[0] === this.currentFile.matchBookTitle,
-        );
-        const { metadata } = book;
-        const matchBookQuotes = book.quotes;
-        const matchBookQuotesSorted = this.SortQuotesByChapter(matchBookQuotes);
-        const { category } = metadata;
-        const categoryFlatten = [];
-        flatten(category, categoryFlatten);
-        const delayImportSelectQuotesTimer = setTimeout(() => {
-          this.setSimilarQuotes(
+      this.$store
+        .dispatch('importQuotes', { quotes, matchBookId })
+        .then((data) => {
+          this.selectedQuotes.find(
+            (item) => item.fileName === this.currentFileName,
+          ).quotesIndex = [];
+          // refesh
+          // const book = this.booksList.find(
+          //   (item) => item.metadata.titles[0] === this.currentFile.matchBookTitle
+          // );
+          // const { metadata } = book;
+          this.currentFile.matchBook.quotes = data;
+          // refesh similarQuotes
+          const matchBookQuotes = this.currentFile.matchBook.quotes;
+          const matchBookQuotesSorted = this.SortQuotesByChapter(
+            matchBookQuotes,
+          );
+          const { category } = this.currentFile.matchBook.metadata;
+          const categoryFlatten = [];
+          flatten(category, categoryFlatten);
+          // const delayImportSelectQuotesTimer = setTimeout(() => {
+          //   this.setSimilarQuotes(
+          //     this.currentFile.notes,
+          //     categoryFlatten,
+          //     matchBookQuotes,
+          //     matchBookQuotesSorted
+          //   ).then((similarQuotes) => {
+          //     this.currentFile.similarQuotes = similarQuotes;
+          //     this.loading = false;
+          //   });
+          //   clearTimeout(delayImportSelectQuotesTimer);
+          // }, 0);
+          this.currentFile.similarQuotes = this.setSimilarQuotes(
             this.currentFile.notes,
             categoryFlatten,
             matchBookQuotes,
             matchBookQuotesSorted,
-          ).then((similarQuotes) => {
-            this.currentFile.similarQuotes = similarQuotes;
-            this.loading = false;
-          });
-          clearTimeout(delayImportSelectQuotesTimer);
-        }, 0);
-      });
+          );
+          this.loading = false;
+        });
     },
   },
   created() {

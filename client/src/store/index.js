@@ -9,6 +9,7 @@ export default new Vuex.Store({
   state: {
     booksList: [],
     book: null,
+    // matchBook: null,
     summariesListMode: 'chapter',
     quotesListMode: 'chapter',
     currentSummariesChapter: '',
@@ -29,10 +30,11 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    // book
+    // books list
     SET_BOOKSLIST(state, payload) {
       state.booksList = payload;
     },
+    // book
     SET_BOOK(state, payload) {
       state.book = payload;
     },
@@ -55,14 +57,18 @@ export default new Vuex.Store({
     SAVE_BOOK_METADATA(state, payload) {
       state.book.metadata = payload;
     },
+    // match book
+    // SET_MATCH_BOOK(state, payload) {
+    //   state.matchBook = payload
+    // },
     // quote and summary status
-    ADD_QUOTES(state, payload) {
-      console.log('ADD_QUOTES');
-      const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
-      if (book) {
-        book.quotes.push(...payload.quotes);
-      }
-    },
+    // ADD_QUOTES(state, payload) {
+    //   console.log('ADD_QUOTES');
+    //   const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
+    //   if (book) {
+    //     book.quotes.push(...payload.quotes);
+    //   }
+    // },
     SET_CONTENT_ORIGIN(state, payload) {
       const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
       if (book) {
@@ -175,15 +181,8 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    // book
+    // books list
     getBooksList(context, payload) {
-      // Vue.axios.get('mooc.json')
-      //   .then((res) => {
-      //     context.commit('SET_BOOKSLIST', res.data);
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
       if (payload) {
         Vue.axios.get(`${APIBASE}books?limit_field=${payload.limit_field}`)
           .then((res) => {
@@ -204,23 +203,11 @@ export default new Vuex.Store({
           });
       }
     },
+    // book
     getBook(context, payload) {
-      // Vue.axios.get('mooc.json')
-      //   .then((res) => {
-      //     const result = res.data.find((item) => {
-      //       if (item.metadata.isbn) {
-      //         return item.metadata.isbn === payload.isbn;
-      //       }
-      //       return false;
-      //     });
-      //     if (result) {
-      //       context.commit('SET_BOOK', result);
-      //     }
-      //   });
       Vue.axios.get(`${APIBASE}books/${payload.id}`)
         .then((res) => {
           context.commit('SET_BOOK', res.data);
-          // console.log(res.data);
         })
         .catch((error) => {
           console.log(error);
@@ -263,7 +250,6 @@ export default new Vuex.Store({
         });
     },
     setStars(context, payload) {
-      console.log(payload.stars);
       Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata/stars`, { stars: payload.stars })
         .then((res) => {
           context.commit('SET_STARS', res.data.stars);
@@ -341,6 +327,67 @@ export default new Vuex.Store({
           });
       }
     },
+    // match book
+    getMatchBook(context, payload) {
+      return new Promise((resolve, reject) => {
+        Vue.axios.get(`${APIBASE}books/${payload.id}`)
+          .then((res) => {
+            resolve(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    },
+    setContentOrigin(context, payload) {
+      // return new Promise((resolve, reject) => {
+      //   context.commit('SET_CONTENT_ORIGIN', payload);
+      //   resolve('set origin content');
+      // });
+
+      // const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
+      // if (book) {
+      //   const index = book.quotes.findIndex((quote) => quote.id === payload.id);
+      //   if (index === -1) return;
+      //   if (payload.type === 'quote') {
+      //     book.quotes[index].contentOrigin = payload.content;
+      //   } else if (payload.type === 'comment') {
+      //     book.quotes[index].commentOrigin = payload.content;
+      //   }
+      // }
+      return new Promise((resolve, reject) => {
+        let field = '';
+        if (payload.type === 'quote') {
+          field = 'content_origin';
+        } else if (payload.type === 'comment') {
+          field = 'comment_origin';
+        }
+
+        Vue.axios.post(`${APIBASE}books/${payload.matchBookId}/quotes/${payload.quoteId}/${field}`, { content: payload.content })
+          .then((res) => {
+            resolve(res.data[field]);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    },
+    importQuotes(context, payload) {
+      return new Promise((resolve, reject) => {
+        // const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
+        // if (book) {
+        //   book.quotes.push(...payload.quotes);
+        // }
+
+        Vue.axios.post(`${APIBASE}books/${payload.matchBookId}/quotes/new`, { quotes: payload.quotes })
+          .then((res) => {
+            resolve(res.data.quotes);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    },
     // quote and summary status
     changeQuotesMode(context, payload) {
       context.commit('CHANGE_QUOTES_MODE', payload);
@@ -368,18 +415,6 @@ export default new Vuex.Store({
     },
 
     // quote content
-    addQuotes(context, payload) {
-      return new Promise((resolve, reject) => {
-        context.commit('ADD_QUOTES', payload);
-        resolve('add quotes');
-      });
-    },
-    setContentOrigin(context, payload) {
-      return new Promise((resolve, reject) => {
-        context.commit('SET_CONTENT_ORIGIN', payload);
-        resolve('set origin content');
-      });
-    },
     activeQuoteEditing(context, payload) {
       context.commit('ACTIVE_QUOTE_EDITING', payload);
     },

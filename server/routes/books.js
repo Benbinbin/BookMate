@@ -57,9 +57,63 @@ router.post('/new', async (req, res) => {
   } catch (e) {
     console.log(e);
   }
-  // await console.log(req.body);
-  // res.send(req.body)
 });
+
+router.post('/:id/quotes/:quote_id/:field', async (req, res) => {
+  let field = '';
+  if (req.params.field === 'content_origin') {
+    field = 'contentOrigin';
+  } else if (req.params.field === 'comment_origin') {
+    field = 'commentOrigin'
+  } else {
+    field = req.params.field;
+  }
+
+  BookModel.findOneAndUpdate({
+    _id: req.params.id,
+    "quotes._id": req.params.quote_id
+  },
+    { $set: { [`quotes.$.${field}`]: req.body.content } },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        const quote = data.quotes.find((item) => {
+          return item.id === req.params.quote_id
+        })
+        res.send({
+          [req.params.field]: quote[field]
+        })
+      }
+    })
+})
+
+router.post('/:id/quotes/new', async (req, res) => {
+
+  BookModel.findOneAndUpdate({
+    _id: req.params.id
+  },
+  {
+    $push: {
+      quotes: {
+        $each: req.body.quotes
+      }
+    }
+  },
+  { new: true },
+  (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      res.send({
+        quotes: data.quotes
+      })
+    }
+  })
+})
 
 
 module.exports = router;
