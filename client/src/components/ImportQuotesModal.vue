@@ -816,7 +816,7 @@ export default {
             return false;
           });
           if (target) {
-            console.log(target);
+            // console.log(target);
             this.$store
               .dispatch('getMatchBook', { id: target._id })
               .then((matchBook) => {
@@ -970,7 +970,6 @@ export default {
           type,
         })
         .then((data) => {
-          console.log(data);
           if (type === 'quote') {
             const quote = this.currentFile.matchBook.quotes.find(
               (item) => item._id === quoteId,

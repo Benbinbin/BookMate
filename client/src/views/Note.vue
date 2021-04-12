@@ -119,7 +119,7 @@
       v-if="book && book.metadata && showImportQuotesModal"
       class="fixed w-screen h-screen inset-0"
       :book-id="book._id"
-      @close-import-quotes-modal="showImportQuotesModal = false"
+      @close-import-quotes-modal="closeImportQuoteModelHandler"
     ></import-quotes-modal>
   </div>
 </template>
@@ -196,6 +196,12 @@ export default {
     },
   },
   methods: {
+    getBook() {
+      const { id } = this.$route.params;
+      this.$store.dispatch('getBook', {
+        id,
+      });
+    },
     toggle(btn) {
       // toggle the btn active state
       const arr = ['info', 'notes', 'quote'];
@@ -286,6 +292,10 @@ export default {
       }
       this.showBookMetadataModal = false;
     },
+    closeImportQuoteModelHandler() {
+      this.getBook();
+      this.showImportQuotesModal = false;
+    },
   },
   mounted() {
     this.spliter = Split(this.containersArr, {
@@ -298,10 +308,7 @@ export default {
   },
   created() {
     this.avatar = require('@/assets/avatar.png');
-    const { id } = this.$route.params;
-    this.$store.dispatch('getBook', {
-      id,
-    });
+    this.getBook();
   },
   destroyed() {
     this.$store.dispatch('clearBook');
