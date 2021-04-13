@@ -57,18 +57,6 @@ export default new Vuex.Store({
     SAVE_BOOK_METADATA(state, payload) {
       state.book.metadata = payload;
     },
-    // match book
-    // SET_MATCH_BOOK(state, payload) {
-    //   state.matchBook = payload
-    // },
-    // quote and summary status
-    // ADD_QUOTES(state, payload) {
-    //   console.log('ADD_QUOTES');
-    //   const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
-    //   if (book) {
-    //     book.quotes.push(...payload.quotes);
-    //   }
-    // },
     SET_CONTENT_ORIGIN(state, payload) {
       const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
       if (book) {
@@ -107,33 +95,20 @@ export default new Vuex.Store({
       state.editingQuote = null;
       state.quoteAddingComment = null;
     },
-    SAVE_QUOTE_EDITING(state, {
-      id, chapter, location, content, comment, type,
-    }) {
-      const index = state.book.quotes.findIndex((item) => item.id === id);
-
-      if (index === -1) {
-        state.book.quotes.push({
-          id, chapter, location, content, comment, type,
-        });
-      } else {
-        state.book.quotes[index].content = content;
-        if (state.book.quotes[index].comment || comment) {
-          state.book.quotes[index].comment = comment;
-        }
-        state.book.quotes[index].chapter = chapter;
-        state.book.quotes[index].location = location;
-        state.book.quotes[index].type = type;
-      }
+    SAVE_QUOTE_EDITING(state, payload) {
+      const index = state.book.quotes.findIndex((item) => item._id === payload._id);
+      Vue.set(state.book.quotes, index, payload);
+      state.editingQuote = null;
+      state.quoteAddingComment = null;
+    },
+    ADD_BOOK_QUOTE(state, payload) {
+      state.book.quotes.push(payload);
       state.editingQuote = null;
       state.quoteAddingComment = null;
     },
     DELETE_QUOTE(state, payload) {
-      const index = state.book.quotes.findIndex((item) => item.id === payload);
-
-      if (index !== -1) {
-        state.book.quotes.splice(index, 1);
-      }
+      const index = state.book.quotes.findIndex((item) => item._id === payload.quote_id);
+      state.book.quotes.splice(index, 1);
     },
     ACTIVE_ADDING_COMMENT(state, payload) {
       state.quoteAddingComment = payload;
@@ -145,28 +120,18 @@ export default new Vuex.Store({
     CANCEL_SUMMARY_EDITING(state) {
       state.editingSummary = null;
     },
-    SAVE_SUMMARY_EDITING(state, { id, chapter, content }) {
-      const index = state.book.summaries.findIndex((item) => item.id === id);
-
-      if (index === -1) {
-        state.book.summaries.push({
-          id,
-          chapter,
-          content,
-        });
-      } else {
-        state.book.summaries[index].content = content;
-        state.book.summaries[index].chapter = chapter;
-      }
-
+    SAVE_SUMMARY_EDITING(state, payload) {
+      const index = state.book.summaries.findIndex((item) => item._id === payload._id);
+      Vue.set(state.book.summaries, index, payload);
+      state.editingSummary = null;
+    },
+    ADD_BOOK_SUMMARY(state, payload) {
+      state.book.summaries.push(payload);
       state.editingSummary = null;
     },
     DELETE_SUMMARY(state, payload) {
-      const index = state.book.summaries.findIndex((item) => item.id === payload);
-
-      if (index !== -1) {
-        state.book.summaries.splice(index, 1);
-      }
+      const index = state.book.summaries.findIndex((item) => item._id === payload.summary_id);
+      state.book.summaries.splice(index, 1);
     },
     // insert quote to summary
     SET_QUOTE(state, payload) {
@@ -187,7 +152,6 @@ export default new Vuex.Store({
         Vue.axios.get(`${APIBASE}books?limit_field=${payload.limit_field}`)
           .then((res) => {
             context.commit('SET_BOOKSLIST', res.data);
-            // console.log(res.data);
           })
           .catch((error) => {
             console.log(error);
@@ -196,7 +160,6 @@ export default new Vuex.Store({
         Vue.axios.get(`${APIBASE}books`)
           .then((res) => {
             context.commit('SET_BOOKSLIST', res.data);
-            // console.log(res.data);
           })
           .catch((error) => {
             console.log(error);
@@ -219,7 +182,6 @@ export default new Vuex.Store({
     // book metadata
     toggleDefaultCollections(context, payload) {
       const defaultCollectionsClone = JSON.parse(JSON.stringify(context.state.book.metadata.defaultCollections));
-      console.log(defaultCollectionsClone);
       const target = defaultCollectionsClone.find((item) => item.name === payload.name);
 
       target.active = !target.active;
@@ -259,8 +221,6 @@ export default new Vuex.Store({
         });
     },
     saveBookMetadata(context, payload) {
-      // context.commit('SAVE_BOOK_METADATA', payload);
-
       Vue.axios.post(`${APIBASE}books/${context.state.book._id}/metadata`, { metadata: payload.metadata })
         .then((res) => {
           context.commit('SAVE_BOOK_METADATA', res.data.metadata);
@@ -280,7 +240,7 @@ export default new Vuex.Store({
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        }).then((res) => { })
+        })
           .catch((error) => {
             console.log(error);
           });
@@ -288,19 +248,14 @@ export default new Vuex.Store({
 
       if (payload.removeCovers.length > 0) {
         Vue.axios.post(`${APIBASE}covers/remove`, { removeCovers: payload.removeCovers })
-          .then((res) => {
-
-          })
           .catch((error) => {
             console.log(error);
           });
       }
     },
     addBookMetadata(context, payload) {
-      // context.commit('ADD_BOOK_METADATA', payload);
       Vue.axios.post(`${APIBASE}books/new`, { metadata: payload.metadata })
         .then((res) => {
-          console.log(res);
           context.dispatch('getBooksList', { limit_field: 'metadata' });
         })
         .catch((error) => {
@@ -319,7 +274,6 @@ export default new Vuex.Store({
             'Content-Type': 'multipart/form-data',
           },
         }).then((res) => {
-          console.log(res);
           context.dispatch('getBooksList', { limit_field: 'metadata' });
         })
           .catch((error) => {
@@ -340,21 +294,6 @@ export default new Vuex.Store({
       });
     },
     setContentOrigin(context, payload) {
-      // return new Promise((resolve, reject) => {
-      //   context.commit('SET_CONTENT_ORIGIN', payload);
-      //   resolve('set origin content');
-      // });
-
-      // const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
-      // if (book) {
-      //   const index = book.quotes.findIndex((quote) => quote.id === payload.id);
-      //   if (index === -1) return;
-      //   if (payload.type === 'quote') {
-      //     book.quotes[index].contentOrigin = payload.content;
-      //   } else if (payload.type === 'comment') {
-      //     book.quotes[index].commentOrigin = payload.content;
-      //   }
-      // }
       return new Promise((resolve, reject) => {
         let field = '';
         if (payload.type === 'quote') {
@@ -374,11 +313,6 @@ export default new Vuex.Store({
     },
     importQuotes(context, payload) {
       return new Promise((resolve, reject) => {
-        // const book = state.booksList.find((item) => item.metadata.titles[0] === payload.matchBookTitle);
-        // if (book) {
-        //   book.quotes.push(...payload.quotes);
-        // }
-
         Vue.axios.post(`${APIBASE}books/${payload.matchBookId}/quotes/new`, { quotes: payload.quotes })
           .then((res) => {
             resolve(res.data.quotes);
@@ -422,24 +356,39 @@ export default new Vuex.Store({
       context.commit('CANCEL_QUOTE_EDITING');
     },
     saveQuoteEditing(context, payload) {
-      const {
-        id, chapter, location, content, comment, type,
-      } = payload;
       return new Promise((resolve, reject) => {
-        if (/new$/.test(id)) {
-          const newID = `quote_${+new Date()}`;
-          context.commit('SAVE_QUOTE_EDITING', {
-            id: newID, chapter, location, content, comment, type,
-          });
-          resolve(newID);
+        if (/new$/.test(payload.id)) {
+          const quote = {};
+          quote.chapter = payload.chapter;
+          quote.location = payload.location;
+          quote.content = payload.content;
+          quote.comment = payload.comment;
+          quote.type = payload.type;
+          Vue.axios.post(`${APIBASE}books/${context.state.book._id}/quotes/new`, { quotes: [quote] })
+            .then((res) => {
+              context.commit('ADD_BOOK_QUOTE', res.data.quote);
+              resolve(res.data.quote._id);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         } else {
-          context.commit('SAVE_QUOTE_EDITING', payload);
-          resolve(id);
+          Vue.axios.post(`${APIBASE}books/${context.state.book._id}/quotes/${payload.id}/all`, { quote: payload })
+            .then((res) => {
+              context.commit('SAVE_QUOTE_EDITING', res.data.quote);
+              resolve(res.data.quote._id);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       });
     },
     deleteQuote(context, payload) {
-      context.commit('DELETE_QUOTE', payload);
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/quotes/delete/`, { quote_id: payload })
+        .then((res) => {
+          context.commit('DELETE_QUOTE', res.data);
+        });
     },
     activeAddingComment(context, payload) {
       context.commit('ACTIVE_ADDING_COMMENT', payload);
@@ -453,20 +402,36 @@ export default new Vuex.Store({
       context.commit('CANCEL_SUMMARY_EDITING');
     },
     saveSummaryEditing(context, payload) {
-      const { id, content, chapter } = payload;
       return new Promise((resolve, reject) => {
-        if (/new$/.test(id)) {
-          const newID = `summary_${+new Date()}`;
-          context.commit('SAVE_SUMMARY_EDITING', { id: newID, chapter, content });
-          resolve(newID);
+        if (/new$/.test(payload.id)) {
+          const summary = {};
+          summary.chapter = payload.chapter;
+          summary.content = payload.content;
+          Vue.axios.post(`${APIBASE}books/${context.state.book._id}/summaries/new`, { summaries: [summary] })
+            .then((res) => {
+              context.commit('ADD_BOOK_SUMMARY', res.data.summary);
+              resolve(res.data.summary._id);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         } else {
-          context.commit('SAVE_SUMMARY_EDITING', payload);
-          resolve(id);
+          Vue.axios.post(`${APIBASE}books/${context.state.book._id}/summaries/${payload.id}`, { summary: payload })
+            .then((res) => {
+              context.commit('SAVE_SUMMARY_EDITING', res.data.summary);
+              resolve(res.data.summary._id);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       });
     },
     deleteSummary(context, payload) {
-      context.commit('DELETE_SUMMARY', payload);
+      Vue.axios.post(`${APIBASE}books/${context.state.book._id}/summaries/delete/`, { summary_id: payload })
+        .then((res) => {
+          context.commit('DELETE_SUMMARY', res.data);
+        });
     },
 
     // insert quote into summary

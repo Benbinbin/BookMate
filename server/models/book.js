@@ -1,4 +1,6 @@
 const mongoose = require('../db/mongoose');
+const quoteSchema = require('../schema/quote');
+const summarySchema = require('../schema/summary');
 
 const bookSchema = new mongoose.Schema({
   metadata: {
@@ -27,38 +29,8 @@ const bookSchema = new mongoose.Schema({
     },
     category: Object
   },
-  quotes: [{
-    chapter: String,
-    type: {
-      type: String,
-      default: 'annotation'
-    },
-    location: Number,
-    contentOrigin: String,
-    content: Object,
-    commentOrigin: String,
-    comment: Object,
-    createdDate: {
-      type: Date,
-      default: Date.now
-    },
-    updatedDate: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  summaries: [{
-    chapter: String,
-    content: Object,
-    createdDate: {
-      type: Date,
-      default: Date.now
-    },
-    updatedDate: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  quotes: [quoteSchema],
+  summaries: [summarySchema],
 });
 
 module.exports = mongoose.model('Book', bookSchema);

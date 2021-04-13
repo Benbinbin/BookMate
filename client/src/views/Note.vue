@@ -288,7 +288,7 @@ export default {
     },
     closeBookModalHandler(payload) {
       if (payload) {
-        this.$store.dispatch('', payload);
+        this.$store.dispatch('saveBookMetadata', payload);
       }
       this.showBookMetadataModal = false;
     },

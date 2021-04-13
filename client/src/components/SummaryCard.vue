@@ -2,8 +2,8 @@
   <div
     class="summary-card relative bg-white rounded-lg outline-none"
     :class="{
-      'editing border-2 border-gray-300': summary.id === editingSummary,
-      border: summary.id !== editingSummary,
+      'editing border-2 border-gray-300': summary._id === editingSummary,
+      border: summary._id !== editingSummary,
     }"
     tabindex="0"
   >
@@ -53,8 +53,8 @@
       <div
         class="card-footer pb-4 px-4 flex-grow justify-between items-end"
         :class="{
-          hidden: summary.id !== editingSummary,
-          flex: summary.id === editingSummary,
+          hidden: summary._id !== editingSummary,
+          flex: summary._id === editingSummary,
         }"
       >
         <div class="left flex items-center">
@@ -126,7 +126,7 @@
       <div class="flex mt-4 space-x-4">
         <button
           class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
-          @click="$store.dispatch('deleteSummary', summary.id)"
+          @click="$store.dispatch('deleteSummary', summary._id)"
         >
           确定
         </button>

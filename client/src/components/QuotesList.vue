@@ -38,10 +38,9 @@
     <div
       ref="quotesList"
       class="flex-grow quotes-list px-3 py-6 h-full"
-      v-if="quotes.length > 0"
     >
       <quote-card
-        v-if="newQuote && newQuote.id === 'whole_book_new'"
+        v-if="newQuote && newQuote._id === 'whole_book_new'"
         ref="whole_book_new"
         :quote="newQuote"
         @inactive-editor="inactiveEditor"
@@ -122,10 +121,10 @@
         <template
           v-slot:comment
           v-if="
-            (newQuote.id === editingQuote &&
+            (newQuote._id === editingQuote &&
               newQuote.comment &&
               newQuote.comment !== '<p></p>') ||
-            newQuote.id === quoteAddingComment
+            newQuote._id === quoteAddingComment
           "
         >
           <div
@@ -138,18 +137,18 @@
           </div>
         </template>
       </quote-card>
-      <div v-if="quotesListMode === 'default'" class="quotes space-y-3">
+      <div v-if="quotes.length > 0 && quotesListMode === 'default'" class="quotes space-y-3">
         <quote-card
           v-for="quote of item.quotes"
-          :key="quote.id"
-          :ref="quote.id"
+          :key="quote._id"
+          :ref="quote._id"
           :quote="quote"
           @active-editor="activeEditor(quote)"
           @inactive-editor="inactiveEditor"
         >
           <template
             v-slot:body
-            v-if="editingQuote && quote.id === editingQuote"
+            v-if="editingQuote && quote._id === editingQuote"
           >
             <div class="quote-editor-container card-body mx-8">
               <quote-editor-floating-menu
@@ -160,7 +159,7 @@
           </template>
           <template
             v-slot:type
-            v-if="editingQuote && quote.id === editingQuote"
+            v-if="editingQuote && quote._id === editingQuote"
           >
             <div class="quote-type flex-shrink-0 relative">
               <button
@@ -194,7 +193,7 @@
           </template>
           <template
             v-slot:location
-            v-if="editingQuote && quote.id === editingQuote"
+            v-if="editingQuote && quote._id === editingQuote"
           >
             <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
               <div class="flex items-center">
@@ -232,10 +231,10 @@
           <template
             v-slot:comment
             v-if="
-              (quote.id === editingQuote &&
+              (quote._id === editingQuote &&
                 quote.comment &&
                 quote.comment !== '<p></p>') ||
-              quote.id === quoteAddingComment
+              quote._id === quoteAddingComment
             "
           >
             <div
@@ -249,7 +248,7 @@
           </template>
         </quote-card>
       </div>
-      <div v-if="quotesListMode === 'chapter'">
+      <div v-if="quotes.length > 0 && quotesListMode === 'chapter'">
         <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
           <div class="chapter py-3 flex justify-between opacity-50">
             <div class="flex items-center">
@@ -293,7 +292,7 @@
             class="quotes space-y-3"
           >
             <quote-card
-              v-if="newQuote && newQuote.id === `${item.name}_new`"
+              v-if="newQuote && newQuote._id === `${item.name}_new`"
               :ref="`${item.name}_new`"
               :quote="newQuote"
               @inactive-editor="inactiveEditor"
@@ -377,10 +376,10 @@
               <template
                 v-slot:comment
                 v-if="
-                  (newQuote.id === editingQuote &&
+                  (newQuote._id === editingQuote &&
                     newQuote.comment &&
                     newQuote.comment !== '<p></p>') ||
-                  newQuote.id === quoteAddingComment
+                  newQuote._id === quoteAddingComment
                 "
               >
                 <div
@@ -395,15 +394,15 @@
             </quote-card>
             <quote-card
               v-for="quote of item.quotes"
-              :key="quote.id"
-              :ref="quote.id"
+              :key="quote._id"
+              :ref="quote._id"
               :quote="quote"
               @active-editor="activeEditor(quote)"
               @inactive-editor="inactiveEditor"
             >
               <template
                 v-slot:body
-                v-if="editingQuote && quote.id === editingQuote"
+                v-if="editingQuote && quote._id === editingQuote"
               >
                 <div class="quote-editor-container card-body mx-8">
                   <quote-editor-floating-menu
@@ -414,7 +413,7 @@
               </template>
               <template
                 v-slot:type
-                v-if="editingQuote && quote.id === editingQuote"
+                v-if="editingQuote && quote._id === editingQuote"
               >
                 <div class="quote-type flex-shrink-0 relative">
                   <button
@@ -448,7 +447,7 @@
               </template>
               <template
                 v-slot:location
-                v-if="editingQuote && quote.id === editingQuote"
+                v-if="editingQuote && quote._id === editingQuote"
               >
                 <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
                   <div class="flex items-center">
@@ -489,10 +488,10 @@
               <template
                 v-slot:comment
                 v-if="
-                  (quote.id === editingQuote &&
+                  (quote._id === editingQuote &&
                     quote.comment &&
                     quote.comment !== '<p></p>') ||
-                  quote.id === quoteAddingComment
+                  quote._id === quoteAddingComment
                 "
               >
                 <div
@@ -570,7 +569,7 @@ export default {
       HTMLtemp: null,
       JSONtemp: null,
       commentJSONtemp: null,
-      quoteChapter: null,
+      quoteChapter: '',
       quoteLocation: 0,
       quoteType: 'annotation',
       newQuote: null,
@@ -653,7 +652,7 @@ export default {
     },
     categoryNormalizer(node) {
       return {
-        id: node.name,
+        id: encodeURIComponent(node.name),
         label: node.name,
         children: node.children,
       };
@@ -685,10 +684,10 @@ export default {
         if (quote.comment) {
           this.commentEditor.setContent(quote.comment, true);
         }
-        if (quote.chapter) this.quoteChapter = quote.chapter;
+        if (quote.chapter) this.quoteChapter = encodeURIComponent(quote.chapter);
         if (quote.location) this.quoteLocation = quote.location;
         this.quoteType = quote.type;
-        this.$store.dispatch('activeQuoteEditing', quote.id);
+        this.$store.dispatch('activeQuoteEditing', quote._id);
       }
 
       this.$nextTick(() => {
@@ -709,18 +708,18 @@ export default {
         }
       });
     },
-    addNewQuote(newID, newChapter = null) {
+    addNewQuote(newID, newChapter = '') {
       if (!newChapter || newChapter === '未分类(NoChapter)') {
         this.newQuote = {
-          id: newID,
-          chapter: null,
+          _id: newID,
+          chapter: '',
           content: null,
           location: 0,
           type: 'annotation',
         };
       } else {
         this.newQuote = {
-          id: newID,
+          _id: newID,
           chapter: newChapter,
           content: null,
           location: 0,
@@ -749,7 +748,7 @@ export default {
         this.$store
           .dispatch('saveQuoteEditing', {
             id: this.editingQuote,
-            chapter: this.quoteChapter,
+            chapter: decodeURIComponent(this.quoteChapter),
             location: this.quoteLocation,
             content: this.JSONtemp,
             comment: this.commentJSONtemp,
@@ -767,7 +766,7 @@ export default {
       this.commentEditor.clearContent();
       this.JSONtemp = null;
       this.commentJSONtemp = null;
-      this.quoteChapter = null;
+      this.quoteChapter = '';
       this.quoteLocation = 0;
       this.newQuote = null;
     },

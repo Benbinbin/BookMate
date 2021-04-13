@@ -1,19 +1,19 @@
 <template>
   <div
     class="quote-card relative bg-white rounded-lg outline-none"
-    :class="{ editing: quote.id === editingQuote }"
+    :class="{ editing: quote._id === editingQuote }"
     tabindex="0"
   >
     <div
       class="quote-content border"
       :class="{
-        'rounded-lg': !showComment && quote.id !== quoteAddingComment,
-        'rounded-t-lg': showComment || quote.id === quoteAddingComment,
+        'rounded-lg': !showComment && quote._id !== quoteAddingComment,
+        'rounded-t-lg': showComment || quote._id === quoteAddingComment,
       }"
     >
       <div class="card-header-container h-12">
         <div
-          v-if="quote.id !== editingQuote"
+          v-if="quote._id !== editingQuote"
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <div class="left flex items-center space-x-1.5">
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div
-          v-if="quote.id === editingQuote"
+          v-if="quote._id === editingQuote"
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <button
@@ -148,8 +148,8 @@
           <div
             class="btns right flex-shrink-0 items-center space-x-1.5"
             :class="{
-              hidden: quote.id !== editingQuote,
-              flex: quote.id === editingQuote,
+              hidden: quote._id !== editingQuote,
+              flex: quote._id === editingQuote,
             }"
           >
             <button
@@ -158,13 +158,13 @@
                   !editingQuote ||
                   (editingQuote &&
                     !quoteAddingComment &&
-                    quote.id === editingQuote),
-                'opacity-10': quoteAddingComment || quote.id !== editingQuote,
+                    quote._id === editingQuote),
+                'opacity-10': quoteAddingComment || quote._id !== editingQuote,
               }"
               v-if="!showComment"
               :disabled="
                 quoteAddingComment ||
-                (editingQuote && quote.id !== editingQuote)
+                (editingQuote && quote._id !== editingQuote)
               "
               @click="addCommentHandler(quote)"
             >
@@ -223,7 +223,7 @@
       <div class="flex mt-4 space-x-4">
         <button
           class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
-          @click="$store.dispatch('deleteQuote', quote.id)"
+          @click="$store.dispatch('deleteQuote', quote._id)"
         >
           确定
         </button>
@@ -287,7 +287,7 @@ export default {
       });
     },
     addCommentHandler(quote) {
-      this.$store.dispatch('activeAddingComment', quote.id);
+      this.$store.dispatch('activeAddingComment', quote._id);
       this.$emit('active-editor');
     },
   },

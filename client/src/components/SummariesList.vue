@@ -28,11 +28,10 @@
     </nav>
     <div
       ref="summariesList"
-      v-if="summaries.length > 0"
       class="summaries-list px-6 py-6 h-full"
     >
       <summary-card
-        v-if="newSummary && newSummary.id === 'whole_book_new'"
+        v-if="newSummary && newSummary._id === 'whole_book_new'"
         ref="whole_book_new"
         :summary="newSummary"
       >
@@ -62,17 +61,17 @@
           </div>
         </template>
       </summary-card>
-      <div v-if="summariesListMode === 'default'" class="summaries space-y-3">
+      <div v-if="summaries.length > 0 && summariesListMode === 'default'" class="summaries space-y-3">
         <summary-card
           v-for="summary of item.summaries"
-          :key="summary.id"
-          :ref="summary.id"
+          :key="summary._id"
+          :ref="summary._id"
           :summary="summary"
           @active-editor="activeEditor(summary)"
         >
           <template
             v-slot:body
-            v-if="editingSummary && summary.id === editingSummary"
+            v-if="editingSummary && summary._id === editingSummary"
           >
             <div class="card-body mx-8">
               <editor-content :editor="editor"></editor-content>
@@ -80,7 +79,7 @@
           </template>
           <template
             v-slot:location
-            v-if="editingSummary && summary.id === editingSummary"
+            v-if="editingSummary && summary._id === editingSummary"
           >
             <div class="summary-location text-xs flex items-center">
               <label class="flex-shrink-0 opacity-30" for="summary-chapter"
@@ -103,7 +102,7 @@
           </template>
         </summary-card>
       </div>
-      <div v-if="summariesListMode === 'chapter'">
+      <div v-if="summaries.length > 0 && summariesListMode === 'chapter'">
         <section
           v-for="item of summariesSorted"
           :key="item.name"
@@ -151,7 +150,7 @@
             class="summaries space-y-3"
           >
             <summary-card
-              v-if="newSummary && newSummary.id === `${item.name}_new`"
+              v-if="newSummary && newSummary._id === `${item.name}_new`"
               :ref="`${item.name}_new`"
               :summary="newSummary"
             >
@@ -183,14 +182,14 @@
             </summary-card>
             <summary-card
               v-for="summary of item.summaries"
-              :key="summary.id"
-              :ref="summary.id"
+              :key="summary._id"
+              :ref="summary._id"
               :summary="summary"
               @active-editor="activeEditor(summary)"
             >
               <template
                 v-slot:body
-                v-if="editingSummary && summary.id === editingSummary"
+                v-if="editingSummary && summary._id === editingSummary"
               >
                 <div class="card-body mx-8">
                   <editor-content :editor="editor"></editor-content>
@@ -198,7 +197,7 @@
               </template>
               <template
                 v-slot:location
-                v-if="editingSummary && summary.id === editingSummary"
+                v-if="editingSummary && summary._id === editingSummary"
               >
                 <div class="summary-location text-xs flex items-center">
                   <label class="flex-shrink-0 opacity-30" for="summary-chapter"
@@ -285,7 +284,7 @@ export default {
       hiddenSummaries: [],
       HTMLtemp: null,
       JSONtemp: null,
-      summaryChapter: null,
+      summaryChapter: '',
       newSummary: null,
       convertor: null,
       editor: null,
@@ -358,7 +357,7 @@ export default {
   methods: {
     categoryNormalizer(node) {
       return {
-        id: node.name,
+        id: encodeURIComponent(node.name),
         label: node.name,
         children: node.children,
       };
@@ -386,8 +385,8 @@ export default {
     },
     activeEditor(summary) {
       this.editor.setContent(summary.content, true);
-      if (summary.chapter) this.summaryChapter = summary.chapter;
-      this.$store.dispatch('activeSummaryEditing', summary.id);
+      if (summary.chapter) this.summaryChapter = encodeURIComponent(summary.chapter);
+      this.$store.dispatch('activeSummaryEditing', summary._id);
 
       this.$nextTick(() => {
         if (this.editingSummary === 'whole_book_new') {
@@ -401,18 +400,18 @@ export default {
         this.editor.focus();
       });
     },
-    addNewSummary(newID, newChapter = null) {
+    addNewSummary(newID, newChapter = '') {
       if (!newChapter || newChapter === '整书(whole)') {
         this.newSummary = {
-          chapter: null,
+          chapter: '',
           content: null,
-          id: newID,
+          _id: newID,
         };
       } else {
         this.newSummary = {
           chapter: newChapter,
           content: null,
-          id: newID,
+          _id: newID,
         };
       }
 
@@ -432,7 +431,7 @@ export default {
         this.$store
           .dispatch('saveSummaryEditing', {
             id: this.editingSummary,
-            chapter: this.summaryChapter,
+            chapter: decodeURIComponent(this.summaryChapter),
             content: this.JSONtemp,
           })
           .then((id) => {
@@ -445,7 +444,7 @@ export default {
       }
       this.editor.clearContent();
       this.JSONtemp = null;
-      this.summaryChapter = null;
+      this.summaryChapter = '';
       this.newSummary = null;
     },
     insert() {

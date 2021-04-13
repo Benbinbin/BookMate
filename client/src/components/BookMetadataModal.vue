@@ -999,6 +999,8 @@ export default {
         this.titleTemp = '';
       } else if (event.key === 'Enter') {
         this.tree.quitEdit(node);
+        const title = node.title.trim();
+        this.tree.setTitle(node, title);
         this.nodeEdting = false;
         this.titleTemp = '';
       }
@@ -1007,6 +1009,8 @@ export default {
       const node = this.tree.getSelected()[0];
       if (type === 'cancel') this.tree.setTitle(node, this.titleTemp);
       this.tree.quitEdit(node);
+      const title = node.title.trim();
+      this.tree.setTitle(node, title);
       this.nodeEdting = false;
       this.titleTemp = '';
     },
@@ -1051,19 +1055,19 @@ export default {
           case 'before':
             if (pos < 0) pos = 0;
             arr.forEach((title) => {
-              this.tree.create({ title }, parentNode, pos);
+              this.tree.create({ title: title.trim() }, parentNode, pos);
               pos += 1;
             });
             break;
           case 'inside':
             arr.forEach((title) => {
-              this.tree.create({ title }, target);
+              this.tree.create({ title: title.trim() }, target);
             });
             break;
           default:
             pos += 1;
             arr.forEach((title) => {
-              this.tree.create({ title }, parentNode, pos);
+              this.tree.create({ title: title.trim() }, parentNode, pos);
               pos += 1;
             });
         }

@@ -59,6 +59,61 @@ router.post('/new', async (req, res) => {
   }
 });
 
+router.post('/:id/quotes/new', async (req, res) => {
+  BookModel.findOneAndUpdate({
+    _id: req.params.id
+  },
+    {
+      $push: {
+        quotes: {
+          $each: req.body.quotes
+        }
+      }
+    },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        if (req.body.quotes.length === 1) {
+          const newQuote = data.quotes[data.quotes.length - 1]
+          res.send({
+            quote: newQuote
+          })
+        } else {
+          res.send({
+            quotes: data.quotes
+          })
+        }
+      }
+    })
+})
+
+router.post('/:id/quotes/delete', async (req, res) => {
+  BookModel.findOneAndUpdate({
+    _id: req.params.id
+  },
+    {
+      $pull: {
+        quotes: {
+          _id: req.body.quote_id
+        }
+      }
+    },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        res.send({
+          quote_id: req.body.quote_id
+        })
+      }
+    })
+})
+
 router.post('/:id/quotes/:quote_id/:field', async (req, res) => {
   let field = '';
   if (req.params.field === 'content_origin') {
@@ -69,51 +124,142 @@ router.post('/:id/quotes/:quote_id/:field', async (req, res) => {
     field = req.params.field;
   }
 
+  if (field !== 'all') {
+    BookModel.findOneAndUpdate({
+      _id: req.params.id,
+      "quotes._id": req.params.quote_id
+    },
+      { $set: { [`quotes.$.${field}`]: req.body.content } },
+      { new: true },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          const quote = data.quotes.find((item) => {
+            return item.id === req.params.quote_id
+          })
+          res.send({
+            [req.params.field]: quote[field]
+          })
+        }
+      })
+  } else {
+    BookModel.findOneAndUpdate({
+      _id: req.params.id,
+      "quotes._id": req.params.quote_id
+    },
+      {
+        $set: {
+          "quotes.$.chapter": req.body.quote.chapter,
+          "quotes.$.location": req.body.quote.location,
+          "quotes.$.content": req.body.quote.content,
+          "quotes.$.comment": req.body.quote.comment,
+          "quotes.$.type": req.body.quote.type,
+          "quotes.$.updatedDate": Date.now()
+        }
+      },
+      { new: true },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          const quote = data.quotes.find((item) => {
+            return item.id === req.params.quote_id
+          })
+          res.send({
+            quote
+          })
+        }
+      })
+  }
+})
+
+router.post('/:id/summaries/new', async (req, res) => {
   BookModel.findOneAndUpdate({
-    _id: req.params.id,
-    "quotes._id": req.params.quote_id
+    _id: req.params.id
   },
-    { $set: { [`quotes.$.${field}`]: req.body.content } },
+    {
+      $push: {
+        summaries: {
+          $each: req.body.summaries
+        }
+      }
+    },
     { new: true },
     (err, data) => {
       if (err) {
         console.log(err);
         return;
       } else {
-        const quote = data.quotes.find((item) => {
-          return item.id === req.params.quote_id
-        })
+        if (req.body.summaries.length === 1) {
+          const newSummary = data.summaries[data.summaries.length - 1]
+          res.send({
+            summary: newSummary
+          })
+        } else {
+          res.send({
+            summaries: data.summaries
+          })
+        }
+      }
+    })
+})
+
+router.post('/:id/summaries/delete', async (req, res) => {
+  BookModel.findOneAndUpdate({
+    _id: req.params.id
+  },
+    {
+      $pull: {
+        summaries: {
+          _id: req.body.summary_id
+        }
+      }
+    },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
         res.send({
-          [req.params.field]: quote[field]
+          summary_id: req.body.summary_id
         })
       }
     })
 })
 
-router.post('/:id/quotes/new', async (req, res) => {
-
-  BookModel.findOneAndUpdate({
-    _id: req.params.id
-  },
-  {
-    $push: {
-      quotes: {
-        $each: req.body.quotes
-      }
-    }
-  },
-  { new: true },
-  (err, data) => {
-    if (err) {
-      console.log(err);
-      return;
-    } else {
-      res.send({
-        quotes: data.quotes
+router.post('/:id/summaries/:summary_id', async (req, res) => {
+    BookModel.findOneAndUpdate({
+      _id: req.params.id,
+      "summaries._id": req.params.summary_id
+    },
+      {
+        $set: {
+          "summaries.$.chapter": req.body.summary.chapter,
+          "summaries.$.content": req.body.summary.content,
+          "summaries.$.updatedDate": Date.now()
+        }
+      },
+      { new: true },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          const summary = data.summaries.find((item) => {
+            return item.id === req.params.summary_id
+          })
+          res.send({
+            summary
+          })
+        }
       })
-    }
-  })
+
 })
+
 
 
 module.exports = router;
