@@ -261,7 +261,7 @@ export default {
   methods: {
     setQuote(quote) {
       const chapter = quote.chapter || '';
-      const location = quote.loaction || 0;
+      const location = quote.location || 0;
       // block quote content
       const blockDom = `<blockquote class="block-quote" data-chapter="${chapter}" data-location="${location}" >
         ${quote.content}
