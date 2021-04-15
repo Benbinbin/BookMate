@@ -30,15 +30,17 @@
       ></quote-editor-menu>
       <div
         v-show="showMoreModal"
-        class="more-modal absolute top-12 right-6 z-10 flex flex-col  rounded bg-gray-100 shadow-md"
+        class="more-modal absolute top-12 right-6 z-10 flex flex-col rounded bg-gray-100 shadow-md"
       >
-        <button class="px-4 py-2 text-sm hover:bg-gray-200  rounded" @click="showImportQuotesModal">导入书摘</button>
+        <button
+          class="px-4 py-2 text-sm hover:bg-gray-200 rounded"
+          @click="showImportQuotesModal"
+        >
+          导入书摘
+        </button>
       </div>
     </nav>
-    <div
-      ref="quotesList"
-      class="flex-grow quotes-list px-3 py-6 h-full"
-    >
+    <div ref="quotesList" class="flex-grow quotes-list px-3 py-6 h-full">
       <quote-card
         v-if="newQuote && newQuote._id === 'whole_book_new'"
         ref="whole_book_new"
@@ -137,7 +139,10 @@
           </div>
         </template>
       </quote-card>
-      <div v-if="quotes.length > 0 && quotesListMode === 'default'" class="quotes space-y-3">
+      <div
+        v-if="quotes.length > 0 && quotesListMode === 'default'"
+        class="quotes space-y-3"
+      >
         <quote-card
           v-for="quote of item.quotes"
           :key="quote._id"

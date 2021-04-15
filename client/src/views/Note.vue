@@ -131,6 +131,8 @@
 <script>
 import { mapState } from 'vuex';
 import Split from 'split.js';
+import 'highlight.js/styles/googlecode.css'; // 样式文件
+
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';

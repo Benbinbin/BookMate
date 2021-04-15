@@ -195,7 +195,10 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80" @click="shareHandler(quote)">
+            <button
+              class="opacity-30 hover:opacity-80"
+              @click="shareHandler(quote)"
+            >
               <img
                 src="@/assets/icons/share.svg"
                 alt="share icon"
@@ -240,6 +243,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import hljs from 'highlight.js';
 
 export default {
   props: ['quote'],
@@ -293,6 +297,12 @@ export default {
     shareHandler(quote) {
       this.$store.dispatch('share', { type: 'quote', ids: [quote._id] });
     },
+  },
+  updated() {
+    hljs.highlightAll();
+  },
+  mounted() {
+    hljs.highlightAll();
   },
 };
 </script>

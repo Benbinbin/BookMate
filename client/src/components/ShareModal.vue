@@ -33,11 +33,15 @@
             :key="item._id"
             class="card-container relative"
           >
-            <div :ref="item._id" class="share-card relative">
-               <div class="absolute inset-0">
-                 <img src="@/assets/icons/quote.svg" alt="quote icon" class="quote-icon w-20 h-20 m-4">
-               </div>
-              <div class="border rounded-t-lg">
+            <div :ref="item._id" class="share-card p-8 bg-white">
+              <div class="border relative rounded-t-lg">
+                <div class="absolute inset-0">
+                  <img
+                    src="@/assets/icons/quote.svg"
+                    alt="quote icon"
+                    class="quote-icon w-20 h-20 m-4"
+                  />
+                </div>
                 <div class="card-header pt-4 px-5 flex justify-end"></div>
                 <div class="card-body m-8">
                   <div
@@ -63,12 +67,12 @@
               >
                 <div class="left flex items-end">
                   <img
-                  v-if="book && book.metadata.covers.length > 0"
-                  :src="`${coverBase}${book.metadata.covers[0]}`"
-                  alt="book cover"
-                  class="w-12"
-                  crossorigin="anonymous"
-                />
+                    v-if="book && book.metadata.covers.length > 0"
+                    :src="`${coverBase}${book.metadata.covers[0]}`"
+                    alt="book cover"
+                    class="w-12"
+                    crossorigin="anonymous"
+                  />
                   <div class="ml-2 text-xs text-gray-400 space-y-1">
                     <p>书籍：《{{ book.metadata.titles[0] }}》</p>
                     <p v-if="item.chapter">章节：{{ item.chapter }}</p>
@@ -182,7 +186,11 @@ export default {
         .toPng(dom, param)
         .then((dataUrl) => {
           const link = document.createElement('a');
-          link.download = `书名-《${this.book.metadata.titles[0] || 'book'}》-章节-${item.chapter || '未分类'}-页码-${item.location || '未知'}.png`;
+          link.download = `书名-《${
+            this.book.metadata.titles[0] || 'book'
+          }》-章节-${item.chapter || '未分类'}-页码-${
+            item.location || '未知'
+          }.png`;
           link.href = dataUrl;
           link.click();
         })

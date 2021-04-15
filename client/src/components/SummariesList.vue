@@ -452,7 +452,6 @@ export default {
       this.$store.dispatch('clearQuote');
     },
   },
-  mounted() {},
   created() {
     this.convertor = new Editor({
       extensions: [

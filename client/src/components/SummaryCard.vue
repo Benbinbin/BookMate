@@ -106,7 +106,7 @@
               'opacity-30': editingSummary,
             }"
             :disabled="editingSummary"
-            @click="showDeleteModal=true"
+            @click="showDeleteModal = true"
           >
             <img
               src="@/assets/icons/delete.svg"
@@ -143,6 +143,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import hljs from 'highlight.js';
 
 export default {
   props: ['summary'],
@@ -153,6 +154,12 @@ export default {
   },
   computed: {
     ...mapState(['editingSummary']),
+  },
+  updated() {
+    hljs.highlightAll();
+  },
+  mounted() {
+    hljs.highlightAll();
   },
 };
 </script>
