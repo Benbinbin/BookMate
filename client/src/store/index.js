@@ -19,6 +19,8 @@ export default new Vuex.Store({
     quoteAddingComment: null,
     candidateQuote: null,
     insertQuote: false,
+    showShareModal: false,
+    shareContent: [],
   },
   getters: {
     allCollections(state) {
@@ -143,6 +145,26 @@ export default new Vuex.Store({
     CLEAR_INSERT_QUOTE(state) {
       state.insertQuote = false;
       state.candidateQuote = null;
+    },
+    // share
+    SHARE(state, payload) {
+      // eslint-disable-next-line no-param-reassign
+      state.showShareModal = true;
+      if (payload.type === 'quote') {
+        payload.ids.forEach((id) => {
+          const quote = state.book.quotes.find((item) => item._id === id);
+          state.shareContent.push(quote);
+        });
+      } else if (payload.type === 'summary') {
+        payload.ids.forEach((id) => {
+          const summary = state.book.summaries.find((item) => item._id === id);
+          state.shareContent.push(summary);
+        });
+      }
+    },
+    CLOSE_SHARE_MODAL(state) {
+      state.showShareModal = false;
+      state.shareContent = [];
     },
   },
   actions: {
@@ -446,6 +468,13 @@ export default new Vuex.Store({
     },
     clearQuote(context) {
       context.commit('CLEAR_INSERT_QUOTE');
+    },
+    // share
+    share(context, payload) {
+      context.commit('SHARE', payload);
+    },
+    closeShareModal(context) {
+      context.commit('CLOSE_SHARE_MODAL');
     },
   },
 });

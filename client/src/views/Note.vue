@@ -36,7 +36,7 @@
           @click="$router.push({ name: 'Home' })"
         >
           <img
-            :src="require(`@/assets/icons/home.svg`)"
+            :src="require(`@/assets/icons/bookmate-2.svg`)"
             alt="back to home icon"
             class="w-5 h-5"
           />
@@ -121,6 +121,10 @@
       :book-id="book._id"
       @close-import-quotes-modal="closeImportQuoteModelHandler"
     ></import-quotes-modal>
+    <share-modal
+      v-if="book && book.metadata && showShareModal"
+      class="fixed w-screen h-screen inset-0"
+    ></share-modal>
   </div>
 </template>
 
@@ -132,6 +136,7 @@ import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';
 import BookMetadataModal from '../components/BookMetadataModal.vue';
 import ImportQuotesModal from '../components/ImportQuotesModal.vue';
+import ShareModal from '../components/ShareModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -153,6 +158,7 @@ export default {
     SummariesList,
     BookMetadataModal,
     ImportQuotesModal,
+    ShareModal,
   },
   data() {
     return {
@@ -187,7 +193,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['book']),
+    ...mapState(['book', 'showShareModal']),
     chaptersWithSummaries() {
       return this.flattenChapters(this.book.summaries);
     },

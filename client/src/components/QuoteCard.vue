@@ -195,7 +195,7 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80">
+            <button class="opacity-30 hover:opacity-80" @click="shareHandler(quote)">
               <img
                 src="@/assets/icons/share.svg"
                 alt="share icon"
@@ -289,6 +289,9 @@ export default {
     addCommentHandler(quote) {
       this.$store.dispatch('activeAddingComment', quote._id);
       this.$emit('active-editor');
+    },
+    shareHandler(quote) {
+      this.$store.dispatch('share', { type: 'quote', ids: [quote._id] });
     },
   },
 };
