@@ -243,7 +243,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import hljs from 'highlight.js';
 
 export default {
   props: ['quote'],
@@ -297,12 +296,6 @@ export default {
     shareHandler(quote) {
       this.$store.dispatch('share', { type: 'quote', ids: [quote._id] });
     },
-  },
-  updated() {
-    hljs.highlightAll();
-  },
-  mounted() {
-    hljs.highlightAll();
   },
 };
 </script>

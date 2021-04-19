@@ -16,7 +16,7 @@
         <button
           v-for="item of menuButtons"
           :key="item.icon"
-          class="w-8 h-8 flex-shrink-0 flex justify-center items-center rounded-full hover:opacity-80"
+          class="w-9 h-9 flex-shrink-0 flex justify-center items-center rounded-full hover:opacity-80"
           :class="{
             'bg-gray-200 opacity-60': !item.active,
             'bg-white': item.active,
@@ -26,19 +26,19 @@
           <img
             :src="require(`@/assets/icons/${item.icon}.svg`)"
             :alt="`${item.icon} icon`"
-            class="w-5 h-5"
+            class="w-6 h-6"
           />
         </button>
       </div>
       <div class="back flex-shrink-0 py-4">
         <button
-          class="w-8 h-8 flex justify-center items-center rounded-full bg-gray-200 opacity-60 hover:opacity-80"
+          class="w-9 h-9 flex justify-center items-center rounded-full bg-gray-200 opacity-60 hover:opacity-80"
           @click="$router.push({ name: 'Home' })"
         >
           <img
             :src="require(`@/assets/icons/bookmate-2.svg`)"
             alt="back to home icon"
-            class="w-5 h-5"
+            class="w-6 h-6"
           />
         </button>
       </div>

@@ -549,6 +549,7 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
+import hljs from 'highlight.js';
 
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
@@ -747,6 +748,7 @@ export default {
           // focus the editing quote
           this.$nextTick(() => {
             this.$refs[target][0].$el.focus();
+            hljs.highlightAll();
           });
         }
       } else if (type === 'save') {
@@ -764,6 +766,7 @@ export default {
             // focus the editing quote
             this.$nextTick(() => {
               this.$refs[target][0].$el.focus();
+              hljs.highlightAll();
             });
           });
       }
@@ -775,6 +778,9 @@ export default {
       this.quoteLocation = 0;
       this.newQuote = null;
     },
+  },
+  mounted() {
+    hljs.highlightAll();
   },
   created() {
     this.convertor = new Editor({

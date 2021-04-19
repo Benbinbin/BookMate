@@ -14,11 +14,19 @@ export default new Vuex.Store({
     quotesListMode: 'chapter',
     currentSummariesChapter: '',
     currentQuotesChapter: '',
-    editingSummary: null,
     editingQuote: null,
+    quoteEditing: false,
     quoteAddingComment: null,
+    editingSummary: null,
+    summaryEditing: false,
     candidateQuote: null,
     insertQuote: false,
+    addQuoteImages: [],
+    removeQuoteImages: [],
+    changeQuoteImagesSrc: false,
+    addSummaryImages: [],
+    removeSummaryImages: [],
+    changeSummaryImagesSrc: false,
     showShareModal: false,
     shareContent: [],
   },
@@ -116,7 +124,10 @@ export default new Vuex.Store({
       state.quoteAddingComment = payload;
     },
     // summary content
-    ACTIVE_SUMMARY_EDITING(state, payload) {
+    TOGGLE_SUMMARY_EDITING(state) {
+      state.summaryEditing = !state.summaryEditing;
+    },
+    SET_EDITING_SUMMARY(state, payload) {
       state.editingSummary = payload;
     },
     CANCEL_SUMMARY_EDITING(state) {
@@ -134,6 +145,29 @@ export default new Vuex.Store({
     DELETE_SUMMARY(state, payload) {
       const index = state.book.summaries.findIndex((item) => item._id === payload.summary_id);
       state.book.summaries.splice(index, 1);
+    },
+    // images
+    ADD_IMAGES(state, payload) {
+      if (payload.action === 'add') {
+        state[`add${payload.type}Images`].push(payload.target);
+      } else if (payload.action === 'remove') {
+        const index = state[`add${payload.type}Images`].find((item) => payload.imageName === item.imageName);
+        if (index === -1) return;
+        state[`add${payload.type}Images`].splice(index, 1);
+      } else if (payload.action === 'clear') {
+        state[`add${payload.type}Images`] = [];
+      }
+    },
+    REMOVE_IMAGES(state, payload) {
+      if (payload.action === 'add') {
+        state[`remove${payload.type}Images`].push(payload.imageName);
+      } else if (payload.action === 'clear') {
+        state[`remove${payload.type}Images`] = [];
+      }
+    },
+    TOGGLE_CHANGE_IMAGES_SRC(state, payload) {
+      // console.log(payload);
+      state[`change${payload.type}ImagesSrc`] = !state[`change${payload.type}ImagesSrc`];
     },
     // insert quote to summary
     SET_QUOTE(state, payload) {
@@ -417,13 +451,18 @@ export default new Vuex.Store({
     },
 
     // summary content
-    activeSummaryEditing(context, payload) {
-      context.commit('ACTIVE_SUMMARY_EDITING', payload);
+    toggleSummaryEditing(context) {
+      context.commit('TOGGLE_SUMMARY_EDITING');
+    },
+    setEditingSummary(context, payload) {
+      context.commit('SET_EDITING_SUMMARY', payload);
     },
     cancelSummaryEditing(context) {
       context.commit('CANCEL_SUMMARY_EDITING');
+      context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
     },
     saveSummaryEditing(context, payload) {
+      // console.log(payload);
       return new Promise((resolve, reject) => {
         if (/new$/.test(payload.id)) {
           const summary = {};
@@ -432,6 +471,8 @@ export default new Vuex.Store({
           Vue.axios.post(`${APIBASE}books/${context.state.book._id}/summaries/new`, { summaries: [summary] })
             .then((res) => {
               context.commit('ADD_BOOK_SUMMARY', res.data.summary);
+              context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
+              // context.commit('TOGGLE_SAVING_SUMMARY');
               resolve(res.data.summary._id);
             })
             .catch((error) => {
@@ -441,6 +482,8 @@ export default new Vuex.Store({
           Vue.axios.post(`${APIBASE}books/${context.state.book._id}/summaries/${payload.id}`, { summary: payload })
             .then((res) => {
               context.commit('SAVE_SUMMARY_EDITING', res.data.summary);
+              context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
+              // context.commit('TOGGLE_SAVING_SUMMARY');
               resolve(res.data.summary._id);
             })
             .catch((error) => {
@@ -455,7 +498,58 @@ export default new Vuex.Store({
           context.commit('DELETE_SUMMARY', res.data);
         });
     },
+    // images
+    addImages(context, payload) {
+      context.commit('ADD_IMAGES', payload);
+    },
+    removeImages(context, payload) {
+      context.commit('REMOVE_IMAGES', payload);
+    },
+    saveContentImagesChange(context, payload) {
+      return new Promise((resolve, reject) => {
+        if (context.state[`add${payload.type}Images`].length > 0) {
+          const formData = new FormData();
 
+          context.state[`add${payload.type}Images`].forEach((image) => {
+            formData.append('image', image.file, image.imageName);
+          });
+
+          Vue.axios.post(`${APIBASE}images/${payload.type.toLowerCase()}/add`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+            .then(() => {
+              context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: payload.type });
+              context.commit('ADD_IMAGES', { action: 'clear', type: payload.type });
+              resolve('images uploaded');
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          console.log('no images uploaded');
+          context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: payload.type });
+          resolve('no images uploaded');
+        }
+
+        if (context.state[`remove${payload.type}Images`].length > 0) {
+          Vue.axios.post(`${APIBASE}images/${payload.type.toLowerCase()}/remove`, { removeImages: context.state[`remove${payload.type}Images`] })
+            .then(() => {
+              context.dispatch('removeImages', {
+                action: 'clear',
+                type: 'Summary',
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      });
+    },
+    // toggleChangeImagesSrc(context, payload) {
+    //   context.commit('TOGGLE_CHANGE_IMAGES_SRC', payload);
+    // },
     // insert quote into summary
     setQuote(context, payload) {
       context.commit('SET_QUOTE', payload);

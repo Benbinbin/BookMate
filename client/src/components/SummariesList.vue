@@ -20,16 +20,13 @@
           <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
         </button>
       </div>
-     <summary-editor-menu
+      <summary-editor-menu
         v-if="editingSummary"
         :editor="editor"
         @inactive-editor="inactiveEditor"
       ></summary-editor-menu>
     </nav>
-    <div
-      ref="summariesList"
-      class="summaries-list px-6 py-6 h-full"
-    >
+    <div ref="summariesList" class="summaries-list px-6 py-6 h-full">
       <summary-card
         v-if="newSummary && newSummary._id === 'whole_book_new'"
         ref="whole_book_new"
@@ -61,7 +58,10 @@
           </div>
         </template>
       </summary-card>
-      <div v-if="summaries.length > 0 && summariesListMode === 'default'" class="summaries space-y-3">
+      <div
+        v-if="summaries.length > 0 && summariesListMode === 'default'"
+        class="summaries space-y-3"
+      >
         <summary-card
           v-for="summary of item.summaries"
           :key="summary._id"
@@ -239,7 +239,6 @@
 </template>
 
 <script>
-// editor package
 import { Editor, EditorContent } from 'tiptap';
 import {
   Bold,
@@ -254,20 +253,22 @@ import {
   Heading,
   TodoItem,
   TodoList,
-  Image,
+  // Image,
 } from 'tiptap-extensions';
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
-
-import Treeselect from '@riophae/vue-treeselect';
-import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-
+import hljs from 'highlight.js';
 import { mapState } from 'vuex';
+import Treeselect from '@riophae/vue-treeselect';
 import QuoteBlock from '../assets/plugins/QuoteBlock';
 import QuoteInline from '../assets/plugins/QuoteInline';
 import InsertQuote from '../assets/plugins/InsertQuote';
+import SummaryImage from '../assets/plugins/SummaryImage';
+
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './SummaryEditorMenu.vue';
 
@@ -281,6 +282,7 @@ export default {
   },
   data() {
     return {
+      imageBase: process.env.VUE_APP_SUMMARY_IMAGES_BASE,
       hiddenSummaries: [],
       HTMLtemp: null,
       JSONtemp: null,
@@ -302,7 +304,15 @@ export default {
       const summariesRendered = [];
       this.summaries.forEach((summary) => {
         const summaryTemp = { ...summary };
-        summaryTemp.content = this.convert(summary.content, true);
+        const content = this.convert(summary.content, true);
+        // console.log(content);
+        const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
+        summaryTemp.content = content.replace(
+          regexp,
+          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+        );
+        // console.log(summaryTemp.content);
+
         summariesRendered.push(summaryTemp);
       });
       return summariesRendered;
@@ -386,7 +396,7 @@ export default {
     activeEditor(summary) {
       this.editor.setContent(summary.content, true);
       if (summary.chapter) this.summaryChapter = encodeURIComponent(summary.chapter);
-      this.$store.dispatch('activeSummaryEditing', summary._id);
+      this.$store.dispatch('setEditingSummary', summary._id);
 
       this.$nextTick(() => {
         if (this.editingSummary === 'whole_book_new') {
@@ -398,6 +408,11 @@ export default {
           this.$refs[this.editingSummary][0].$el.focus();
         }
         this.editor.focus();
+        const delayTimer = setTimeout(() => {
+          this.$store.dispatch('toggleSummaryEditing');
+          console.log('active');
+          clearTimeout(delayTimer);
+        }, 0);
       });
     },
     addNewSummary(newID, newChapter = '') {
@@ -417,7 +432,12 @@ export default {
 
       this.activeEditor(this.newSummary);
     },
-    inactiveEditor(type) {
+    async inactiveEditor(type) {
+      this.$store.dispatch('toggleSummaryEditing');
+
+      await this.$store.dispatch('saveContentImagesChange', {
+        type: 'Summary',
+      });
       let target = this.editingSummary;
       if (type === 'cancel') {
         this.$store.dispatch('cancelSummaryEditing');
@@ -425,9 +445,11 @@ export default {
         if (!/new$/.test(target)) {
           this.$nextTick(() => {
             this.$refs[target][0].$el.focus();
+            hljs.highlightAll();
           });
         }
       } else if (type === 'save') {
+        console.log('saving editing summary');
         this.$store
           .dispatch('saveSummaryEditing', {
             id: this.editingSummary,
@@ -436,9 +458,9 @@ export default {
           })
           .then((id) => {
             target = id;
-
             this.$nextTick(() => {
               this.$refs[target][0].$el.focus();
+              hljs.highlightAll();
             });
           });
       }
@@ -451,6 +473,9 @@ export default {
       this.editor.commands.insertHTML(this.candidateQuote);
       this.$store.dispatch('clearQuote');
     },
+  },
+  mounted() {
+    hljs.highlightAll();
   },
   created() {
     this.convertor = new Editor({
@@ -478,7 +503,7 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new SummaryImage(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -514,10 +539,12 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new SummaryImage(),
       ],
-      onUpdate: ({ getJSON }) => {
+      onUpdate: ({ getJSON, transaction }) => {
         this.JSONtemp = getJSON();
+        // console.log(this.JSONtemp);
+        // console.log(transaction);
       },
       onDrop: (view, event, slice, moved) => {
         // console.log(slice);
