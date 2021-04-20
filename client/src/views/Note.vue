@@ -121,10 +121,10 @@
       :book-id="book._id"
       @close-import-quotes-modal="closeImportQuoteModelHandler"
     ></import-quotes-modal>
-    <share-modal
-      v-if="book && book.metadata && showShareModal"
+    <share-pic-modal
+      v-if="book && book.metadata && showSharePicModal"
       class="fixed w-screen h-screen inset-0"
-    ></share-modal>
+    ></share-pic-modal>
   </div>
 </template>
 
@@ -138,7 +138,7 @@ import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';
 import BookMetadataModal from '../components/BookMetadataModal.vue';
 import ImportQuotesModal from '../components/ImportQuotesModal.vue';
-import ShareModal from '../components/ShareModal.vue';
+import SharePicModal from '../components/SharePicModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -160,7 +160,7 @@ export default {
     SummariesList,
     BookMetadataModal,
     ImportQuotesModal,
-    ShareModal,
+    SharePicModal,
   },
   data() {
     return {
@@ -195,7 +195,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['book', 'showShareModal']),
+    ...mapState(['book', 'showSharePicModal']),
     chaptersWithSummaries() {
       return this.flattenChapters(this.book.summaries);
     },

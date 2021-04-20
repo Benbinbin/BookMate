@@ -28,8 +28,8 @@ export default new Vuex.Store({
     removeSummaryImages: [],
     changeSummaryImagesSrc: false,
 
-    showShareModal: false,
-    shareContent: [],
+    showSharePicModal: false,
+    sharePicContent: [],
   },
   getters: {
     allCollections(state) {
@@ -184,25 +184,25 @@ export default new Vuex.Store({
       state.insertQuote = false;
       state.candidateQuote = null;
     },
-    // share
-    SHARE(state, payload) {
+    // share picture
+    SHARE_PIC(state, payload) {
       // eslint-disable-next-line no-param-reassign
-      state.showShareModal = true;
+      state.showSharePicModal = true;
       if (payload.type === 'quote') {
         payload.ids.forEach((id) => {
           const quote = state.book.quotes.find((item) => item._id === id);
-          state.shareContent.push(quote);
+          state.sharePicContent.push(quote);
         });
       } else if (payload.type === 'summary') {
         payload.ids.forEach((id) => {
           const summary = state.book.summaries.find((item) => item._id === id);
-          state.shareContent.push(summary);
+          state.sharePicContent.push(summary);
         });
       }
     },
-    CLOSE_SHARE_MODAL(state) {
-      state.showShareModal = false;
-      state.shareContent = [];
+    CLOSE_SHARE_PIC_MODAL(state) {
+      state.showSharePicModal = false;
+      state.sharePicContent = [];
     },
   },
   actions: {
@@ -569,11 +569,11 @@ export default new Vuex.Store({
       context.commit('CLEAR_INSERT_QUOTE');
     },
     // share
-    share(context, payload) {
-      context.commit('SHARE', payload);
+    sharePic(context, payload) {
+      context.commit('SHARE_PIC', payload);
     },
-    closeShareModal(context) {
-      context.commit('CLOSE_SHARE_MODAL');
+    closeSharePicModal(context) {
+      context.commit('CLOSE_SHARE_PIC_MODAL');
     },
   },
 });

@@ -294,7 +294,7 @@ export default {
       this.$emit('active-editor');
     },
     shareHandler(quote) {
-      this.$store.dispatch('share', { type: 'quote', ids: [quote._id] });
+      this.$store.dispatch('sharePic', { type: 'quote', ids: [quote._id] });
     },
   },
 };

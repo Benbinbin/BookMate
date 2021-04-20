@@ -10,7 +10,7 @@
         <h1 class="font-bold text-sm text-gray-400">分享</h1>
         <button
           class="left w-8 h-8 flex items-center rounded-full p-1 text-red-300 opacity-60 hover:opacity-100"
-          @click="$store.dispatch('closeShareModal')"
+          @click="$store.dispatch('closeSharePicModal')"
         >
           <svg
             viewBox="0 0 50 50"
@@ -126,32 +126,42 @@ import {
   Heading,
   TodoItem,
   TodoList,
-  Image,
+  // Image,
 } from 'tiptap-extensions';
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
-
 import * as htmlToImage from 'html-to-image';
+import QuoteImage from '../assets/plugins/QuoteImage';
 
 export default {
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
+      imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
       HTMLtemp: null,
     };
   },
   computed: {
-    ...mapState(['book', 'shareContent']),
+    ...mapState(['book', 'sharePicContent']),
     contentsRendered() {
       const contentsRendered = [];
-      this.shareContent.forEach((item) => {
+      const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
+      this.sharePicContent.forEach((item) => {
         const contentsTemp = { ...item };
 
-        contentsTemp.content = this.convert(item.content, true);
+        const content = this.convert(item.content, true);
+        contentsTemp.content = content.replace(
+          regexp,
+          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+        );
         if (item.comment) {
-          contentsTemp.comment = this.convert(item.comment, true);
+          const comment = this.convert(item.comment, true);
+          contentsTemp.comment = comment.replace(
+            regexp,
+            (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+          );
         }
         contentsRendered.push(contentsTemp);
       });
@@ -223,7 +233,7 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new QuoteImage(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
