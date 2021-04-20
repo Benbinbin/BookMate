@@ -529,6 +529,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { Editor, EditorContent } from 'tiptap';
 import {
   Bold,
@@ -543,18 +548,15 @@ import {
   Heading,
   TodoItem,
   TodoList,
-  Image,
+  // Image,
 } from 'tiptap-extensions';
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
+import QuoteImage from '../assets/plugins/QuoteImage';
 
-import Treeselect from '@riophae/vue-treeselect';
-import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-
-import { mapState } from 'vuex';
 import QuoteCard from './QuoteCard.vue';
 import QuoteEditorMenu from './QuoteEditorMenu.vue';
 import QuoteEditorFloatingMenu from './QuoteEditorFloatingMenu.vue';
@@ -570,6 +572,7 @@ export default {
   },
   data() {
     return {
+      imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
       showMoreModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
@@ -595,12 +598,20 @@ export default {
     ]),
     quotesRendered() {
       const quotesRendered = [];
+      const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
       this.quotes.forEach((quote) => {
         const quoteTemp = { ...quote };
-
-        quoteTemp.content = this.convert(quote.content, true);
+        const content = this.convert(quote.content, true);
+        quoteTemp.content = content.replace(
+          regexp,
+          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+        );
         if (quote.comment) {
-          quoteTemp.comment = this.convert(quote.comment, true);
+          const comment = this.convert(quote.comment, true);
+          quoteTemp.comment = comment.replace(
+            regexp,
+            (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+          );
         }
         quotesRendered.push(quoteTemp);
       });
@@ -693,11 +704,10 @@ export default {
         if (quote.chapter) this.quoteChapter = encodeURIComponent(quote.chapter);
         if (quote.location) this.quoteLocation = quote.location;
         this.quoteType = quote.type;
-        this.$store.dispatch('activeQuoteEditing', quote._id);
+        this.$store.dispatch('setEditingQuote', quote._id);
       }
 
       this.$nextTick(() => {
-        // console.log(this.$refs[this.editingSummary]);
         if (this.editingQuote === 'whole_book_new') {
           this.$refs[this.editingQuote].$el.focus();
         } else if (
@@ -712,6 +722,11 @@ export default {
         } else {
           this.editor.focus();
         }
+
+        const delayTimer = setTimeout(() => {
+          this.$store.dispatch('toggleQuoteEditing');
+          clearTimeout(delayTimer);
+        }, 0);
       });
     },
     addNewQuote(newID, newChapter = '') {
@@ -739,9 +754,13 @@ export default {
       this.quoteType = type;
       this.showTypesModal = false;
     },
-    inactiveEditor(type) {
-      let target = this.editingQuote;
+    async inactiveEditor(type) {
+      this.$store.dispatch('toggleQuoteEditing');
+      await this.$store.dispatch('saveContentImagesChange', {
+        type: 'Quote',
+      });
 
+      let target = this.editingQuote;
       if (type === 'cancel') {
         this.$store.dispatch('cancelQuoteEditing');
         if (!/new$/.test(target)) {
@@ -806,7 +825,7 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new QuoteImage(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -839,7 +858,7 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new QuoteImage(),
       ],
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
@@ -872,7 +891,7 @@ export default {
         }),
         new TodoItem(),
         new TodoList(),
-        new Image(),
+        new QuoteImage(),
       ],
       onUpdate: ({ getJSON }) => {
         this.commentJSONtemp = getJSON();

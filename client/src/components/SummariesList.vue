@@ -239,6 +239,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { Editor, EditorContent } from 'tiptap';
 import {
   Bold,
@@ -260,14 +265,10 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
-import { mapState } from 'vuex';
-import Treeselect from '@riophae/vue-treeselect';
+import SummaryImage from '../assets/plugins/SummaryImage';
 import QuoteBlock from '../assets/plugins/QuoteBlock';
 import QuoteInline from '../assets/plugins/QuoteInline';
 import InsertQuote from '../assets/plugins/InsertQuote';
-import SummaryImage from '../assets/plugins/SummaryImage';
-
-import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './SummaryEditorMenu.vue';
@@ -302,17 +303,14 @@ export default {
     ]),
     summariesRendered() {
       const summariesRendered = [];
+      const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
       this.summaries.forEach((summary) => {
         const summaryTemp = { ...summary };
         const content = this.convert(summary.content, true);
-        // console.log(content);
-        const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
         summaryTemp.content = content.replace(
           regexp,
           (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
         );
-        // console.log(summaryTemp.content);
-
         summariesRendered.push(summaryTemp);
       });
       return summariesRendered;
@@ -410,7 +408,6 @@ export default {
         this.editor.focus();
         const delayTimer = setTimeout(() => {
           this.$store.dispatch('toggleSummaryEditing');
-          console.log('active');
           clearTimeout(delayTimer);
         }, 0);
       });
@@ -449,7 +446,6 @@ export default {
           });
         }
       } else if (type === 'save') {
-        console.log('saving editing summary');
         this.$store
           .dispatch('saveSummaryEditing', {
             id: this.editingSummary,

@@ -9,7 +9,6 @@ export default new Vuex.Store({
   state: {
     booksList: [],
     book: null,
-    // matchBook: null,
     summariesListMode: 'chapter',
     quotesListMode: 'chapter',
     currentSummariesChapter: '',
@@ -17,16 +16,18 @@ export default new Vuex.Store({
     editingQuote: null,
     quoteEditing: false,
     quoteAddingComment: null,
+    addQuoteImages: [],
+    removeQuoteImages: [],
+    changeQuoteImagesSrc: false,
+
     editingSummary: null,
     summaryEditing: false,
     candidateQuote: null,
     insertQuote: false,
-    addQuoteImages: [],
-    removeQuoteImages: [],
-    changeQuoteImagesSrc: false,
     addSummaryImages: [],
     removeSummaryImages: [],
     changeSummaryImagesSrc: false,
+
     showShareModal: false,
     shareContent: [],
   },
@@ -98,7 +99,10 @@ export default new Vuex.Store({
       state.currentSummariesChapter = null;
     },
     // quote content
-    ACTIVE_QUOTE_EDITING(state, payload) {
+    TOGGLE_QUOTE_EDITING(state) {
+      state.quoteEditing = !state.quoteEditing;
+    },
+    SET_EDITING_QUOTE(state, payload) {
       state.editingQuote = payload;
     },
     CANCEL_QUOTE_EDITING(state) {
@@ -405,11 +409,15 @@ export default new Vuex.Store({
     },
 
     // quote content
-    activeQuoteEditing(context, payload) {
-      context.commit('ACTIVE_QUOTE_EDITING', payload);
+    toggleQuoteEditing(context) {
+      context.commit('TOGGLE_QUOTE_EDITING');
+    },
+    setEditingQuote(context, payload) {
+      context.commit('SET_EDITING_QUOTE', payload);
     },
     cancelQuoteEditing(context) {
       context.commit('CANCEL_QUOTE_EDITING');
+      context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Quote' });
     },
     saveQuoteEditing(context, payload) {
       return new Promise((resolve, reject) => {
@@ -423,6 +431,7 @@ export default new Vuex.Store({
           Vue.axios.post(`${APIBASE}books/${context.state.book._id}/quotes/new`, { quotes: [quote] })
             .then((res) => {
               context.commit('ADD_BOOK_QUOTE', res.data.quote);
+              context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Quote' });
               resolve(res.data.quote._id);
             })
             .catch((error) => {
@@ -432,6 +441,8 @@ export default new Vuex.Store({
           Vue.axios.post(`${APIBASE}books/${context.state.book._id}/quotes/${payload.id}/all`, { quote: payload })
             .then((res) => {
               context.commit('SAVE_QUOTE_EDITING', res.data.quote);
+              context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Quote' });
+
               resolve(res.data.quote._id);
             })
             .catch((error) => {
@@ -462,7 +473,6 @@ export default new Vuex.Store({
       context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
     },
     saveSummaryEditing(context, payload) {
-      // console.log(payload);
       return new Promise((resolve, reject) => {
         if (/new$/.test(payload.id)) {
           const summary = {};
@@ -472,7 +482,6 @@ export default new Vuex.Store({
             .then((res) => {
               context.commit('ADD_BOOK_SUMMARY', res.data.summary);
               context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
-              // context.commit('TOGGLE_SAVING_SUMMARY');
               resolve(res.data.summary._id);
             })
             .catch((error) => {
@@ -483,7 +492,6 @@ export default new Vuex.Store({
             .then((res) => {
               context.commit('SAVE_SUMMARY_EDITING', res.data.summary);
               context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
-              // context.commit('TOGGLE_SAVING_SUMMARY');
               resolve(res.data.summary._id);
             })
             .catch((error) => {
