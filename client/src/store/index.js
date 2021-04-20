@@ -546,7 +546,7 @@ export default new Vuex.Store({
             .then(() => {
               context.dispatch('removeImages', {
                 action: 'clear',
-                type: 'Summary',
+                type: payload.type,
               });
             })
             .catch((error) => {
@@ -555,9 +555,6 @@ export default new Vuex.Store({
         }
       });
     },
-    // toggleChangeImagesSrc(context, payload) {
-    //   context.commit('TOGGLE_CHANGE_IMAGES_SRC', payload);
-    // },
     // insert quote into summary
     setQuote(context, payload) {
       context.commit('SET_QUOTE', payload);
