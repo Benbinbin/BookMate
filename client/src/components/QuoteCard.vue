@@ -7,8 +7,8 @@
     <div
       class="quote-content border"
       :class="{
-        'rounded-lg': !showComment && quote._id !== quoteAddingComment,
-        'rounded-t-lg': showComment || quote._id === quoteAddingComment,
+        'rounded-lg': !showComment && quote._id !== addingCommentQuote,
+        'rounded-t-lg': showComment || quote._id === addingCommentQuote,
       }"
     >
       <div class="card-header-container h-12">
@@ -20,7 +20,7 @@
             <button
               class="quote-link opacity-30 flex items-center"
               @click="insertQuote(quote)"
-              @drag="setQuote(quote)"
+              @drag="setCandidateQuote(quote)"
             >
               <img
                 src="@/assets/icons/quote.svg"
@@ -157,13 +157,13 @@
                 'opacity-30 hover:opacity-80':
                   !editingQuote ||
                   (editingQuote &&
-                    !quoteAddingComment &&
+                    !addingCommentQuote &&
                     quote._id === editingQuote),
-                'opacity-10': quoteAddingComment || quote._id !== editingQuote,
+                'opacity-10': addingCommentQuote || quote._id !== editingQuote,
               }"
               v-if="!showComment"
               :disabled="
-                quoteAddingComment ||
+                addingCommentQuote ||
                 (editingQuote && quote._id !== editingQuote)
               "
               @click="addCommentHandler(quote)"
@@ -226,7 +226,7 @@
       <div class="flex mt-4 space-x-4">
         <button
           class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
-          @click="$store.dispatch('deleteQuote', quote._id)"
+          @click="$store.dispatch('deleteQuote', [quote._id])"
         >
           确定
         </button>
@@ -253,7 +253,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['editingQuote', 'quoteAddingComment']),
+    ...mapState(['editingQuote', 'addingCommentQuote']),
     showComment() {
       if (this.quote.comment && this.quote.comment !== '<p></p>') {
         return true;
@@ -262,7 +262,7 @@ export default {
     },
   },
   methods: {
-    setQuote(quote) {
+    setCandidateQuote(quote) {
       const chapter = quote.chapter || '';
       const location = quote.location || 0;
       // block quote content
@@ -278,13 +278,13 @@ export default {
       const content = dom.body.textContent;
       const inlineDom = `<span class="inline-quote" data-chapter="${chapter}" data-location="${location}" >${content}</span>`;
 
-      this.$store.dispatch('setQuote', {
+      this.$store.dispatch('setCandidateQuote', {
         blockDom,
         inlineDom,
       });
     },
     insertQuote(quote) {
-      this.setQuote(quote);
+      this.setCandidateQuote(quote);
       this.$store.dispatch('insertQuote').then(() => {
         this.$store.dispatch('clearQuote');
       });

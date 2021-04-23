@@ -563,7 +563,7 @@
                   >
                   </star-rating>
                 </div>
-                <div class="book-defaultCollections space-y-2">
+                <div class="default_collections space-y-2">
                   <h2>
                     <span class="highlight pr-2 text-lg font-bold"
                       >默认收藏夹</span
@@ -571,7 +571,7 @@
                   </h2>
                   <div class="px-2 py-1 space-x-1">
                     <button
-                      v-for="item of defaultCollections"
+                      v-for="item of default_collections"
                       :key="item.name"
                       :title="item.name"
                       class="w-8 h-8 p-1 border border-gray-300 rounded"
@@ -707,7 +707,7 @@ export default {
       authors: createTags(this.metadata.authors) || [],
       translator: '',
       translators: createTags(this.metadata.translators) || [],
-      defaultCollections: [],
+      default_collections: [],
       collection: '',
       collections: createTags(this.metadata.collections) || [],
       tag: '',
@@ -787,7 +787,7 @@ export default {
             authors,
             translators,
             covers: this.covers,
-            defaultCollections: this.defaultCollections,
+            default_collections: this.default_collections,
             collections,
             tags,
             sources,
@@ -798,7 +798,7 @@ export default {
             description: this.description,
             review: this.review,
             category,
-            createdDate: this.metadata.createdDate || Date.now(),
+            created_date: this.metadata.created_date || Date.now(),
             stars: this.stars,
           },
         };
@@ -874,11 +874,11 @@ export default {
       dom.style.height = `${dom.scrollHeight}px`;
     },
     toggleDefaultCollections(val) {
-      const index = this.defaultCollections.findIndex(
+      const index = this.default_collections.findIndex(
         (item) => item.name === val,
       );
-      const item = this.defaultCollections[index];
-      this.$set(this.defaultCollections, index, {
+      const item = this.default_collections[index];
+      this.$set(this.default_collections, index, {
         name: item.name,
         active: !item.active,
       });
@@ -1116,8 +1116,8 @@ export default {
     this.tree.setTitle(root, '根节点');
   },
   created() {
-    this.defaultCollections = JSON.parse(
-      JSON.stringify(this.metadata.defaultCollections),
+    this.default_collections = JSON.parse(
+      JSON.stringify(this.metadata.default_collections),
     ) || [
       {
         name: 'like',

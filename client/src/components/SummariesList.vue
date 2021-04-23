@@ -239,12 +239,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
-import Treeselect from '@riophae/vue-treeselect';
-import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
-import { Editor, EditorContent } from 'tiptap';
+import { Editor, EditorContent } from "tiptap";
 import {
   Bold,
   Blockquote,
@@ -259,22 +259,22 @@ import {
   TodoItem,
   TodoList,
   // Image,
-} from 'tiptap-extensions';
-import javascript from 'highlight.js/lib/languages/javascript';
-import css from 'highlight.js/lib/languages/css';
-import xml from 'highlight.js/lib/languages/xml';
-import markdown from 'highlight.js/lib/languages/markdown';
-import hljs from 'highlight.js';
-import SummaryImage from '../assets/plugins/SummaryImage';
-import QuoteBlock from '../assets/plugins/QuoteBlock';
-import QuoteInline from '../assets/plugins/QuoteInline';
-import InsertQuote from '../assets/plugins/InsertQuote';
+} from "tiptap-extensions";
+import javascript from "highlight.js/lib/languages/javascript";
+import css from "highlight.js/lib/languages/css";
+import xml from "highlight.js/lib/languages/xml";
+import markdown from "highlight.js/lib/languages/markdown";
+import hljs from "highlight.js";
+import SummaryImage from "../assets/plugins/SummaryImage";
+import QuoteBlock from "../assets/plugins/QuoteBlock";
+import QuoteInline from "../assets/plugins/QuoteInline";
+import InsertQuote from "../assets/plugins/InsertQuote";
 
-import SummaryCard from './SummaryCard.vue';
-import SummaryEditorMenu from './SummaryEditorMenu.vue';
+import SummaryCard from "./SummaryCard.vue";
+import SummaryEditorMenu from "./SummaryEditorMenu.vue";
 
 export default {
-  props: ['category', 'summaries', 'summariesChapters'],
+  props: ["category", "summaries", "summariesChapters"],
   components: {
     SummaryCard,
     EditorContent,
@@ -287,7 +287,7 @@ export default {
       hiddenSummaries: [],
       HTMLtemp: null,
       JSONtemp: null,
-      summaryChapter: '',
+      summaryChapter: "",
       newSummary: null,
       convertor: null,
       editor: null,
@@ -295,11 +295,11 @@ export default {
   },
   computed: {
     ...mapState([
-      'summariesListMode',
-      'currentSummariesChapter',
-      'editingSummary',
-      'candidateQuote',
-      'insertQuote',
+      "summariesListMode",
+      "currentSummariesChapter",
+      "editingSummary",
+      "candidateQuote",
+      "insertQuote",
     ]),
     summariesRendered() {
       const summariesRendered = [];
@@ -309,14 +309,15 @@ export default {
         const content = this.convert(summary.content, true);
         summaryTemp.content = content.replace(
           regexp,
-          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+          (match, p1, p2, p3, p4) =>
+            `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`
         );
         summariesRendered.push(summaryTemp);
       });
       return summariesRendered;
     },
     summariesSorted() {
-      if (this.summariesListMode === 'chapter') {
+      if (this.summariesListMode === "chapter") {
         const chaptersContainer = [];
         this.summariesChapters.forEach((chapter) => {
           chaptersContainer.push({
@@ -325,19 +326,19 @@ export default {
           });
         });
         chaptersContainer.push({
-          name: '整书(whole)',
+          name: "整书(whole)",
           summaries: [],
         });
         this.summariesRendered.forEach((summary) => {
           const index = chaptersContainer.findIndex(
-            (item) => item.name === summary.chapter,
+            (item) => item.name === summary.chapter
           );
 
           if (index !== -1) {
             chaptersContainer[index].summaries.push(summary);
           } else {
             chaptersContainer[chaptersContainer.length - 1].summaries.push(
-              summary,
+              summary
             );
           }
         });
@@ -349,8 +350,8 @@ export default {
   watch: {
     currentSummariesChapter() {
       if (
-        this.summariesListMode === 'chapter'
-        && this.currentSummariesChapter !== null
+        this.summariesListMode === "chapter" &&
+        this.currentSummariesChapter !== null
       ) {
         const top = this.$refs[this.currentSummariesChapter][0].offsetTop;
         this.$refs.summariesList.scrollTop = top - 6 * 14;
@@ -389,33 +390,34 @@ export default {
       return tempContent;
     },
     changeMode(mode) {
-      this.$store.dispatch('changeSummariesMode', mode);
+      this.$store.dispatch("changeDisplayMode", { type: "summaries", mode });
     },
     activeEditor(summary) {
       this.editor.setContent(summary.content, true);
-      if (summary.chapter) this.summaryChapter = encodeURIComponent(summary.chapter);
-      this.$store.dispatch('setEditingSummary', summary._id);
+      if (summary.chapter)
+        this.summaryChapter = encodeURIComponent(summary.chapter);
+      this.$store.dispatch("setEditingSummary", summary._id);
 
       this.$nextTick(() => {
-        if (this.editingSummary === 'whole_book_new') {
+        if (this.editingSummary === "whole_book_new") {
           this.$refs[this.editingSummary].$el.focus();
         } else if (
-          /new$/.test(this.editingSummary)
-          && this.editingSummary !== 'whole_book_new'
+          /new$/.test(this.editingSummary) &&
+          this.editingSummary !== "whole_book_new"
         ) {
           this.$refs[this.editingSummary][0].$el.focus();
         }
         this.editor.focus();
         const delayTimer = setTimeout(() => {
-          this.$store.dispatch('toggleSummaryEditing');
+          this.$store.dispatch("toggleSummaryEditing");
           clearTimeout(delayTimer);
         }, 0);
       });
     },
-    addNewSummary(newID, newChapter = '') {
-      if (!newChapter || newChapter === '整书(whole)') {
+    addNewSummary(newID, newChapter = "") {
+      if (!newChapter || newChapter === "整书(whole)") {
         this.newSummary = {
-          chapter: '',
+          chapter: "",
           content: null,
           _id: newID,
         };
@@ -430,30 +432,37 @@ export default {
       this.activeEditor(this.newSummary);
     },
     async inactiveEditor(type) {
-      this.$store.dispatch('toggleSummaryEditing');
+      this.$store.dispatch("toggleSummaryEditing");
+      await this.$store.dispatch("saveContentImagesChange");
 
-      await this.$store.dispatch('saveContentImagesChange', {
-        type: 'Summary',
-      });
       let target = this.editingSummary;
-      if (type === 'cancel') {
-        this.$store.dispatch('cancelSummaryEditing');
-
+      if (type === "cancel") {
+        this.$store.dispatch("cancelSummaryEditing");
+        this.$store.dispatch("changeSummaryImagesSrc");
         if (!/new$/.test(target)) {
+          // focus the editing summary
           this.$nextTick(() => {
             this.$refs[target][0].$el.focus();
             hljs.highlightAll();
           });
         }
-      } else if (type === 'save') {
+      } else if (type === "save") {
         this.$store
-          .dispatch('saveSummaryEditing', {
+          .dispatch("saveSummaryEditing", {
             id: this.editingSummary,
             chapter: decodeURIComponent(this.summaryChapter),
             content: this.JSONtemp,
           })
+          .then((summaries) => {
+            if (/new$/.test(this.editingSummary))
+              ths.$store.dispatch("addSummaries", summaries);
+
+            resolve(quotes[0]._id);
+            this.$store.dispatch("changeSummaryImagesSrc");
+          })
           .then((id) => {
             target = id;
+            // focus the editing summary
             this.$nextTick(() => {
               this.$refs[target][0].$el.focus();
               hljs.highlightAll();
@@ -462,12 +471,12 @@ export default {
       }
       this.editor.clearContent();
       this.JSONtemp = null;
-      this.summaryChapter = '';
+      this.summaryChapter = "";
       this.newSummary = null;
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);
-      this.$store.dispatch('clearQuote');
+      this.$store.dispatch("clearQuote");
     },
   },
   mounted() {
@@ -507,7 +516,7 @@ export default {
     });
     this.editor = new Editor({
       dropCursor: {
-        color: 'rgba(252, 211, 77, 50%)',
+        color: "rgba(252, 211, 77, 50%)",
         width: 5,
       },
       extensions: [
@@ -545,8 +554,8 @@ export default {
       onDrop: (view, event, slice, moved) => {
         // console.log(slice);
         if (
-          slice.size === 1
-          && slice.content.content[0].attrs.alt === 'quote icon'
+          slice.size === 1 &&
+          slice.content.content[0].attrs.alt === "quote icon"
         ) {
           setTimeout(() => {
             if (this.editingSummary && this.candidateQuote) {

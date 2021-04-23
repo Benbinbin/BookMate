@@ -69,7 +69,7 @@
         </button>
         <div class="space-x-1">
           <button
-            v-for="item of metadata.defaultCollections"
+            v-for="item of metadata.default_collections"
             :key="item.name"
             :class="{
               'opacity-60': item.active,

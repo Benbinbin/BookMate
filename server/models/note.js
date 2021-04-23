@@ -6,11 +6,11 @@ const noteSchema = new mongoose.Schema({
     type: Object,
     required: true
   },
-  createdDate: {
+  created_date: {
     type: Date,
     default: Date.now
   },
-  updatedDate: {
+  updated_date: {
     type: Date,
     default: Date.now
   }

@@ -3,15 +3,15 @@ const mongoose = require('../db/mongoose');
 const summarySchema = new mongoose.Schema({
   chapter: String,
   content: Object,
-  createdDate: {
+  quote_links: [String],
+  created_date: {
     type: Date,
     default: Date.now
   },
-  updatedDate: {
+  updated_date: {
     type: Date,
     default: Date.now
   }
-
 });
 
-module.exports = summarySchema;
+module.exports = mongoose.model('Summary', summarySchema);

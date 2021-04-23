@@ -129,16 +129,16 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import Split from 'split.js';
-import 'highlight.js/styles/googlecode.css'; // 样式文件
+import { mapState } from "vuex";
+import Split from "split.js";
+import "highlight.js/styles/googlecode.css"; // 样式文件
 
-import BookInfo from '../components/BookInfo.vue';
-import QuotesList from '../components/QuotesList.vue';
-import SummariesList from '../components/SummariesList.vue';
-import BookMetadataModal from '../components/BookMetadataModal.vue';
-import ImportQuotesModal from '../components/ImportQuotesModal.vue';
-import SharePicModal from '../components/SharePicModal.vue';
+import BookInfo from "../components/BookInfo.vue";
+import QuotesList from "../components/QuotesList.vue";
+import SummariesList from "../components/SummariesList.vue";
+import BookMetadataModal from "../components/BookMetadataModal.vue";
+import ImportQuotesModal from "../components/ImportQuotesModal.vue";
+import SharePicModal from "../components/SharePicModal.vue";
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -165,37 +165,37 @@ export default {
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      avatar: require('@/assets/profile.png'),
+      avatar: require("@/assets/profile.png"),
       menuButtons: [
         {
-          icon: 'info',
+          icon: "info",
           active: true,
         },
         {
-          icon: 'notes',
+          icon: "notes",
           active: true,
         },
         {
-          icon: 'quote',
+          icon: "quote",
           active: true,
         },
         {
-          icon: 'mind-map',
+          icon: "mind-map",
           active: false,
         },
         {
-          icon: 'library',
+          icon: "library",
           active: false,
         },
       ],
       spliter: null,
-      containersArr: ['#split-left', '#split-middle', '#split-right'],
+      containersArr: ["#split-left", "#split-middle", "#split-right"],
       showBookMetadataModal: false,
       showImportQuotesModal: false,
     };
   },
   computed: {
-    ...mapState(['book', 'showSharePicModal']),
+    ...mapState(["book", "showSharePicModal"]),
     chaptersWithSummaries() {
       return this.flattenChapters(this.book.summaries);
     },
@@ -206,13 +206,13 @@ export default {
   methods: {
     getBook() {
       const { id } = this.$route.params;
-      this.$store.dispatch('getBook', {
-        id,
+      this.$store.dispatch("getBook", { id }).then((book) => {
+        this.$store.dispatch("setBook", book);
       });
     },
     toggle(btn) {
       // toggle the btn active state
-      const arr = ['info', 'notes', 'quote'];
+      const arr = ["info", "notes", "quote"];
       if (arr.includes(btn.icon)) {
         this.toggleSplitContainers(btn);
       } else {
@@ -221,9 +221,9 @@ export default {
     },
     toggleSplitContainers(btn) {
       const selectorsMap = {
-        info: '#split-left',
-        notes: '#split-middle',
-        quote: '#split-right',
+        info: "#split-left",
+        notes: "#split-middle",
+        quote: "#split-right",
       };
 
       if (this.containersArr.length > 1) {
@@ -246,7 +246,7 @@ export default {
         let containersMinSize = [];
         switch (this.containersArr.length) {
           case 2:
-            if (this.containersArr.includes('#split-left')) {
+            if (this.containersArr.includes("#split-left")) {
               containersSize = [30, 70];
               containersMinSize = [280, 350];
             } else {
@@ -296,7 +296,7 @@ export default {
     },
     closeBookModalHandler(payload) {
       if (payload) {
-        this.$store.dispatch('saveBookMetadata', payload);
+        this.$store.dispatch("saveBookMetadata", payload);
       }
       this.showBookMetadataModal = false;
     },
@@ -315,11 +315,11 @@ export default {
     });
   },
   created() {
-    this.avatar = require('@/assets/avatar.png');
+    this.avatar = require("@/assets/avatar.png");
     this.getBook();
   },
   destroyed() {
-    this.$store.dispatch('clearBook');
+    this.$store.dispatch("clearBook");
   },
 };
 </script>

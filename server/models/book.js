@@ -1,36 +1,40 @@
 const mongoose = require('../db/mongoose');
-const quoteSchema = require('../schema/quote');
-const summarySchema = require('../schema/summary');
 
 const bookSchema = new mongoose.Schema({
   metadata: {
     isbn: Number,
     titles: {
-      type: Array,
+      type: [String],
       required: true
     },
     date: Date,
-    authors: Array,
-    translators: Array,
+    authors: [String],
+    translators: [String],
     press: String,
-    covers: Array,
+    covers: [String],
     // pagination: Number,
-    defaultCollections: Array,
-    collections: Array,
+    default_collections: Array,
+    collections: [String],
     description: String,
     review: String,
-    tags: Array,
+    tags: [String],
     stars: Number,
     sources: Array,
-    links: Array,
-    createdDate: {
+    links: [String],
+    created_date: {
       type: Date,
       default: Date.now
     },
     category: Object
   },
-  quotes: [quoteSchema],
-  summaries: [summarySchema],
+  quote_ids: {
+    type: [String],
+    default: []
+  },
+  summary_ids: {
+    type: [String],
+    default: []
+  },
 });
 
 module.exports = mongoose.model('Book', bookSchema);

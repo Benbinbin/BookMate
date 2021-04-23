@@ -1,31 +1,33 @@
 const mongoose = require('../db/mongoose');
 
 const quoteSchema = new mongoose.Schema({
-
+    book: String,
     chapter: String,
     type: {
       type: String,
       default: 'annotation'
     },
     location: Number,
-    contentOrigin: {
+    content_origin: {
       type: String,
       default: ''
     },
     content: Object,
-    commentOrigin: {
+    comment_origin: {
       type: String,
       default: ''
     },
     comment: Object,
-    createdDate: {
+    summary_links: [String],
+    note_links: [String],
+    created_date: {
       type: Date,
       default: Date.now
     },
-    updatedDate: {
+    updated_date: {
       type: Date,
       default: Date.now
     }
 });
 
-module.exports = quoteSchema;
+module.exports = mongoose.model('Quote', quoteSchema);

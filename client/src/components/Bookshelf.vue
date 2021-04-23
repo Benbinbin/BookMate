@@ -71,7 +71,7 @@
             {{ book.metadata.titles[0] }}
           </p>
           <router-link
-            :to="`/note/${book._id}`"
+            :to="`/book/${book._id}`"
             class="absolute inset-0 z-10"
           ></router-link>
         </li>
@@ -97,7 +97,7 @@
             {{ book.metadata.titles[0] }}
           </p>
           <router-link
-            :to="`/note/${book._id}`"
+            :to="`/book/${book._id}`"
             class="absolute inset-0 z-10"
           ></router-link>
         </li>
@@ -118,13 +118,13 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters } from "vuex";
 
 const filterMap = {
-  readingBooks: '在读',
-  laterReadingBooks: '待读',
-  loveBooks: '喜欢',
-  cartBooks: '待购',
+  readingBooks: "在读",
+  laterReadingBooks: "待读",
+  loveBooks: "喜欢",
+  cartBooks: "待购",
 };
 
 function filterBooks(collectionType, key, books) {
@@ -132,13 +132,13 @@ function filterBooks(collectionType, key, books) {
   const arr = [];
   books.forEach((book) => {
     if (
-      collectionType === 'defaultCollections'
-      && book.metadata[collectionType].find((item) => item.name === key).active
+      collectionType === "default_collections" &&
+      book.metadata[collectionType].find((item) => item.name === key).active
     ) {
       arr.push(book);
     } else if (
-      collectionType === 'collections'
-      && book.metadata[collectionType].includes(key)
+      collectionType === "collections" &&
+      book.metadata[collectionType].includes(key)
     ) {
       arr.push(book);
     }
@@ -150,33 +150,33 @@ export default {
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      selected: 'readingBooks',
+      selected: "readingBooks",
       showMoreModal: false,
       moreModalList: [
         {
-          icon: 'category',
-          name: '所有',
-          val: 'allBooks',
+          icon: "category",
+          name: "所有",
+          val: "allBooks",
         },
         {
-          icon: 'reading',
-          name: '在读',
-          val: 'readingBooks',
+          icon: "reading",
+          name: "在读",
+          val: "readingBooks",
         },
         {
-          icon: 'read-it-later',
-          name: '待读',
-          val: 'laterReadingBooks',
+          icon: "read-it-later",
+          name: "待读",
+          val: "laterReadingBooks",
         },
         {
-          icon: 'like',
-          name: '喜欢',
-          val: 'loveBooks',
+          icon: "like",
+          name: "喜欢",
+          val: "loveBooks",
         },
         {
-          icon: 'buy',
-          name: '待购',
-          val: 'cartBooks',
+          icon: "buy",
+          name: "待购",
+          val: "cartBooks",
         },
       ],
       dragging: false,
@@ -184,8 +184,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(['booksList']),
-    ...mapGetters(['allCollections']),
+    ...mapState(["booksList"]),
+    ...mapGetters(["allCollections"]),
     currentList() {
       return {
         name: filterMap[this.selected],
@@ -196,23 +196,23 @@ export default {
       return this.booksList;
     },
     readingBooks() {
-      return filterBooks('defaultCollections', 'reading', this.booksList);
+      return filterBooks("default_collections", "reading", this.booksList);
     },
     laterReadingBooks() {
-      return filterBooks('defaultCollections', 'later', this.booksList);
+      return filterBooks("default_collections", "later", this.booksList);
     },
     loveBooks() {
-      return filterBooks('defaultCollections', 'like', this.booksList);
+      return filterBooks("default_collections", "like", this.booksList);
     },
     cartBooks() {
-      return filterBooks('defaultCollections', 'cart', this.booksList);
+      return filterBooks("default_collections", "cart", this.booksList);
     },
     collectionsBooks() {
       const collectionsBooks = [];
       this.allCollections.forEach((val) => {
         collectionsBooks.push({
           name: val,
-          data: filterBooks('collections', val, this.booksList),
+          data: filterBooks("collections", val, this.booksList),
         });
       });
       return collectionsBooks;
@@ -225,7 +225,13 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('getBooksList', { limit_field: 'metadata' });
+    this.$store
+      .dispatch("getBooksList", {
+        metadata: ["titles", "covers", "default_collections", "collections"],
+      })
+      .then((books) => {
+        this.$store.dispatch("setBooksList", books);
+      });
   },
 };
 </script>

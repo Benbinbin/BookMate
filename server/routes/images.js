@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-router.post('/:type/add', upload.array('image'), (req, res) => {
+router.post('/:type', upload.array('image'), (req, res) => {
   const imagesArr = [];
   req.files.forEach(file => {
     imagesArr.push(file.path)
@@ -26,7 +26,7 @@ router.post('/:type/add', upload.array('image'), (req, res) => {
   res.json('uploaded')
 })
 
-router.post('/:type/remove', upload.array('image'), (req, res) => {
+router.delete('/:type', upload.array('image'), (req, res) => {
   req.body.removeImages.forEach(image => {
     fs.unlink(path.join(__dirname, `../public/images/${req.params.type}/${image}`), (err) => {
       if (err) {

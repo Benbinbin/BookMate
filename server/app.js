@@ -5,9 +5,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 
-const indexRouter = require('./routes/index');
+// const indexRouter = require('./routes/index');
 // const usersRouter = require('./routes/users');
 const booksRouter = require('./routes/books');
+const quotesRouter = require('./routes/quotes');
+const summariesRouter = require('./routes/summaries');
 const notesRouter = require('./routes/notes');
 const coversRouter = require('./routes/covers')
 const imagesRouter = require('./routes/images')
@@ -27,9 +29,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // router
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 app.use('/api/books', booksRouter);
+app.use('/api/quotes', quotesRouter);
+app.use('/api/summaries', summariesRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/covers', coversRouter);
 app.use('/api/images', imagesRouter);

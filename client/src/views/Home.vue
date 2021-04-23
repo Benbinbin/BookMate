@@ -216,7 +216,7 @@ export default {
         authors: [],
         translators: [],
         covers: [],
-        defaultCollections: [
+        default_collections: [
           {
             name: 'like',
             active: false,
@@ -268,7 +268,7 @@ export default {
     },
     closeBookModalHandler(payload) {
       if (payload) {
-        this.$store.dispatch('addBookMetadata', payload);
+        this.$store.dispatch('addBook', payload);
       }
       this.showModal = '';
     },

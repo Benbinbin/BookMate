@@ -17,24 +17,33 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-router.post('/add', upload.array('cover'), (req, res) => {
+router.post('/', upload.array('cover'), (req, res) => {
   const coversArr = [];
   req.files.forEach(file => {
     coversArr.push(file.path)
   })
   // 将上传成功的文件信息响应给浏览器
-  res.json(coversArr)
+  res.send(`covers: ${coversArr} uploaded`)
 })
 
-router.post('/remove', upload.array('cover'), (req, res) => {
-
+router.delete('/', (req, res) => {
   req.body.removeCovers.forEach(cover => {
-    fs.unlink(path.join(__dirname,`../public/images/covers/${cover}`), (err) => {
-      if (err) throw err;
-      console.log(`./public/images/covers/${cover} was deleted`);
-    });
+    const filePath = path.join(__dirname, `../public/images/covers/${cover}`)
+    fs.access(path, fs.F_OK, (err) => {
+      if (err) {
+        console.log(`${filePath} doesn't exist`);
+      } else {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.log(`${filePath} cannot deleted. ${err}`);
+          } else {
+            console.log(`${filePath} was deleted`);
+            res.send(`${cover} removed`)
+          }
+        });
+      }
+    })
   })
-  res.send(`${req.body.removeCovers} removed`)
 })
 
 module.exports = router;
