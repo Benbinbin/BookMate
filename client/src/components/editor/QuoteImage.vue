@@ -1,11 +1,11 @@
 <template>
-    <img
-      :src="src"
-      :alt="node.attrs.alt"
-      :title="node.attrs.title"
-      :data-src="dataSrc"
-      :data-type="dataType"
-    />
+  <img
+    :src="src"
+    :alt="node.attrs.alt"
+    :title="node.attrs.title"
+    :data-src="dataSrc"
+    :data-type="dataType"
+  />
 </template>
 
 <script>
@@ -19,7 +19,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['quoteEditing', 'changeQuoteImagesSrc']),
+    ...mapState({
+      quoteEditing: (state) => state.quote.quoteEditing,
+      changeQuoteImagesSrc: (state) => state.quote.changeQuoteImagesSrc,
+    }),
     src: {
       get() {
         let src = '';
@@ -70,13 +73,13 @@ export default {
   beforeDestroy() {
     if (!this.quoteEditing) return;
     if (this.dataType === 'dropped') {
-      this.$store.dispatch('addImages', {
+      this.$store.dispatch('addQuoteImages', {
         action: 'remove',
         imageName: this.dataSrc,
         type: 'Quote',
       });
     } else if (this.dataType === 'uploaded') {
-      this.$store.dispatch('removeImages', {
+      this.$store.dispatch('removeQuoteImages', {
         action: 'add',
         imageName: this.dataSrc,
         type: 'Quote',

@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 const APIBASE = 'http://localhost:3000/api/';
 
 export default {
@@ -54,7 +56,7 @@ export default {
     },
     SAVE_SUMMARY_EDITING(state, payload) {
       const index = state.summaries.findIndex((item) => item._id === payload._id);
-      Vue.set(state.book.summaries, index, payload);
+      Vue.set(state.summaries, index, payload);
       state.editingSummary = null;
     },
     CANCEL_SUMMARY_EDITING(state) {
@@ -72,7 +74,7 @@ export default {
       state.candidateQuote = null;
     },
     // delete summary
-    DELETE_SUMMARY(state, payload) {
+    DELETE_SUMMARIES(state, payload) {
       const index = state.summaries.findIndex((item) => item._id === payload._id);
       state.summaries.splice(index, 1);
     },
@@ -80,38 +82,40 @@ export default {
   actions: {
     // get summary (summaries)
     getSummaries(context, payload) {
-      if (payload) {
-        // get summary by summary id or get summaries by book id
-        // payload should be { summary_id: id } or { book_id: id }
-        Vue.axios.get(`${APIBASE}summaries`, { params: payload })
-          .then((res) => {
-            resolve(res.data)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        // get all summaries by default
-        Vue.axios.get(`${APIBASE}summaries`)
-          .then((res) => {
-            resolve(res.data)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      return new Promise((resolve, reject) => {
+        if (payload) {
+          // get summary by summary id or get summaries by book id
+          // payload should be { summary_id: id } or { book_id: id }
+          Vue.axios.get(`${APIBASE}summaries`, { params: payload })
+            .then((res) => {
+              resolve(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          // get all summaries by default
+          Vue.axios.get(`${APIBASE}summaries`)
+            .then((res) => {
+              resolve(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      });
     },
     // set current summaries list
     setSummaries(context, payload) {
-      context.commit('SET_SUMMARIES', payload)
+      context.commit('SET_SUMMARIES', payload);
     },
     // push summary (summaries) to current summaries list
     addSummaries(context, payload) {
       context.commit('ADD_SUMMARIES', payload);
     },
     // clear current summaries list before the book component destroy
-    clearQuotes() {
-      context.commit('CLEAR_SUMMARIES')
+    clearSummaries(context) {
+      context.commit('CLEAR_SUMMARIES');
     },
     // edit summary
     toggleSummaryEditing(context) {
@@ -149,9 +153,11 @@ export default {
         }
 
         if (context.state.removeSummaryImages.length > 0) {
-          Vue.axios.post(`${APIBASE}images/summary`, { removeImages: context.state.removeSummaryImages })
+          Vue.axios.delete(`${APIBASE}images/summary`, {
+            data: { removeImages: context.state.removeSummaryImages },
+          })
             .then(() => {
-              context.dispatch('removeImages', { action: 'clear' });
+              context.dispatch('removeSummaryImages', { action: 'clear' });
             })
             .catch((error) => {
               console.log(error);
@@ -160,31 +166,37 @@ export default {
       });
     },
     changeSummaryImagesSrc(context) {
-      context.commit('CHANGE_SUMMARY_IMAGES_SRC')
+      context.commit('CHANGE_SUMMARY_IMAGES_SRC');
+    },
+    addSummaryImages(context, payload) {
+      context.commit('ADD_SUMMARY_IMAGES', payload);
     },
     removeSummaryImages(context, payload) {
       context.commit('REMOVE_SUMMARY_IMAGES', payload);
     },
     saveSummaryEditing(context, payload) {
+      console.log(payload);
       return new Promise((resolve, reject) => {
         if (/new$/.test(payload.id)) {
+          // if the summary is new to create
+          // don't send the _id field to backend
           const summary = {};
+          summary.book = payload.book;
           summary.chapter = payload.chapter;
           summary.content = payload.content;
-          Vue.axios.post(`${APIBASE}summaries`, { summaries: [summary] })
+          Vue.axios.post(`${APIBASE}summaries`, { summaries: [summary], book_id: payload.book })
             .then((res) => {
-              // context.commit('ADD_BOOK_SUMMARY', res.data.summary);
-              // context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
               resolve(res.data);
             })
             .catch((error) => {
               console.log(error);
             });
         } else {
+          // if the quote exist
+          // send all the fields to backend
           Vue.axios.put(`${APIBASE}summaries/${payload.id}`, { summary: payload })
             .then((res) => {
               context.commit('SAVE_SUMMARY_EDITING', res.data);
-              // context.commit('TOGGLE_CHANGE_IMAGES_SRC', { type: 'Summary' });
               resolve([res.data]);
             })
             .catch((error) => {
@@ -210,11 +222,11 @@ export default {
       context.commit('CANCEL_SUMMARY_EDITING');
     },
     // delete summary
-    deleteSummary(context, payload) {
-      Vue.axios.delete(`${APIBASE}summaries`, { summary_ids: payload })
+    deleteSummaries(context, payload) {
+      Vue.axios.delete(`${APIBASE}summaries`, { data: payload })
         .then((res) => {
-          context.commit('DELETE_SUMMARY', res.data);
+          context.commit('DELETE_SUMMARIES', res.data);
         });
     },
-  }
-}
+  },
+};

@@ -2,11 +2,16 @@
   <div class="max-w-full flex-grow flex flex-col">
     <nav class="flex-shrink-0 h-16 px-8 border-b-2 border-gray-100">
       <div
-        v-if="!editingSummary"
+        v-if="!summaryEditing"
         class="default w-full h-full flex justify-between items-center"
       >
         <button
-          class="flex items-center opacity-30 hover:opacity-80"
+          class="flex items-center"
+          :class="{
+            'opacity-30 hover:opacity-80': !summaryEditing,
+            'opacity-10': summaryEditing,
+          }"
+          :disabled="summaryEditing"
           @click="addNewSummary('whole_book_new')"
         >
           <img
@@ -21,7 +26,7 @@
         </button>
       </div>
       <summary-editor-menu
-        v-if="editingSummary"
+        v-if="summaryEditing"
         :editor="editor"
         @inactive-editor="inactiveEditor"
       ></summary-editor-menu>
@@ -30,9 +35,12 @@
       <summary-card
         v-if="newSummary && newSummary._id === 'whole_book_new'"
         ref="whole_book_new"
+        :category="category"
         :summary="newSummary"
+        :summary-chapter.sync="summaryChapter"
+        :editor="editor"
       >
-        <template v-slot:body>
+        <!-- <template v-slot:body>
           <div class="card-body mx-8">
             <editor-content :editor="editor"></editor-content>
           </div>
@@ -56,7 +64,7 @@
               :max-height="150"
             />
           </div>
-        </template>
+        </template> -->
       </summary-card>
       <div
         v-if="summaries.length > 0 && summariesListMode === 'default'"
@@ -66,10 +74,13 @@
           v-for="summary of item.summaries"
           :key="summary._id"
           :ref="summary._id"
+          :category="category"
           :summary="summary"
+          :summary-chapter.sync="summaryChapter"
+          :editor="editor"
           @active-editor="activeEditor(summary)"
         >
-          <template
+          <!-- <template
             v-slot:body
             v-if="editingSummary && summary._id === editingSummary"
           >
@@ -99,7 +110,7 @@
                 :max-height="150"
               />
             </div>
-          </template>
+          </template> -->
         </summary-card>
       </div>
       <div v-if="summaries.length > 0 && summariesListMode === 'chapter'">
@@ -112,6 +123,11 @@
             <div class="flex items-center">
               <button
                 class="flex items-center"
+                :class="{
+                  'opacity-30 hover:opacity-80': !summaryEditing,
+                  'opacity-10': summaryEditing,
+                }"
+                :disabled="summaryEditing"
                 @click="addNewSummary(`${item.name}_new`, item.name)"
               >
                 <img
@@ -152,9 +168,12 @@
             <summary-card
               v-if="newSummary && newSummary._id === `${item.name}_new`"
               :ref="`${item.name}_new`"
+              :category="category"
               :summary="newSummary"
+              :summary-chapter.sync="summaryChapter"
+              :editor="editor"
             >
-              <template v-slot:body>
+              <!-- <template v-slot:body>
                 <div class="card-body mx-8">
                   <editor-content :editor="editor"></editor-content>
                 </div>
@@ -178,16 +197,19 @@
                     :max-height="150"
                   />
                 </div>
-              </template>
+              </template> -->
             </summary-card>
             <summary-card
               v-for="summary of item.summaries"
               :key="summary._id"
               :ref="summary._id"
+              :category="category"
               :summary="summary"
+              :summary-chapter.sync="summaryChapter"
+              :editor="editor"
               @active-editor="activeEditor(summary)"
             >
-              <template
+              <!-- <template
                 v-slot:body
                 v-if="editingSummary && summary._id === editingSummary"
               >
@@ -217,7 +239,7 @@
                     :max-height="150"
                   />
                 </div>
-              </template>
+              </template> -->
             </summary-card>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
@@ -239,12 +261,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+// import Treeselect from "@riophae/vue-treeselect";
+// import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
-import { Editor, EditorContent } from "tiptap";
+// import { Editor, EditorContent } from "tiptap";
+import { Editor } from 'tiptap';
 import {
   Bold,
   Blockquote,
@@ -259,27 +282,27 @@ import {
   TodoItem,
   TodoList,
   // Image,
-} from "tiptap-extensions";
-import javascript from "highlight.js/lib/languages/javascript";
-import css from "highlight.js/lib/languages/css";
-import xml from "highlight.js/lib/languages/xml";
-import markdown from "highlight.js/lib/languages/markdown";
-import hljs from "highlight.js";
-import SummaryImage from "../assets/plugins/SummaryImage";
-import QuoteBlock from "../assets/plugins/QuoteBlock";
-import QuoteInline from "../assets/plugins/QuoteInline";
-import InsertQuote from "../assets/plugins/InsertQuote";
+} from 'tiptap-extensions';
+import javascript from 'highlight.js/lib/languages/javascript';
+import css from 'highlight.js/lib/languages/css';
+import xml from 'highlight.js/lib/languages/xml';
+import markdown from 'highlight.js/lib/languages/markdown';
+import hljs from 'highlight.js';
+import InsertQuote from '@/assets/js/plugins/InsertQuote';
+import SummaryImage from '@/assets/js/plugins/SummaryImage';
+import QuoteBlock from '@/assets/js/plugins/QuoteBlock';
+import QuoteInline from '@/assets/js/plugins/QuoteInline';
 
-import SummaryCard from "./SummaryCard.vue";
-import SummaryEditorMenu from "./SummaryEditorMenu.vue";
+import SummaryCard from './SummaryCard.vue';
+import SummaryEditorMenu from './editor/SummaryEditorMenu.vue';
 
 export default {
-  props: ["category", "summaries", "summariesChapters"],
+  props: ['category', 'summaries', 'summariesChapters'],
   components: {
     SummaryCard,
-    EditorContent,
+    // EditorContent,
     SummaryEditorMenu,
-    Treeselect,
+    // Treeselect,
   },
   data() {
     return {
@@ -287,20 +310,22 @@ export default {
       hiddenSummaries: [],
       HTMLtemp: null,
       JSONtemp: null,
-      summaryChapter: "",
+      summaryChapter: '',
       newSummary: null,
       convertor: null,
       editor: null,
     };
   },
   computed: {
-    ...mapState([
-      "summariesListMode",
-      "currentSummariesChapter",
-      "editingSummary",
-      "candidateQuote",
-      "insertQuote",
-    ]),
+    ...mapState({
+      summariesListMode: (state) => state.summariesListMode,
+      currentSummariesChapter: (state) => state.summariesListMode,
+      book: (state) => state.book.book,
+      summaryEditing: (state) => state.summary.summaryEditing,
+      editingSummary: (state) => state.summary.editingSummary,
+      candidateQuote: (state) => state.summary.candidateQuote,
+      insertQuote: (state) => state.summary.insertQuote,
+    }),
     summariesRendered() {
       const summariesRendered = [];
       const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
@@ -309,15 +334,14 @@ export default {
         const content = this.convert(summary.content, true);
         summaryTemp.content = content.replace(
           regexp,
-          (match, p1, p2, p3, p4) =>
-            `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`
+          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
         );
         summariesRendered.push(summaryTemp);
       });
       return summariesRendered;
     },
     summariesSorted() {
-      if (this.summariesListMode === "chapter") {
+      if (this.summariesListMode === 'chapter') {
         const chaptersContainer = [];
         this.summariesChapters.forEach((chapter) => {
           chaptersContainer.push({
@@ -326,19 +350,19 @@ export default {
           });
         });
         chaptersContainer.push({
-          name: "整书(whole)",
+          name: '整书(whole)',
           summaries: [],
         });
         this.summariesRendered.forEach((summary) => {
           const index = chaptersContainer.findIndex(
-            (item) => item.name === summary.chapter
+            (item) => item.name === summary.chapter,
           );
 
           if (index !== -1) {
             chaptersContainer[index].summaries.push(summary);
           } else {
             chaptersContainer[chaptersContainer.length - 1].summaries.push(
-              summary
+              summary,
             );
           }
         });
@@ -350,8 +374,8 @@ export default {
   watch: {
     currentSummariesChapter() {
       if (
-        this.summariesListMode === "chapter" &&
-        this.currentSummariesChapter !== null
+        this.summariesListMode === 'chapter'
+        && this.currentSummariesChapter !== null
       ) {
         const top = this.$refs[this.currentSummariesChapter][0].offsetTop;
         this.$refs.summariesList.scrollTop = top - 6 * 14;
@@ -364,13 +388,13 @@ export default {
     },
   },
   methods: {
-    categoryNormalizer(node) {
-      return {
-        id: encodeURIComponent(node.name),
-        label: node.name,
-        children: node.children,
-      };
-    },
+    // categoryNormalizer(node) {
+    //   return {
+    //     id: encodeURIComponent(node.name),
+    //     label: node.name,
+    //     children: node.children,
+    //   };
+    // },
     backToTopHandler() {
       this.$refs.summariesList.scrollTop = 0;
     },
@@ -390,34 +414,33 @@ export default {
       return tempContent;
     },
     changeMode(mode) {
-      this.$store.dispatch("changeDisplayMode", { type: "summaries", mode });
+      this.$store.dispatch('changeDisplayMode', { type: 'summaries', mode });
     },
     activeEditor(summary) {
       this.editor.setContent(summary.content, true);
-      if (summary.chapter)
-        this.summaryChapter = encodeURIComponent(summary.chapter);
-      this.$store.dispatch("setEditingSummary", summary._id);
+      if (summary.chapter) this.summaryChapter = encodeURIComponent(summary.chapter);
+      this.$store.dispatch('setEditingSummary', summary._id);
 
       this.$nextTick(() => {
-        if (this.editingSummary === "whole_book_new") {
+        if (this.editingSummary === 'whole_book_new') {
           this.$refs[this.editingSummary].$el.focus();
         } else if (
-          /new$/.test(this.editingSummary) &&
-          this.editingSummary !== "whole_book_new"
+          /new$/.test(this.editingSummary)
+          && this.editingSummary !== 'whole_book_new'
         ) {
           this.$refs[this.editingSummary][0].$el.focus();
         }
         this.editor.focus();
         const delayTimer = setTimeout(() => {
-          this.$store.dispatch("toggleSummaryEditing");
+          this.$store.dispatch('toggleSummaryEditing');
           clearTimeout(delayTimer);
         }, 0);
       });
     },
-    addNewSummary(newID, newChapter = "") {
-      if (!newChapter || newChapter === "整书(whole)") {
+    addNewSummary(newID, newChapter = '') {
+      if (!newChapter || newChapter === '整书(whole)') {
         this.newSummary = {
-          chapter: "",
+          chapter: '',
           content: null,
           _id: newID,
         };
@@ -432,13 +455,13 @@ export default {
       this.activeEditor(this.newSummary);
     },
     async inactiveEditor(type) {
-      this.$store.dispatch("toggleSummaryEditing");
-      await this.$store.dispatch("saveContentImagesChange");
+      this.$store.dispatch('toggleSummaryEditing');
+      await this.$store.dispatch('saveSummaryImagesChange');
 
       let target = this.editingSummary;
-      if (type === "cancel") {
-        this.$store.dispatch("cancelSummaryEditing");
-        this.$store.dispatch("changeSummaryImagesSrc");
+      if (type === 'cancel') {
+        this.$store.dispatch('cancelSummaryEditing');
+        this.$store.dispatch('changeSummaryImagesSrc');
         if (!/new$/.test(target)) {
           // focus the editing summary
           this.$nextTick(() => {
@@ -446,19 +469,18 @@ export default {
             hljs.highlightAll();
           });
         }
-      } else if (type === "save") {
+      } else if (type === 'save') {
         this.$store
-          .dispatch("saveSummaryEditing", {
+          .dispatch('saveSummaryEditing', {
             id: this.editingSummary,
+            book: this.book._id,
             chapter: decodeURIComponent(this.summaryChapter),
             content: this.JSONtemp,
           })
           .then((summaries) => {
-            if (/new$/.test(this.editingSummary))
-              ths.$store.dispatch("addSummaries", summaries);
-
-            resolve(quotes[0]._id);
-            this.$store.dispatch("changeSummaryImagesSrc");
+            if (/new$/.test(this.editingSummary)) this.$store.dispatch('addSummaries', summaries);
+            this.$store.dispatch('changeSummaryImagesSrc');
+            return summaries[0]._id;
           })
           .then((id) => {
             target = id;
@@ -471,12 +493,12 @@ export default {
       }
       this.editor.clearContent();
       this.JSONtemp = null;
-      this.summaryChapter = "";
+      this.summaryChapter = '';
       this.newSummary = null;
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);
-      this.$store.dispatch("clearQuote");
+      this.$store.dispatch('clearQuote');
     },
   },
   mounted() {
@@ -516,7 +538,7 @@ export default {
     });
     this.editor = new Editor({
       dropCursor: {
-        color: "rgba(252, 211, 77, 50%)",
+        color: 'rgba(252, 211, 77, 50%)',
         width: 5,
       },
       extensions: [
@@ -554,8 +576,8 @@ export default {
       onDrop: (view, event, slice, moved) => {
         // console.log(slice);
         if (
-          slice.size === 1 &&
-          slice.content.content[0].attrs.alt === "quote icon"
+          slice.size === 1
+          && slice.content.content[0].attrs.alt === 'quote icon'
         ) {
           setTimeout(() => {
             if (this.editingSummary && this.candidateQuote) {
@@ -581,6 +603,17 @@ export default {
   }
   &:hover::-webkit-scrollbar-thumb {
     background-color: rgba(156, 163, 175, 0.5);
+  }
+}
+</style>
+
+<style lang="scss">
+.vue-treeselect__control {
+  height: 100%;
+  .vue-treeselect__placeholder,
+  .vue-treeselect__single-value {
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
 </style>

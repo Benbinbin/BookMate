@@ -18,7 +18,10 @@ const bookSchema = new mongoose.Schema({
     description: String,
     review: String,
     tags: [String],
-    stars: Number,
+    stars: {
+      type: Number,
+      default: 0
+    },
     sources: Array,
     links: [String],
     created_date: {

@@ -6,14 +6,14 @@ const router = express.Router();
 
 // get quote by id
 router.get('/:quote_id', async (req, res) => {
-    await QuoteModel.findById(req.params.quote_id, (err, quote) => {
-      if (err) {
-        console.log(err);
-        res.send(`Oops, can't find quote of ${req.params.quote_id}. ${err}`)
-      } else {
-        res.send(quote)
-      }
-    })
+  await QuoteModel.findById(req.params.quote_id, (err, quote) => {
+    if (err) {
+      console.log(err);
+      res.send(`Oops, can't find quote of ${req.params.quote_id}. ${err}`)
+    } else {
+      res.send(quote)
+    }
+  })
 })
 
 // get quotes
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
   req.body.quotes.forEach(quote => {
     quotes.push(new QuoteModel({ ...quote }))
   })
-  await QuoteModel.insertMany(quotes, (err, docs) => {
+  await QuoteModel.insertMany(quotes, async (err, docs) => {
     if (err) {
       console.log(err);
       res.send(`Oops, can't add new quotes. ${err}`)
@@ -71,13 +71,21 @@ router.post('/', async (req, res) => {
       docs.forEach(doc => {
         doc_ids.push(doc.id)
       })
-      BookModel.findOneAndUpdate({ _id: req.body.book_id }, {
-        $addToSet: {
-          quote_ids: {
-            $each: doc_ids
+      await BookModel.findByIdAndUpdate(req.body.book_id,
+        {
+          $addToSet: {
+            quote_ids: {
+              $each: doc_ids
+            }
           }
-        }
-      })
+        },
+        {new: true},
+        (err, data) => {
+          if (err) {
+            console.log(err);
+            res.send(`Oops, can't insert quote id(s) to book. ${err}`)
+          }
+        })
       res.send(docs)
     }
   })
@@ -125,22 +133,22 @@ router.put('/:quote_id/:field', async (req, res) => {
 })
 
 // delete quote(s)
-router.delete('/delete', async (req, res) => {
-  await QuoteModel.remove({ _id: { $in: req.body.quote_ids } }, (err, removed) => {
+router.delete('/', async (req, res) => {
+  await QuoteModel.deleteMany({ _id: { $in: req.body.quote_ids } }, async (err, removed) => {
     if (err) {
       console.log(err);
       res.send(`Oops, can't delete summaries. ${err}`)
     } else {
-      let doc_ids = [];
-      removed.forEach(doc => {
-        doc_ids.push(doc.id)
-      })
-      await BookModel.findOneAndUpdate({ _id: req.body.book_id }, {
+      // let doc_ids = [];
+      // removed.forEach(doc => {
+      //   doc_ids.push(doc.id)
+      // })
+      await BookModel.findByIdAndUpdate(req.body.book_id, {
         $pullAll: {
-          quote_ids: doc_ids
+          quote_ids: req.body.quote_ids
         }
       })
-      res.send(doc_ids)
+      res.send(req.body.quote_ids)
     }
   })
 })

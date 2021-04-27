@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
   req.body.summaries.forEach(summary => {
     summaries.push(new SummaryModel({ ...summary }))
   })
-  await SummaryModel.insertMany(summaries, (err, docs) => {
+  await SummaryModel.insertMany(summaries, async (err, docs) => {
     if (err) {
       console.log(err);
       res.send(`Oops, can't add new summaries. ${err}`)
@@ -71,13 +71,21 @@ router.post('/', async (req, res) => {
       docs.forEach(doc => {
         doc_ids.push(doc.id)
       })
-      BookModel.findByIdAndUpdate(req.body.book_id, {
-        $addToSet: {
-          summary_ids: {
-            $each: doc_ids
+      await BookModel.findByIdAndUpdate(req.body.book_id,
+        {
+          $addToSet: {
+            summary_ids: {
+              $each: doc_ids
+            }
           }
-        }
-      })
+        },
+        { new: true },
+        (err, data) => {
+          if (err) {
+            console.log(err);
+            res.send(`Oops, can't insert summary id(s) to book. ${err}`)
+          }
+        })
       res.send(docs)
     }
   })
@@ -104,21 +112,21 @@ router.put('/:summary_id', async (req, res) => {
 
 // delete summary (summaries)
 router.delete('/', async (req, res) => {
-  await SummaryModel.remove({ _id: { $in: req.body.summary_ids } }, (err, removed) => {
+  await SummaryModel.deleteMany({ _id: { $in: req.body.summary_ids } }, async (err, removed) => {
     if (err) {
       console.log(err);
       res.send(`Oops, can't delete summaries. ${err}`)
     } else {
-      let doc_ids = [];
-      removed.forEach(doc => {
-        doc_ids.push(doc.id)
-      })
-      BookModel.findByIdAndUpdate(req.body.book_id, {
+      // let doc_ids = [];
+      // removed.forEach(doc => {
+      //   doc_ids.push(doc.id)
+      // })
+      await BookModel.findByIdAndUpdate(req.body.book_id, {
         $pullAll: {
-          summary_ids: doc_ids
+          summary_ids: req.body.summary_ids
         }
       })
-      res.send(doc_ids)
+      res.send(req.body.summary_ids)
     }
   })
 });

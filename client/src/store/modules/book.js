@@ -1,3 +1,6 @@
+import Vue from 'vue';
+import Qs from 'qs';
+
 const APIBASE = 'http://localhost:3000/api/';
 
 export default {
@@ -35,7 +38,7 @@ export default {
   actions: {
     // set current book
     setBook(context, payload) {
-      context.commit('SET_BOOK', payload)
+      context.commit('SET_BOOK', payload);
     },
     // get book information by id
     getBook(context, payload) {
@@ -48,12 +51,10 @@ export default {
           // get particular field of book
           Vue.axios.get(`${APIBASE}books/${payload.id}`, {
             params: payload.query,
-            paramsSerializer: (params) => {
-              return Qs.stringify(params, { arrayFormat: 'repeat' })
-            }
+            paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: 'repeat' }),
           })
             .then((res) => {
-              resolve(res.data)
+              resolve(res.data);
             })
             .catch((error) => {
               console.log(error);
@@ -62,13 +63,13 @@ export default {
           // get all fields of book by default
           Vue.axios.get(`${APIBASE}books/${payload.id}`)
             .then((res) => {
-              resolve(res.data)
+              resolve(res.data);
             })
             .catch((error) => {
               console.log(error);
             });
         }
-      })
+      });
     },
     // clear current book before the book component destroy
     clearBook(context) {
@@ -120,7 +121,7 @@ export default {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
           field: 'metadata.default_collections',
-          value: defaultCollectionsClone
+          value: defaultCollectionsClone,
         })
         .then((res) => {
           context.commit('TOGGLE_DEFAULT_COLLECTIONS', res.data.value);
@@ -133,7 +134,7 @@ export default {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
           field: 'metadata.collections',
-          value: payload.collections
+          value: payload.collections,
         })
         .then((res) => {
           context.commit('SET_COLLECTIONS', res.data.value);
@@ -146,7 +147,7 @@ export default {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
           field: 'metadata.tags',
-          tags: payload.tags
+          tags: payload.tags,
         })
         .then((res) => {
           context.commit('SET_TAGS', res.data.value);
@@ -159,7 +160,7 @@ export default {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
           field: 'metadata.stars',
-          value: payload.stars
+          value: payload.stars,
         })
         .then((res) => {
           context.commit('SET_STARS', res.data.value);
@@ -170,47 +171,52 @@ export default {
     },
     // save the book metadata of almost all fields modification
     saveBookMetadata(context, payload) {
-      Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
-        {
-          field: 'metadata',
-          value: payload.metadata
-        })
-        .then((res) => {
-          // if user add covers of book, upload them
-          if (payload.addCovers.length > 0) {
-            const formData = new FormData();
+      return new Promise((resolve, reject) => {
+        Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
+          {
+            field: 'metadata',
+            value: payload.metadata,
+          })
+          .then((res) => {
+            // if user add covers of book, upload them
+            if (payload.addCovers.length > 0) {
+              const formData = new FormData();
 
-            payload.addCovers.forEach((cover) => {
-              formData.append('cover', cover.file, cover.name);
-            });
-
-            Vue.axios.post(`${APIBASE}covers`, formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            })
-              .then(() => {
-                // refresh book metadata
-                context.commit('SAVE_BOOK_METADATA', res.data.value);
-              })
-              .catch((error) => {
-                console.log(error);
+              payload.addCovers.forEach((cover) => {
+                formData.append('cover', cover.file, cover.name);
               });
-          } else {
-            // refresh book metadata
-            context.commit('SAVE_BOOK_METADATA', res.data.value);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      // if user remove covers of book, delete them
-      if (payload.removeCovers.length > 0) {
-        Vue.axios.delete(`${APIBASE}covers`, { removeCovers: payload.removeCovers })
+
+              Vue.axios.post(`${APIBASE}covers`, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              })
+                .then(() => {
+                  // refresh book metadata
+                  context.commit('SAVE_BOOK_METADATA', res.data.value);
+                  resolve('save book metadata editing');
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            } else {
+              // refresh book metadata
+              context.commit('SAVE_BOOK_METADATA', res.data.value);
+            }
+          })
           .catch((error) => {
             console.log(error);
           });
-      }
+        // if user remove covers of book, delete them
+        if (payload.removeCovers.length > 0) {
+          Vue.axios.delete(`${APIBASE}covers`, {
+            data: { removeCovers: payload.removeCovers },
+          })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      });
     },
-  }
-}
+  },
+};

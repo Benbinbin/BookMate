@@ -21,7 +21,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['summaryEditing', 'changeSummaryImagesSrc']),
+    ...mapState({
+      summaryEditing: (state) => state.summary.summaryEditing,
+      changeSummaryImagesSrc: (state) => state.summary.changeSummaryImagesSrc,
+    }),
     src: {
       get() {
         let src = '';
@@ -85,13 +88,13 @@ export default {
     console.log(this.summaryEditing);
     if (!this.summaryEditing) return;
     if (this.dataType === 'dropped') {
-      this.$store.dispatch('addImages', {
+      this.$store.dispatch('addSummaryImages', {
         action: 'remove',
         imageName: this.dataSrc,
         type: 'Summary',
       });
     } else if (this.dataType === 'uploaded') {
-      this.$store.dispatch('removeImages', {
+      this.$store.dispatch('removeSummaryImages', {
         action: 'add',
         imageName: this.dataSrc,
         type: 'Summary',

@@ -28,15 +28,22 @@ router.post('/:type', upload.array('image'), (req, res) => {
 
 router.delete('/:type', upload.array('image'), (req, res) => {
   req.body.removeImages.forEach(image => {
-    fs.unlink(path.join(__dirname, `../public/images/${req.params.type}/${image}`), (err) => {
+    const filePath = path.join(__dirname, `../public/images/${req.params.type}/${image}`)
+    fs.access(filePath, fs.F_OK, (err) => {
       if (err) {
-        throw err;
+        console.log(`${filePath} doesn't exist`);
       } else {
-        console.log(`${image} was deleted`);
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            throw err;
+          } else {
+            console.log(`${image} was deleted`);
+          }
+        });
       }
-    });
+    })
   })
-  res.send(`${req.body.removeCovers} removed`)
+  // res.send(`${req.body.removeCovers} removed`)
 })
 
 module.exports = router;

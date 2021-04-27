@@ -16,6 +16,7 @@
     "highlight.js": "^10.6.0",
     "html-to-image": "^1.6.0",
     "prosemirror-model": "^1.13.3",
+    "qs": "^6.10.1",
     "split.js": "^1.6.2",
     "tiptap": "^1.32.2",
     "tiptap-commands": "^1.17.1",

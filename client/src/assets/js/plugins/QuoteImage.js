@@ -1,16 +1,11 @@
 import { Node, Plugin } from 'tiptap';
 import { nodeInputRule } from 'tiptap-commands';
 import store from '@/store/index';
-import SummaryImage from '@/components/editor/SummaryImage.vue';
+import QuoteImage from '@/components/editor/QuoteImage.vue';
 
 const IMAGE_INPUT_REGEX = /!\[(.+|:?)\]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/;
 
 export default class Image extends Node {
-  // constructor(name, parent, uploadFunc = null) {
-  //   super(name, parent);
-  //   this.uploadFunc = uploadFunc;
-  // }
-
   get name() {
     return 'image';
   }
@@ -104,13 +99,13 @@ export default class Image extends Node {
 
               images.forEach((image) => {
                 const imageName = `${Date.now()}${Math.round(Math.random() * 100)}.${image.name.split('.')[1]}`;
-                store.dispatch('addImages', {
+                store.dispatch('addQuoteImages', {
                   action: 'add',
                   target: {
                     file: image,
                     imageName,
                   },
-                  type: 'Summary',
+                  type: 'Quote',
                 });
                 const reader = new FileReader();
                 reader.readAsDataURL(image);
@@ -165,6 +160,6 @@ export default class Image extends Node {
   }
 
   get view() {
-    return SummaryImage;
+    return QuoteImage;
   }
 }

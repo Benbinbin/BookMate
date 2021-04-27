@@ -133,7 +133,7 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import * as htmlToImage from 'html-to-image';
-import QuoteImage from '../assets/plugins/QuoteImage';
+import QuoteImage from '../editor/QuoteImage.vue';
 
 export default {
   data() {
@@ -144,7 +144,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['book', 'sharePicContent']),
+    ...mapState({
+      book: (state) => state.book.book,
+      sharePicContent: (state) => state.sharePicContent,
+    }),
     contentsRendered() {
       const contentsRendered = [];
       const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;

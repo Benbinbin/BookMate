@@ -17,6 +17,7 @@ module.exports = {
     "global-require": 'off',
     "no-unused-vars": 'off',
     "class-methods-use-this": "off",
-    "no-underscore-dangle": 'off'
+    "no-underscore-dangle": 'off',
+    "camelcase": "off"
   },
 };

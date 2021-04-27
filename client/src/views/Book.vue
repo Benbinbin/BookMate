@@ -1,17 +1,17 @@
 <template>
-  <div class="note-container h-screen w-screen flex">
+  <div class="book-container h-screen w-screen flex">
     <aside
       class="w-16 flex-shrink-0 flex flex-col justify-center items-center bg-gray-100"
     >
       <div class="profile flex-shrink-0 h-16 flex justify-center items-center">
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
       </div>
-      <img
-        v-if="book"
-        :src="`${coverBase}${book.metadata.covers[0]}`"
-        alt="book cover"
-        class="w-12 my-4"
-      />
+      <div
+        class="book-cover w-14 h-16 bg-center bg-no-repeat bg-contain"
+        :style="{
+          backgroundImage: bookCover,
+        }"
+      ></div>
       <div class="menu flex-grow py-4 space-y-4 overflow-y-auto">
         <button
           v-for="item of menuButtons"
@@ -36,7 +36,7 @@
           @click="$router.push({ name: 'Home' })"
         >
           <img
-            :src="require(`@/assets/icons/bookmate-2.svg`)"
+            :src="require(`@/assets/icons/bookmate.svg`)"
             alt="back to home icon"
             class="w-6 h-6"
           />
@@ -52,33 +52,11 @@
         id="split-left"
         class="border-gray-200 flex-grow flex flex-col"
       >
-        <nav
-          class="flex-shrink-0 h-16 px-3 flex items-center justify-between border-b-2 border-gray-100"
-        >
-          <button
-            class="flex items-center opacity-30 hover:opacity-80"
-            @click="showBookMetadataModal = true"
-          >
-            <img
-              class="w-6 h-6"
-              src="@/assets/icons/edit.svg"
-              alt="edit icon"
-            />
-          </button>
-          <h2 class="text-xl font-bold">简介</h2>
-          <button class="flex items-center opacity-30 hover:opacity-80">
-            <img
-              class="w-6 h-6"
-              src="@/assets/icons/menu.svg"
-              alt="menu icon"
-            />
-          </button>
-        </nav>
         <book-info
-          v-if="book && book.metadata"
+          v-if="book"
           :metadata="book.metadata"
-          :quotes-chapters="chaptersWithQuotes"
-          :summaries-chapters="chaptersWithSummaries"
+          :quotes-chapters="flattenChaptersWithQuotes"
+          :summaries-chapters="flattenChaptersWithSummaries"
           class="flex-grow"
         ></book-info>
       </div>
@@ -89,9 +67,11 @@
       >
         <summaries-list
           v-if="book"
-          :category="book.metadata.category.children"
-          :summaries="book.summaries"
-          :summaries-chapters="chaptersWithSummaries"
+          :category="
+            book.metadata.category ? book.metadata.category.children : []
+          "
+          :summaries="summaries"
+          :summaries-chapters="flattenChaptersWithSummaries"
           class="flex-grow"
         ></summaries-list>
       </div>
@@ -102,43 +82,30 @@
       >
         <quotes-list
           v-if="book"
-          :category="book.metadata.category.children"
-          :quotes="book.quotes"
-          :quotes-chapters="chaptersWithQuotes"
-          @show-import-quotes-modal="showImportQuotesModal = true"
+          :category="
+            book.metadata.category ? book.metadata.category.children : []
+          "
+          :quotes="quotes"
+          :quotes-chapters="flattenChaptersWithQuotes"
         ></quotes-list>
       </div>
     </div>
-    <book-metadata-modal
-      v-if="book && book.metadata && showBookMetadataModal"
-      class="fixed w-screen h-screen inset-0"
-      :metadata="book.metadata"
-      @close-book-modal="closeBookModalHandler"
-    ></book-metadata-modal>
-    <import-quotes-modal
-      v-if="book && book.metadata && showImportQuotesModal"
-      class="fixed w-screen h-screen inset-0"
-      :book-id="book._id"
-      @close-import-quotes-modal="closeImportQuoteModelHandler"
-    ></import-quotes-modal>
     <share-pic-modal
-      v-if="book && book.metadata && showSharePicModal"
+      v-if="showSharePicModal"
       class="fixed w-screen h-screen inset-0"
     ></share-pic-modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import Split from "split.js";
-import "highlight.js/styles/googlecode.css"; // 样式文件
+import { mapState } from 'vuex';
+import Split from 'split.js';
+import 'highlight.js/styles/googlecode.css'; // 样式文件
 
-import BookInfo from "../components/BookInfo.vue";
-import QuotesList from "../components/QuotesList.vue";
-import SummariesList from "../components/SummariesList.vue";
-import BookMetadataModal from "../components/BookMetadataModal.vue";
-import ImportQuotesModal from "../components/ImportQuotesModal.vue";
-import SharePicModal from "../components/SharePicModal.vue";
+import BookInfo from '../components/BookInfo.vue';
+import QuotesList from '../components/QuotesList.vue';
+import SummariesList from '../components/SummariesList.vue';
+import SharePicModal from '../components/modal/SharePicModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -158,61 +125,80 @@ export default {
     BookInfo,
     QuotesList,
     SummariesList,
-    BookMetadataModal,
-    ImportQuotesModal,
     SharePicModal,
   },
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      avatar: require("@/assets/profile.png"),
+      avatar: require('@/assets/profile.png'),
       menuButtons: [
         {
-          icon: "info",
+          icon: 'info',
           active: true,
         },
         {
-          icon: "notes",
+          icon: 'notes',
           active: true,
         },
         {
-          icon: "quote",
+          icon: 'quote',
           active: true,
         },
         {
-          icon: "mind-map",
+          icon: 'mind-map',
           active: false,
         },
         {
-          icon: "library",
+          icon: 'library',
           active: false,
         },
       ],
       spliter: null,
-      containersArr: ["#split-left", "#split-middle", "#split-right"],
-      showBookMetadataModal: false,
-      showImportQuotesModal: false,
+      containersArr: ['#split-left', '#split-middle', '#split-right'],
     };
   },
   computed: {
-    ...mapState(["book", "showSharePicModal"]),
-    chaptersWithSummaries() {
-      return this.flattenChapters(this.book.summaries);
+    ...mapState({
+      showSharePicModal: (state) => state.showSharePicModal,
+      book: (state) => state.book.book,
+      quotes: (state) => state.quote.quotes,
+      summaries: (state) => state.summary.summaries,
+    }),
+    // get the chapters array with quotes or summaries
+    flattenChaptersWithQuotes() {
+      return this.flattenChapters(this.quotes);
     },
-    chaptersWithQuotes() {
-      return this.flattenChapters(this.book.quotes);
+    flattenChaptersWithSummaries() {
+      return this.flattenChapters(this.summaries);
+    },
+    bookCover() {
+      if (this.book && this.book.metadata.covers[0]) {
+        return `url(${this.coverBase}${this.book.metadata.covers[0]})`;
+      }
+      return 'url(@/assets/icons/bookmate.svg)';
     },
   },
   methods: {
     getBook() {
       const { id } = this.$route.params;
-      this.$store.dispatch("getBook", { id }).then((book) => {
-        this.$store.dispatch("setBook", book);
+      this.$store.dispatch('getBook', { id }).then((book) => {
+        this.$store.dispatch('setBook', book);
+        if (book.quote_ids.length > 0) {
+          this.$store.dispatch('getQuotes', { book_id: id }).then((quotes) => {
+            this.$store.dispatch('setQuotes', quotes);
+          });
+        }
+        if (book.summary_ids.length > 0) {
+          this.$store.dispatch('getSummaries', { book_id: id })
+            .then((summaries) => {
+              this.$store.dispatch('setSummaries', summaries);
+            });
+        }
       });
     },
     toggle(btn) {
-      // toggle the btn active state
-      const arr = ["info", "notes", "quote"];
+      // toggle the btn to show/hidde particular column
+      const arr = ['info', 'notes', 'quote'];
       if (arr.includes(btn.icon)) {
         this.toggleSplitContainers(btn);
       } else {
@@ -221,9 +207,9 @@ export default {
     },
     toggleSplitContainers(btn) {
       const selectorsMap = {
-        info: "#split-left",
-        notes: "#split-middle",
-        quote: "#split-right",
+        info: '#split-left',
+        notes: '#split-middle',
+        quote: '#split-right',
       };
 
       if (this.containersArr.length > 1) {
@@ -246,7 +232,7 @@ export default {
         let containersMinSize = [];
         switch (this.containersArr.length) {
           case 2:
-            if (this.containersArr.includes("#split-left")) {
+            if (this.containersArr.includes('#split-left')) {
               containersSize = [30, 70];
               containersMinSize = [280, 350];
             } else {
@@ -272,37 +258,31 @@ export default {
       }
     },
     flattenChapters(arr) {
-      // chapters set extract from quotes or summaries
-      const chaptersArr = [];
-      arr.forEach((item) => {
-        if (item.chapter) {
-          chaptersArr.push(item.chapter);
-        }
-      });
-      const chaptersSet = new Set(chaptersArr);
-
-      // flatten chapters from book category
-      const categoryFlatten = [];
-      flatten(this.book.metadata.category, categoryFlatten);
-
-      // chapters with content in order
       const chaptersSorted = [];
-      categoryFlatten.forEach((chapter) => {
-        if (chaptersSet.has(chapter)) {
-          chaptersSorted.push(chapter);
-        }
-      });
-      return chaptersSorted;
-    },
-    closeBookModalHandler(payload) {
-      if (payload) {
-        this.$store.dispatch("saveBookMetadata", payload);
+
+      if (this.book.metadata.category) {
+        const chaptersArr = [];
+        arr.forEach((item) => {
+          if (item.chapter) {
+            chaptersArr.push(item.chapter);
+          }
+        });
+        // chapters set extract from quotes or summaries
+        const chaptersSet = new Set(chaptersArr);
+
+        // flatten chapters from book category
+        const categoryFlatten = [];
+        flatten(this.book.metadata.category, categoryFlatten);
+
+        // chapters with content in order
+        categoryFlatten.forEach((chapter) => {
+          if (chaptersSet.has(chapter)) {
+            chaptersSorted.push(chapter);
+          }
+        });
       }
-      this.showBookMetadataModal = false;
-    },
-    closeImportQuoteModelHandler() {
-      this.getBook();
-      this.showImportQuotesModal = false;
+
+      return chaptersSorted;
     },
   },
   mounted() {
@@ -315,11 +295,14 @@ export default {
     });
   },
   created() {
-    this.avatar = require("@/assets/avatar.png");
+    this.avatar = require('@/assets/avatar.png');
     this.getBook();
   },
   destroyed() {
-    this.$store.dispatch("clearBook");
+    // clear the data when leave the page
+    this.$store.dispatch('clearBook');
+    this.$store.dispatch('clearQuotes');
+    this.$store.dispatch('clearSummaries');
   },
 };
 </script>
@@ -333,7 +316,7 @@ export default {
 <style lang="scss">
 @import "../assets/styles/card.scss";
 
-.note-container {
+.book-container {
   background-color: #fcfcfd;
 }
 
@@ -344,17 +327,6 @@ export default {
   transition-duration: 200ms;
   &:hover {
     background-color: rgba(209, 213, 219, 0.5);
-  }
-}
-</style>
-
-<style lang="scss">
-.vue-treeselect__control {
-  height: 100%;
-  .vue-treeselect__placeholder,
-  .vue-treeselect__single-value {
-    font-size: 0.75rem;
-    line-height: 1rem;
   }
 }
 </style>

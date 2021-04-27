@@ -777,7 +777,6 @@ export default {
         const sources = getText(this.sources);
         const links = getText(this.links);
 
-        // const categoryTree = this.tree.getNestedTree();
         const category = getCategoryData(this.tree.getNestedTree()[0]);
         const payload = {
           removeCovers,

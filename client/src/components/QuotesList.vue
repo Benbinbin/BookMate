@@ -2,11 +2,16 @@
   <div class="max-w-full flex-grow flex flex-col">
     <nav class="flex-shrink-0 h-16 px-6 relative border-b-2 border-gray-100">
       <div
-        v-if="!editingQuote"
+        v-if="!quoteEditing"
         class="default w-full h-full flex justify-between items-center"
       >
         <button
-          class="flex items-center opacity-30 hover:opacity-80"
+          class="flex items-center"
+          :class="{
+            'opacity-30 hover:opacity-80': !quoteEditing,
+            'opacity-10': quoteEditing,
+          }"
+          :disabled="quoteEditing"
           @click="addNewQuote('whole_book_new')"
         >
           <img
@@ -24,8 +29,9 @@
         </button>
       </div>
       <quote-editor-menu
-        v-if="editingQuote"
+        v-if="quoteEditing"
         :editor="editor"
+        :commentEditor="commentEditor"
         @inactive-editor="inactiveEditor"
       ></quote-editor-menu>
       <div
@@ -34,7 +40,7 @@
       >
         <button
           class="px-4 py-2 text-sm hover:bg-gray-200 rounded"
-          @click="showImportQuotesModal"
+          @click="showImportQuotesModalHandler"
         >
           导入书摘
         </button>
@@ -44,10 +50,16 @@
       <quote-card
         v-if="newQuote && newQuote._id === 'whole_book_new'"
         ref="whole_book_new"
+        :category="category"
         :quote="newQuote"
+        :quote-chapter.sync="quoteChapter"
+        :quote-location.sync="quoteLocation"
+        :quote-type="quoteType"
+        :editor="editor"
+        :commentEditor="commentEditor"
         @inactive-editor="inactiveEditor"
       >
-        <template v-slot:body>
+        <!-- <template v-slot:body>
           <div class="quote-editor-container card-body mx-8">
             <quote-editor-floating-menu
               :editor="editor"
@@ -137,7 +149,7 @@
             ></quote-editor-floating-menu>
             <editor-content :editor="commentEditor"></editor-content>
           </div>
-        </template>
+        </template> -->
       </quote-card>
       <div
         v-if="quotes.length > 0 && quotesListMode === 'default'"
@@ -147,11 +159,17 @@
           v-for="quote of item.quotes"
           :key="quote._id"
           :ref="quote._id"
+          :category="category"
           :quote="quote"
+          :quote-chapter.sync="quoteChapter"
+          :quote-location.sync="quoteLocation"
+          :quote-type="quoteType"
+          :editor="editor"
+          :commentEditor="commentEditor"
           @active-editor="activeEditor(quote)"
           @inactive-editor="inactiveEditor"
         >
-          <template
+          <!-- <template
             v-slot:body
             v-if="editingQuote && quote._id === editingQuote"
           >
@@ -250,7 +268,7 @@
               ></quote-editor-floating-menu>
               <editor-content :editor="commentEditor"></editor-content>
             </div>
-          </template>
+          </template> -->
         </quote-card>
       </div>
       <div v-if="quotes.length > 0 && quotesListMode === 'chapter'">
@@ -259,6 +277,11 @@
             <div class="flex items-center">
               <button
                 class="flex items-center"
+                :class="{
+                  'opacity-30 hover:opacity-80': !quoteEditing,
+                  'opacity-10': quoteEditing,
+                }"
+                :disabled="quoteEditing"
                 @click="addNewQuote(`${item.name}_new`, item.name)"
               >
                 <img
@@ -299,10 +322,16 @@
             <quote-card
               v-if="newQuote && newQuote._id === `${item.name}_new`"
               :ref="`${item.name}_new`"
+              :category="category"
               :quote="newQuote"
+              :quote-chapter.sync="quoteChapter"
+              :quote-location.sync="quoteLocation"
+              :quote-type="quoteType"
+              :editor="editor"
+              :commentEditor="commentEditor"
               @inactive-editor="inactiveEditor"
             >
-              <template v-slot:body>
+              <!-- <template v-slot:body>
                 <div class="quote-editor-container card-body mx-8">
                   <quote-editor-floating-menu
                     :editor="editor"
@@ -395,17 +424,23 @@
                   ></quote-editor-floating-menu>
                   <editor-content :editor="commentEditor"></editor-content>
                 </div>
-              </template>
+              </template> -->
             </quote-card>
             <quote-card
               v-for="quote of item.quotes"
               :key="quote._id"
               :ref="quote._id"
+              :category="category"
               :quote="quote"
+              :quote-chapter.sync="quoteChapter"
+              :quote-location.sync="quoteLocation"
+              :quote-type="quoteType"
+              :editor="editor"
+              :commentEditor="commentEditor"
               @active-editor="activeEditor(quote)"
               @inactive-editor="inactiveEditor"
             >
-              <template
+              <!-- <template
                 v-slot:body
                 v-if="editingQuote && quote._id === editingQuote"
               >
@@ -507,7 +542,7 @@
                   ></quote-editor-floating-menu>
                   <editor-content :editor="commentEditor"></editor-content>
                 </div>
-              </template>
+              </template> -->
             </quote-card>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
@@ -525,16 +560,23 @@
         </div>
       </footer>
     </div>
+    <import-quotes-modal
+      v-if="book && book.metadata && showImportQuotesModal"
+      class="fixed w-screen h-screen inset-0"
+      :book-id="book._id"
+      @close-import-quotes-modal="closeImportQuoteModelHandler"
+    ></import-quotes-modal>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
-import { Editor, EditorContent } from "tiptap";
+// import Treeselect from "@riophae/vue-treeselect";
+// import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+// editor
+// import { Editor, EditorContent } from "tiptap";
+import { Editor } from 'tiptap';
 import {
   Bold,
   Blockquote,
@@ -549,53 +591,59 @@ import {
   TodoItem,
   TodoList,
   // Image,
-} from "tiptap-extensions";
-import javascript from "highlight.js/lib/languages/javascript";
-import css from "highlight.js/lib/languages/css";
-import xml from "highlight.js/lib/languages/xml";
-import markdown from "highlight.js/lib/languages/markdown";
-import hljs from "highlight.js";
-import QuoteImage from "../assets/plugins/QuoteImage";
+} from 'tiptap-extensions';
+import javascript from 'highlight.js/lib/languages/javascript';
+import css from 'highlight.js/lib/languages/css';
+import xml from 'highlight.js/lib/languages/xml';
+import markdown from 'highlight.js/lib/languages/markdown';
+import hljs from 'highlight.js';
+import QuoteImage from '@/assets/js/plugins/QuoteImage';
 
-import QuoteCard from "./QuoteCard.vue";
-import QuoteEditorMenu from "./QuoteEditorMenu.vue";
-import QuoteEditorFloatingMenu from "./QuoteEditorFloatingMenu.vue";
+import QuoteCard from './QuoteCard.vue';
+import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
+// import QuoteEditorFloatingMenu from "./editor/QuoteEditorFloatingMenu.vue";
+
+import ImportQuotesModal from './modal/ImportQuotesModal.vue';
 
 export default {
-  props: ["category", "quotes", "quotesChapters"],
+  props: ['category', 'quotes', 'quotesChapters'],
   components: {
+    // Treeselect,
+    // EditorContent,
     QuoteCard,
     QuoteEditorMenu,
-    QuoteEditorFloatingMenu,
-    EditorContent,
-    Treeselect,
+    // QuoteEditorFloatingMenu,
+    ImportQuotesModal,
   },
   data() {
     return {
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
       showMoreModal: false,
+      showImportQuotesModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
       commentJSONtemp: null,
-      quoteChapter: "",
+      quoteChapter: '',
       quoteLocation: 0,
-      quoteType: "annotation",
+      quoteType: 'annotation',
       newQuote: null,
       convertor: null,
       editor: null,
       commentEditor: null,
       showTypesModal: false,
-      types: ["annotation", "question", "deep-reading", "inspiration"],
+      types: ['annotation', 'question', 'deep-reading', 'inspiration'],
     };
   },
   computed: {
-    ...mapState([
-      "quotesListMode",
-      "currentQuotesChapter",
-      "editingQuote",
-      "addingCommentQuote",
-    ]),
+    ...mapState({
+      quotesListMode: (state) => state.quotesListMode,
+      currentQuotesChapter: (state) => state.currentQuotesChapter,
+      book: (state) => state.book.book,
+      quoteEditing: (state) => state.quote.quoteEditing,
+      editingQuote: (state) => state.quote.editingQuote,
+      addingCommentQuote: (state) => state.quote.addingCommentQuote,
+    }),
     quotesRendered() {
       const quotesRendered = [];
       const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
@@ -604,15 +652,13 @@ export default {
         const content = this.convert(quote.content, true);
         quoteTemp.content = content.replace(
           regexp,
-          (match, p1, p2, p3, p4) =>
-            `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`
+          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
         );
         if (quote.comment) {
           const comment = this.convert(quote.comment, true);
           quoteTemp.comment = comment.replace(
             regexp,
-            (match, p1, p2, p3, p4) =>
-              `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`
+            (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
           );
         }
         quotesRendered.push(quoteTemp);
@@ -620,7 +666,7 @@ export default {
       return quotesRendered;
     },
     quotesSorted() {
-      if (this.quotesListMode === "chapter") {
+      if (this.quotesListMode === 'chapter') {
         const chaptersContainer = [];
         this.quotesChapters.forEach((chapter) => {
           chaptersContainer.push({
@@ -629,12 +675,12 @@ export default {
           });
         });
         chaptersContainer.push({
-          name: "未分类(NoChapter)",
+          name: '未分类(NoChapter)',
           quotes: [],
         });
         this.quotesRendered.forEach((quote) => {
           const index = chaptersContainer.findIndex(
-            (item) => item.name === quote.chapter
+            (item) => item.name === quote.chapter,
           );
 
           if (index !== -1) {
@@ -651,8 +697,8 @@ export default {
   watch: {
     currentQuotesChapter() {
       if (
-        this.quotesListMode === "chapter" &&
-        this.currentQuotesChapter !== null
+        this.quotesListMode === 'chapter'
+        && this.currentQuotesChapter !== null
       ) {
         const top = this.$refs[this.currentQuotesChapter][0].offsetTop;
         this.$refs.quotesList.scrollTop = top - 6 * 14;
@@ -665,16 +711,23 @@ export default {
     },
   },
   methods: {
-    showImportQuotesModal() {
-      this.$emit("show-import-quotes-modal");
+    getQuotes() {
+      const { id } = this.$route.params;
+      this.$store.dispatch('getBook', { id }).then((book) => {
+        if (book.quote_ids.length > 0) {
+          this.$store.dispatch('getQuotes', { book_id: id }).then((quotes) => {
+            this.$store.dispatch('setQuotes', quotes);
+          });
+        }
+      });
+    },
+    showImportQuotesModalHandler() {
+      this.showImportQuotesModal = true;
       this.showMoreModal = false;
     },
-    categoryNormalizer(node) {
-      return {
-        id: encodeURIComponent(node.name),
-        label: node.name,
-        children: node.children,
-      };
+    closeImportQuoteModelHandler() {
+      this.showImportQuotesModal = false;
+      this.getQuotes();
     },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;
@@ -695,7 +748,7 @@ export default {
       return tempContent;
     },
     changeMode(mode) {
-      this.$store.dispatch("changeDisplayMode", { type: "quotes", mode });
+      this.$store.dispatch('changeDisplayMode', { type: 'quotes', mode });
     },
     activeEditor(quote) {
       if (!this.editingQuote) {
@@ -703,19 +756,18 @@ export default {
         if (quote.comment) {
           this.commentEditor.setContent(quote.comment, true);
         }
-        if (quote.chapter)
-          this.quoteChapter = encodeURIComponent(quote.chapter);
+        if (quote.chapter) this.quoteChapter = encodeURIComponent(quote.chapter);
         if (quote.location) this.quoteLocation = quote.location;
         this.quoteType = quote.type;
-        this.$store.dispatch("setEditingQuote", quote._id);
+        this.$store.dispatch('setEditingQuote', quote._id);
       }
 
       this.$nextTick(() => {
-        if (this.editingQuote === "whole_book_new") {
+        if (this.editingQuote === 'whole_book_new') {
           this.$refs[this.editingQuote].$el.focus();
         } else if (
-          /new$/.test(this.editingQuote) &&
-          this.editingQuote !== "whole_book_new"
+          /new$/.test(this.editingQuote)
+          && this.editingQuote !== 'whole_book_new'
         ) {
           this.$refs[this.editingQuote][0].$el.focus();
         }
@@ -727,19 +779,19 @@ export default {
         }
 
         const delayTimer = setTimeout(() => {
-          this.$store.dispatch("toggleQuoteEditing");
+          this.$store.dispatch('toggleQuoteEditing');
           clearTimeout(delayTimer);
         }, 0);
       });
     },
-    addNewQuote(newID, newChapter = "") {
-      if (!newChapter || newChapter === "未分类(NoChapter)") {
+    addNewQuote(newID, newChapter = '') {
+      if (!newChapter || newChapter === '未分类(NoChapter)') {
         this.newQuote = {
           _id: newID,
-          chapter: "",
+          chapter: '',
           content: null,
           location: 0,
-          type: "annotation",
+          type: 'annotation',
         };
       } else {
         this.newQuote = {
@@ -747,24 +799,20 @@ export default {
           chapter: newChapter,
           content: null,
           location: 0,
-          type: "annotation",
+          type: 'annotation',
         };
       }
 
       this.activeEditor(this.newQuote);
     },
-    changeQuoteType(type) {
-      this.quoteType = type;
-      this.showTypesModal = false;
-    },
     async inactiveEditor(type) {
-      this.$store.dispatch("toggleQuoteEditing");
-      await this.$store.dispatch("saveQuoteImagesChange");
+      this.$store.dispatch('toggleQuoteEditing');
+      await this.$store.dispatch('saveQuoteImagesChange');
 
       let target = this.editingQuote;
-      if (type === "cancel") {
-        this.$store.dispatch("cancelQuoteEditing");
-        this.$store.dispatch("changeQuoteImagesSrc");
+      if (type === 'cancel') {
+        this.$store.dispatch('cancelQuoteEditing');
+        this.$store.dispatch('changeQuoteImagesSrc');
         if (!/new$/.test(target)) {
           // focus the editing quote
           this.$nextTick(() => {
@@ -772,10 +820,11 @@ export default {
             hljs.highlightAll();
           });
         }
-      } else if (type === "save") {
+      } else if (type === 'save') {
         this.$store
-          .dispatch("saveQuoteEditing", {
+          .dispatch('saveQuoteEditing', {
             id: this.editingQuote,
+            book: this.book._id,
             chapter: decodeURIComponent(this.quoteChapter),
             location: this.quoteLocation,
             content: this.JSONtemp,
@@ -783,10 +832,9 @@ export default {
             type: this.quoteType,
           })
           .then((quotes) => {
-            if (/new$/.test(this.editingQuote)) ths.$store.dispatch("addQuotes", quotes);
-
-            resolve(quotes[0]._id);
-            this.$store.dispatch("changeQuoteImagesSrc");
+            if (/new$/.test(this.editingQuote)) this.$store.dispatch('addQuotes', quotes);
+            this.$store.dispatch('changeQuoteImagesSrc');
+            return quotes[0]._id;
           })
           .then((id) => {
             target = id;
@@ -801,7 +849,7 @@ export default {
       this.commentEditor.clearContent();
       this.JSONtemp = null;
       this.commentJSONtemp = null;
-      this.quoteChapter = "";
+      this.quoteChapter = '';
       this.quoteLocation = 0;
       this.newQuote = null;
     },
@@ -841,7 +889,7 @@ export default {
     });
     this.editor = new Editor({
       dropCursor: {
-        color: "rgba(252, 211, 77, 50%)",
+        color: 'rgba(252, 211, 77, 50%)',
         width: 5,
       },
       extensions: [
@@ -874,7 +922,7 @@ export default {
     });
     this.commentEditor = new Editor({
       dropCursor: {
-        color: "rgba(252, 211, 77, 50%)",
+        color: 'rgba(252, 211, 77, 50%)',
         width: 5,
       },
       extensions: [
@@ -945,5 +993,14 @@ export default {
 .quote-editor-container,
 .comment-editor-container {
   position: relative;
+}
+
+.vue-treeselect__control {
+  height: 100%;
+  .vue-treeselect__placeholder,
+  .vue-treeselect__single-value {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
 }
 </style>

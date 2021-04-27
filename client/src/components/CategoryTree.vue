@@ -85,10 +85,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex';
 
 export default {
-  name: "tree-item",
+  name: 'tree-item',
   props: {
     item: Object,
     quotesChapters: Array,
@@ -101,10 +101,10 @@ export default {
   },
   computed: {
     ...mapState([
-      "summariesListMode",
-      "quotesListMode",
-      "currentSummariesChapter",
-      "currentQuotesChapter",
+      'summariesListMode',
+      'quotesListMode',
+      'currentSummariesChapter',
+      'currentQuotesChapter',
     ]),
     isParent() {
       return this.item.children;
@@ -112,23 +112,23 @@ export default {
   },
   methods: {
     clickHandler(val) {
-      if (val.type === "summary") {
+      if (val.type === 'summary') {
         this.$store
-          .dispatch("setNavChapter", {
-            type: "summaries",
+          .dispatch('setNavChapter', {
+            type: 'summaries',
             chapter: val.chapter,
           })
           .then(() => {
-            this.$store.dispatch("clearNavChapter", { type: "summaries" });
+            this.$store.dispatch('clearNavChapter', { type: 'summaries' });
           });
-      } else if (val.type === "quote") {
+      } else if (val.type === 'quote') {
         this.$store
-          .dispatch("setNavChapter", {
-            type: "quotes",
+          .dispatch('setNavChapter', {
+            type: 'quotes',
             chapter: val.chapter,
           })
           .then(() => {
-            this.$store.dispatch("clearNavChapter", { type: "quotes" });
+            this.$store.dispatch('clearNavChapter', { type: 'quotes' });
           });
       }
     },

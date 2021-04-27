@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 const APIBASE = 'http://localhost:3000/api/';
 
 export default {
@@ -70,7 +72,7 @@ export default {
     },
     SAVE_QUOTE_EDITING(state, payload) {
       const index = state.quotes.findIndex((item) => item._id === payload._id);
-      Vue.set(state.book.quotes, index, payload);
+      Vue.set(state.quotes, index, payload);
       state.editingQuote = null;
       state.addingCommentQuote = null;
     },
@@ -79,36 +81,38 @@ export default {
       state.addingCommentQuote = null;
     },
     // delete quote
-    DELETE_QUOTE(state, payload) {
-      payload.forEach(quote_id => {
-        const index = state.quotes.findIndex((item) => item._id === quote_id);
+    DELETE_QUOTES(state, payload) {
+      payload.forEach((id) => {
+        const index = state.quotes.findIndex((item) => item._id === id);
         state.quotes.splice(index, 1);
-      })
+      });
     },
   },
   actions: {
     // get quote(s)
     getQuotes(context, payload) {
-      if (payload) {
-        // get quote by quote id or get quotes by book id
-        // payload should be { quote_id: id } or { book_id: id }
-        Vue.axios.get(`${APIBASE}quotes`, { params: payload })
-          .then((res) => {
-            resolve(res.data)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        // get all quotes by default
-        Vue.axios.get(`${APIBASE}quotes`)
-          .then((res) => {
-            resolve(res.data)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      return new Promise((resolve, reject) => {
+        if (payload) {
+          // get quote by quote id or get quotes by book id
+          // payload should be { quote_id: id } or { book_id: id }
+          Vue.axios.get(`${APIBASE}quotes`, { params: payload })
+            .then((res) => {
+              resolve(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          // get all quotes by default
+          Vue.axios.get(`${APIBASE}quotes`)
+            .then((res) => {
+              resolve(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      });
     },
     // set current quotes list
     setQuotes(context, payload) {
@@ -119,34 +123,35 @@ export default {
       context.commit('ADD_QUOTES', payload);
     },
     // clear current quotes list before the book component destroy
-    clearQuotes() {
-      context.commit('CLEAR_QUOTES')
+    clearQuotes(context) {
+      context.commit('CLEAR_QUOTES');
     },
     // import quote(s)
     // get match book information (metadata, quotes)
     // quotes will "import" to this match book
     getMatchBook(context, payload) {
-      let matchBook = {}
+      const matchBook = {};
       return new Promise((resolve, reject) => {
         context.dispatch('getBook', {
           id: payload.id,
           query: {
-            fields: ['metadata', 'quote_ids']
-          }
+            fields: ['metadata', 'quote_ids'],
+          },
         })
           .then((data) => {
-            matchBook.metadata = data.metadata
+            matchBook._id = data._id;
+            matchBook.metadata = data.metadata;
             if (data.quote_ids.length > 0) {
               context.dispatch('getQuotes', { book_id: payload.id })
-                .then(quotes => {
+                .then((quotes) => {
                   matchBook.quotes = quotes;
-                  resolve(matchBook)
-                })
+                  resolve(matchBook);
+                });
             } else {
               matchBook.quotes = [];
-              resolve(matchBook)
+              resolve(matchBook);
             }
-          })
+          });
       });
     },
     // import conflictive quote
@@ -172,7 +177,7 @@ export default {
     // import new quote(s)
     importQuotes(context, payload) {
       return new Promise((resolve, reject) => {
-        Vue.axios.post(`${APIBASE}quotes`, { quotes: payload.quotes, book_id: matchBookId })
+        Vue.axios.post(`${APIBASE}quotes`, { quotes: payload.quotes, book_id: payload.matchBookId })
           .then((res) => {
             resolve(res.data);
           })
@@ -193,10 +198,10 @@ export default {
     },
     saveQuoteImagesChange(context) {
       return new Promise((resolve, reject) => {
-        if (context.state.addQuotesImages.length > 0) {
+        if (context.state.addQuoteImages.length > 0) {
           const formData = new FormData();
 
-          context.state.addQuotesImages.forEach((image) => {
+          context.state.addQuoteImages.forEach((image) => {
             formData.append('image', image.file, image.imageName);
           });
 
@@ -207,22 +212,23 @@ export default {
           })
             .then(() => {
               context.dispatch('changeQuoteImagesSrc');
-              context.commit('ADD_QUOTE_IMAGES', { action: 'clear'});
+              context.commit('ADD_QUOTE_IMAGES', { action: 'clear' });
               resolve('images uploaded');
             })
             .catch((error) => {
               console.log(error);
             });
         } else {
-          console.log('no images uploaded');
           context.dispatch('changeQuoteImagesSrc');
           resolve('no images uploaded');
         }
 
         if (context.state.removeQuoteImages.length > 0) {
-          Vue.axios.delete(`${APIBASE}images/quote`, { removeImages: context.state.removeQuoteImages })
+          Vue.axios.delete(`${APIBASE}images/quote`, {
+            data: { removeImages: context.state.removeQuoteImages },
+          })
             .then(() => {
-              context.dispatch('removeQuoteImages', {action: 'clear'});
+              context.dispatch('removeQuoteImages', { action: 'clear' });
             })
             .catch((error) => {
               console.log(error);
@@ -231,7 +237,10 @@ export default {
       });
     },
     changeQuoteImagesSrc(context) {
-      context.commit('CHANGE_QUOTE_IMAGES_SRC')
+      context.commit('CHANGE_QUOTE_IMAGES_SRC');
+    },
+    addQuoteImages(context, payload) {
+      context.commit('ADD_QUOTE_IMAGES', payload);
     },
     removeQuoteImages(context, payload) {
       context.commit('REMOVE_QUOTE_IMAGES', payload);
@@ -239,13 +248,16 @@ export default {
     saveQuoteEditing(context, payload) {
       return new Promise((resolve, reject) => {
         if (/new$/.test(payload.id)) {
+          // if the quote is new to create
+          // don't send the _id field to backend
           const quote = {};
+          quote.book = payload.book;
           quote.chapter = payload.chapter;
           quote.location = payload.location;
           quote.content = payload.content;
           quote.comment = payload.comment;
           quote.type = payload.type;
-          Vue.axios.post(`${APIBASE}quotes`, { quotes: [quote] })
+          Vue.axios.post(`${APIBASE}quotes`, { quotes: [quote], book_id: payload.book })
             .then((res) => {
               resolve(res.data);
             })
@@ -253,10 +265,12 @@ export default {
               console.log(error);
             });
         } else {
-          Vue.axios.put(`${APIBASE}quotes/${payload.id}`,
+          // if the quote exist
+          // send all the fields to backend
+          Vue.axios.put(`${APIBASE}quotes/${payload.id}/all`,
             {
               field: 'all',
-              quote: payload
+              quote: payload,
             })
             .then((res) => {
               context.commit('SAVE_QUOTE_EDITING', res.data);
@@ -272,12 +286,13 @@ export default {
       context.commit('CANCEL_QUOTE_EDITING');
     },
     // delete quote
-    deleteQuote(context, payload) {
-      Vue.axios.delete(`${APIBASE}quotes`, { quote_ids: payload })
+    deleteQuotes(context, payload) {
+      console.log(payload);
+      Vue.axios.delete(`${APIBASE}quotes`, { data: payload })
         .then((res) => {
-          context.commit('DELETE_QUOTE', res.data);
+          context.commit('DELETE_QUOTES', res.data);
         });
     },
 
-  }
-}
+  },
+};

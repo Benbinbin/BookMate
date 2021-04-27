@@ -166,7 +166,7 @@ import Bookshelf from '@/components/Bookshelf.vue';
 import NotesList from '@/components/NotesList.vue';
 import Mindmap from '@/components/Mindmap.vue';
 import DataAnalysis from '@/components/DataAnalysis.vue';
-import BookMetadataModal from '../components/BookMetadataModal.vue';
+import BookMetadataModal from '../components/modal/BookMetadataModal.vue';
 
 export default {
   name: 'Home',
@@ -240,7 +240,7 @@ export default {
         links: [],
         press: '',
         isbn: null,
-        date: '1970-01-01',
+        date: new Date().toISOString().substr(0, 10),
         description: '',
         review: '',
         category: {
@@ -276,8 +276,6 @@ export default {
   created() {
     this.avatar = require('@/assets/avatar.png');
     this.user = 'Ben';
-    const today = new Date().toISOString().substr(0, 10);
-    this.newBookMetadata.date = today;
   },
 };
 </script>

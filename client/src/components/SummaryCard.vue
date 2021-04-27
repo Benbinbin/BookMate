@@ -46,38 +46,61 @@
         </div>
       </div>
     </div>
-    <slot name="body">
-      <div class="card-body mx-8" v-html="summary.content"></div>
-    </slot>
+    <!-- <slot name="body"> -->
+    <div
+      v-if="!summaryEditing || summary._id !== editingSummary"
+      class="card-body mx-8"
+      v-html="summary.content"
+    ></div>
+    <div
+      v-if="summaryEditing && summary._id === editingSummary"
+      class="card-body mx-8"
+    >
+      <editor-content :editor="editor"></editor-content>
+    </div>
+    <!-- </slot> -->
     <div class="card-footer-container h-14 flex items-end">
       <div
-        class="card-footer pb-4 px-4 flex-grow justify-between items-end"
-        :class="{
-          hidden: summary._id !== editingSummary,
-          flex: summary._id === editingSummary,
-        }"
+        class="card-footer pb-4 px-4 flex-grow justify-between items-end flex"
       >
         <div class="left flex items-center">
-          <slot name="location">
-            <div class="summary-location text-xs opacity-30">
-              <p>章节：{{ summary.chapter || "未分类" }}</p>
-            </div>
-          </slot>
+          <!-- <slot name="location"> -->
+          <div
+            v-if="!summaryEditing || summary._id !== editingSummary"
+            class="summary-location text-xs opacity-30"
+          >
+            <p>章节：{{ summary.chapter || "未分类" }}</p>
+          </div>
+          <div
+            v-if="summaryEditing && summary._id === editingSummary"
+            class="summary-location text-xs flex items-center"
+          >
+            <label class="flex-shrink-0 opacity-30" for="summary-chapter"
+              >章节：</label
+            >
+            <treeselect
+              class="w-4/5 z-10"
+              v-model="summaryChapterTemp"
+              placeholder="请选择章节"
+              :multiple="false"
+              :options="category"
+              :normalizer="categoryNormalizer"
+              :searchable="true"
+              :flatten-search-results="true"
+              :close-on-select="true"
+              :default-expand-level="1"
+              :max-height="150"
+            />
+          </div>
+          <!-- </slot> -->
         </div>
         <div class="right flex-shrink-0 flex items-center space-x-1.5">
-          <!-- <button class="opacity-30">
-              <img
-                src="@/assets/icons/add.svg"
-                alt="add icon"
-                class="w-5 h-5"
-              />
-            </button> -->
           <button
             :class="{
-              'opacity-30 hover:opacity-80': !editingSummary,
-              'opacity-10': editingSummary,
+              'opacity-30 hover:opacity-80': !summaryEditing,
+              'opacity-10': summaryEditing,
             }"
-            :disabled="editingSummary"
+            :disabled="summaryEditing"
             @click="$emit('active-editor')"
           >
             <img
@@ -102,10 +125,10 @@
           </button>
           <button
             :class="{
-              'opacity-70 hover:opacity-100': !editingSummary,
-              'opacity-30': editingSummary,
+              'opacity-70 hover:opacity-100': !summaryEditing,
+              'opacity-30': summaryEditing,
             }"
-            :disabled="editingSummary"
+            :disabled="summaryEditing"
             @click="showDeleteModal = true"
           >
             <img
@@ -126,7 +149,12 @@
       <div class="flex mt-4 space-x-4">
         <button
           class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
-          @click="$store.dispatch('deleteSummary', summary._id)"
+          @click="
+            $store.dispatch('deleteSummaries', {
+              summary_ids: [summary._id],
+              book_id: book._id,
+            })
+          "
         >
           确定
         </button>
@@ -143,24 +171,44 @@
 
 <script>
 import { mapState } from 'vuex';
-// import hljs from 'highlight.js';
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
+import { EditorContent } from 'tiptap';
 
 export default {
-  props: ['summary'],
+  props: ['editor', 'category', 'summary', 'summaryChapter'],
+  components: {
+    EditorContent,
+    Treeselect,
+  },
   data() {
     return {
+      summaryChapterTemp: this.summaryChapter,
       showDeleteModal: false,
     };
   },
   computed: {
-    ...mapState(['editingSummary']),
+    ...mapState({
+      book: (state) => state.book.book,
+      summaryEditing: (state) => state.summary.summaryEditing,
+      editingSummary: (state) => state.summary.editingSummary,
+    }),
   },
-  // updated() {
-  //   hljs.highlightAll();
-  // },
-  // mounted() {
-  //   hljs.highlightAll();
-  // },
+  watch: {
+    summaryChapterTemp() {
+      this.$emit('update:summaryChapter', this.summaryChapterTemp);
+    },
+  },
+  methods: {
+    categoryNormalizer(node) {
+      return {
+        id: encodeURIComponent(node.name),
+        label: node.name,
+        children: node.children,
+      };
+    },
+  },
 };
 </script>
 

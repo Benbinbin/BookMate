@@ -13,7 +13,7 @@
     >
       <div class="card-header-container h-12">
         <div
-          v-if="quote._id !== editingQuote"
+          v-if="!quoteEditing || quote._id !== editingQuote"
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <div class="left flex items-center space-x-1.5">
@@ -56,10 +56,10 @@
             </button>
             <button
               :class="{
-                'opacity-70 hover:opacity-100': !editingQuote,
-                'opacity-30': editingQuote,
+                'opacity-70 hover:opacity-100': !quoteEditing,
+                'opacity-30': quoteEditing,
               }"
-              :disabled="editingQuote"
+              :disabled="quoteEditing"
               @click="showDeleteModal = true"
             >
               <img
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div
-          v-if="quote._id === editingQuote"
+          v-if="quoteEditing && quote._id === editingQuote"
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <button
@@ -114,59 +114,130 @@
           </button>
         </div>
       </div>
-      <slot name="body">
-        <div class="card-body mx-8" v-html="quote.content"></div>
-      </slot>
+      <!-- <slot name="body"> -->
+      <div
+        v-if="!quoteEditing || quote._id !== editingQuote"
+        class="card-body mx-8"
+        v-html="quote.content"
+      ></div>
+      <div
+        v-if="quoteEditing && quote._id === editingQuote"
+        class="quote-editor-container card-body mx-8"
+      >
+        <quote-editor-floating-menu
+          :editor="editor"
+        ></quote-editor-floating-menu>
+        <editor-content :editor="editor"></editor-content>
+      </div>
+      <!-- </slot> -->
       <div class="card-footer-container h-16 flex items-end">
         <div
           class="card-footer pb-3 px-3 flex justify-between items-end flex-grow"
         >
           <div class="left flex items-center">
-            <slot name="type">
-              <div class="quote-type p-1">
+            <!-- <slot name="type"> -->
+            <div
+              v-if="!quoteEditing || quote._id !== editingQuote"
+              class="quote-type p-1"
+            >
+              <img
+                :src="require(`@/assets/icons/${quote.type}.svg`)"
+                :alt="`${quote.type} icon`"
+                class="quote-type w-5 h-5"
+                :class="{
+                  'hidden opacity-30':
+                    quote.type === 'annotation' && !showComment,
+                }"
+              />
+            </div>
+            <div
+              v-if="quoteEditing && quote._id === editingQuote"
+              class="quote-type flex-shrink-0 relative"
+            >
+              <button
+                class="border p-1 border-gray-300 rounded"
+                @click="showTypesModal = true"
+              >
                 <img
-                  :src="require(`@/assets/icons/${quote.type}.svg`)"
-                  :alt="`${quote.type} icon`"
-                  class="quote-type w-5 h-5"
-                  :class="{
-                    'hidden opacity-30':
-                      quote.type === 'annotation' && !showComment,
-                  }"
+                  :src="require(`@/assets/icons/${quoteType}.svg`)"
+                  :alt="`${quoteType} icon`"
+                  class="w-5 h-5"
+                />
+              </button>
+              <div
+                v-show="showTypesModal"
+                class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
+              >
+                <button
+                  v-for="type of types"
+                  :key="type"
+                  class="p-1 hover:bg-gray-200 rounded"
+                  @click="changeQuoteType(type)"
+                >
+                  <img
+                    :src="require(`@/assets/icons/${type}.svg`)"
+                    :alt="`${type} icon`"
+                    class="w-5 h-5"
+                  />
+                </button>
+              </div>
+            </div>
+            <!-- </slot> -->
+
+            <!-- <slot name="location"> -->
+            <div
+              v-if="!quoteEditing || quote._id !== editingQuote"
+              class="quote-location ml-1.5 text-xs flex flex-col space-y-1"
+            >
+              <p class="opacity-0">章节：{{ quote.chapter || "未分类" }}</p>
+              <p class="opacity-0">页码：{{ quote.location || "未知" }}</p>
+            </div>
+            <div
+              v-if="quoteEditing && quote._id === editingQuote"
+              class="quote-location ml-1.5 text-xs flex-col space-y-1"
+            >
+              <div class="flex items-center">
+                <label class="flex-shrink-0 opacity-30" for="quote-chapter"
+                  >章节：</label
+                >
+                <treeselect
+                  class="w-4/5 z-10"
+                  v-model="quoteChapterTemp"
+                  placeholder="请选择章节"
+                  :multiple="false"
+                  :options="category"
+                  :normalizer="categoryNormalizer"
+                  :searchable="true"
+                  :flatten-search-results="true"
+                  :close-on-select="true"
+                  :default-expand-level="1"
+                  :max-height="150"
                 />
               </div>
-            </slot>
-
-            <slot name="location">
-              <div
-                class="quote-location ml-1.5 text-xs flex flex-col space-y-1"
-              >
-                <p class="opacity-0">章节：{{ quote.chapter || "未分类" }}</p>
-                <p class="opacity-0">页码：{{ quote.location || "未知" }}</p>
+              <div class="flex items-center">
+                <label class="flex-shrink-0 opacity-30" for="quote-location">
+                  页码：</label
+                >
+                <input
+                  class="w-4/5"
+                  id="quote-location"
+                  type="number"
+                  v-model="quoteLocationTemp"
+                  placeholder="请输入页码"
+                />
               </div>
-            </slot>
+            </div>
+            <!-- </slot> -->
           </div>
-          <div
-            class="btns right flex-shrink-0 items-center space-x-1.5"
-            :class="{
-              hidden: quote._id !== editingQuote,
-              flex: quote._id === editingQuote,
-            }"
-          >
+          <div class="btns right flex flex-shrink-0 items-center space-x-1.5">
             <button
-              :class="{
-                'opacity-30 hover:opacity-80':
-                  !editingQuote ||
-                  (editingQuote &&
-                    !addingCommentQuote &&
-                    quote._id === editingQuote),
-                'opacity-10': addingCommentQuote || quote._id !== editingQuote,
-              }"
-              v-if="!showComment"
+              class="opacity-30 hover:opacity-80"
+              v-show="!showComment"
               :disabled="
                 addingCommentQuote ||
-                (editingQuote && quote._id !== editingQuote)
+                (quoteEditing && quote._id !== editingQuote)
               "
-              @click="addCommentHandler(quote)"
+              @click="addCommentHandler"
             >
               <img
                 src="@/assets/icons/add.svg"
@@ -176,10 +247,10 @@
             </button>
             <button
               :class="{
-                'opacity-30 hover:opacity-80': !editingQuote,
-                'opacity-10': editingQuote,
+                'opacity-30 hover:opacity-80': !quoteEditing,
+                'opacity-10': quoteEditing,
               }"
-              :disabled="editingQuote"
+              :disabled="quoteEditing"
               @click="$emit('active-editor')"
             >
               <img
@@ -195,10 +266,7 @@
                 class="w-5 h-5"
               />
             </button>
-            <button
-              class="opacity-30 hover:opacity-80"
-              @click="shareHandler(quote)"
-            >
+            <button class="opacity-30 hover:opacity-80" @click="shareHandler">
               <img
                 src="@/assets/icons/share.svg"
                 alt="share icon"
@@ -210,13 +278,26 @@
       </div>
     </div>
 
-    <slot name="comment">
-      <div
-        v-if="showComment"
-        class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-        v-html="quote.comment"
-      ></div>
-    </slot>
+    <!-- <slot name="comment"> -->
+    <div
+      v-if="!quoteEditing && showComment"
+      class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+      v-html="quote.comment"
+    ></div>
+    <div
+      v-if="
+        quoteEditing &&
+        ((quote._id === editingQuote && showComment) ||
+          quote._id === addingCommentQuote)
+      "
+      class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
+    >
+      <quote-editor-floating-menu
+        :editor="commentEditor"
+      ></quote-editor-floating-menu>
+      <editor-content :editor="commentEditor"></editor-content>
+    </div>
+    <!-- </slot> -->
 
     <div
       class="delete-modal absolute inset-0 flex-col justify-center items-center rounded-lg bg-opacity-90 bg-gray-200"
@@ -226,7 +307,12 @@
       <div class="flex mt-4 space-x-4">
         <button
           class="p-2 rounded-lg bg-red-400 hover:bg-red-500 text-white"
-          @click="$store.dispatch('deleteQuote', [quote._id])"
+          @click="
+            $store.dispatch('deleteQuotes', {
+              quote_ids: [quote._id],
+              book_id: book._id,
+            })
+          "
         >
           确定
         </button>
@@ -243,17 +329,44 @@
 
 <script>
 import { mapState } from 'vuex';
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
+import { EditorContent } from 'tiptap';
+import QuoteEditorFloatingMenu from './editor/QuoteEditorFloatingMenu.vue';
 
 export default {
-  props: ['quote'],
+  props: [
+    'editor',
+    'commentEditor',
+    'category',
+    'quote',
+    'quoteChapter',
+    'quoteLocation',
+    'quoteType',
+  ],
+  components: {
+    EditorContent,
+    Treeselect,
+    QuoteEditorFloatingMenu,
+  },
   data() {
     return {
+      types: ['annotation', 'question', 'deep-reading', 'inspiration'],
+      quoteChapterTemp: this.quoteChapter,
+      quoteLocationTemp: 0,
       addComment: false,
       showDeleteModal: false,
+      showTypesModal: false,
     };
   },
   computed: {
-    ...mapState(['editingQuote', 'addingCommentQuote']),
+    ...mapState({
+      book: (state) => state.book.book,
+      quoteEditing: (state) => state.quote.quoteEditing,
+      editingQuote: (state) => state.quote.editingQuote,
+      addingCommentQuote: (state) => state.quote.addingCommentQuote,
+    }),
     showComment() {
       if (this.quote.comment && this.quote.comment !== '<p></p>') {
         return true;
@@ -261,7 +374,26 @@ export default {
       return false;
     },
   },
+  watch: {
+    quoteChapterTemp() {
+      this.$emit('update:quoteChapter', this.quoteChapterTemp);
+    },
+    quoteLocationTemp() {
+      this.$emit('update:quoteLocation', this.quoteLocationTemp);
+    },
+  },
   methods: {
+    changeQuoteType(type) {
+      this.$emit('update:quoteType', type);
+      this.showTypesModal = false;
+    },
+    categoryNormalizer(node) {
+      return {
+        id: encodeURIComponent(node.name),
+        label: node.name,
+        children: node.children,
+      };
+    },
     setCandidateQuote(quote) {
       const chapter = quote.chapter || '';
       const location = quote.location || 0;
@@ -289,12 +421,15 @@ export default {
         this.$store.dispatch('clearQuote');
       });
     },
-    addCommentHandler(quote) {
-      this.$store.dispatch('activeAddingComment', quote._id);
+    addCommentHandler() {
+      this.$store.dispatch('activeAddingComment', this.quote._id);
       this.$emit('active-editor');
     },
-    shareHandler(quote) {
-      this.$store.dispatch('sharePic', { type: 'quote', ids: [quote._id] });
+    shareHandler() {
+      this.$store.dispatch('sharePic', {
+        type: 'quote',
+        ids: [this.quote._id],
+      });
     },
   },
 };

@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { getMetaData, getNotes } from '../assets/js/kindleParse';
+import { getMetaData, getNotes } from '../../assets/js/parser/kindleParse';
 
 export default {
   data() {

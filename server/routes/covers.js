@@ -29,7 +29,7 @@ router.post('/', upload.array('cover'), (req, res) => {
 router.delete('/', (req, res) => {
   req.body.removeCovers.forEach(cover => {
     const filePath = path.join(__dirname, `../public/images/covers/${cover}`)
-    fs.access(path, fs.F_OK, (err) => {
+    fs.access(filePath, fs.F_OK, (err) => {
       if (err) {
         console.log(`${filePath} doesn't exist`);
       } else {
@@ -38,7 +38,7 @@ router.delete('/', (req, res) => {
             console.log(`${filePath} cannot deleted. ${err}`);
           } else {
             console.log(`${filePath} was deleted`);
-            res.send(`${cover} removed`)
+            // res.send(`${cover} removed`)
           }
         });
       }
