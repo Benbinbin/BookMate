@@ -100,6 +100,7 @@
 <script>
 import { mapState } from 'vuex';
 import Split from 'split.js';
+import hljs from 'highlight.js';
 import 'highlight.js/styles/googlecode.css'; // 样式文件
 
 import BookInfo from '../components/BookInfo.vue';
@@ -186,12 +187,19 @@ export default {
         if (book.quote_ids.length > 0) {
           this.$store.dispatch('getQuotes', { book_id: id }).then((quotes) => {
             this.$store.dispatch('setQuotes', quotes);
+            this.$nextTick(() => {
+              hljs.highlightAll();
+            });
           });
         }
         if (book.summary_ids.length > 0) {
-          this.$store.dispatch('getSummaries', { book_id: id })
+          this.$store
+            .dispatch('getSummaries', { book_id: id })
             .then((summaries) => {
               this.$store.dispatch('setSummaries', summaries);
+              this.$nextTick(() => {
+                hljs.highlightAll();
+              });
             });
         }
       });

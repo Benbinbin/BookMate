@@ -56,17 +56,7 @@ export default new Vuex.Store({
     SHARE_PIC(state, payload) {
       // eslint-disable-next-line no-param-reassign
       state.showSharePicModal = true;
-      if (payload.type === 'quote') {
-        payload.ids.forEach((id) => {
-          const target = state.book.quotes.find((item) => item._id === id);
-          state.sharePicContent.push(target);
-        });
-      } else if (payload.type === 'summary') {
-        payload.ids.forEach((id) => {
-          const target = state.book.summaries.find((item) => item._id === id);
-          state.sharePicContent.push(target);
-        });
-      }
+      state.sharePicContent = payload;
     },
     CLOSE_SHARE_PIC_MODAL(state) {
       state.showSharePicModal = false;
@@ -123,6 +113,18 @@ export default new Vuex.Store({
     },
     // share
     sharePic(context, payload) {
+      // const content = [];
+      // if (payload.type === 'quote') {
+      //   payload.ids.forEach((id) => {
+      //     const target = context.rootState.quote.quotes.find((item) => item._id === id);
+      //     if (target) content.push(target);
+      //   });
+      // } else if (payload.type === 'summary') {
+      //   payload.ids.forEach((id) => {
+      //     const target = context.rootState.summary.summaries.find((item) => item._id === id);
+      //     content.push(target);
+      //   });
+      // }
       context.commit('SHARE_PIC', payload);
     },
     closeSharePicModal(context) {

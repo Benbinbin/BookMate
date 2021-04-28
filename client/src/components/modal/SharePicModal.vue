@@ -29,7 +29,7 @@
       <div class="modal-body">
         <div class="cards-container m-4 flex justify-center space-x-4">
           <div
-            v-for="item of contentsRendered"
+            v-for="item of sharePicContent"
             :key="item._id"
             class="card-container relative"
           >
@@ -46,7 +46,7 @@
                 <div class="card-body m-8">
                   <div
                     class="my-4 text-gray-800 text-lg"
-                    v-html="item.content"
+                    v-html="item.quote"
                   ></div>
                   <div v-if="item.comment" class="my-4 flex">
                     <img
@@ -111,36 +111,38 @@
 
 <script>
 import { mapState } from 'vuex';
-
-import { Editor } from 'tiptap';
-import {
-  Bold,
-  Blockquote,
-  BulletList,
-  Code,
-  CodeBlockHighlight,
-  Italic,
-  Link,
-  ListItem,
-  OrderedList,
-  Heading,
-  TodoItem,
-  TodoList,
-  // Image,
-} from 'tiptap-extensions';
-import javascript from 'highlight.js/lib/languages/javascript';
-import css from 'highlight.js/lib/languages/css';
-import xml from 'highlight.js/lib/languages/xml';
-import markdown from 'highlight.js/lib/languages/markdown';
 import * as htmlToImage from 'html-to-image';
-import QuoteImage from '../editor/QuoteImage.vue';
+
+// import { Editor } from 'tiptap';
+// import {
+//   Bold,
+//   Blockquote,
+//   BulletList,
+//   Code,
+//   CodeBlockHighlight,
+//   Italic,
+//   Link,
+//   ListItem,
+//   OrderedList,
+//   Heading,
+//   TodoItem,
+//   TodoList,
+//   // Image,
+// } from 'tiptap-extensions';
+// import javascript from 'highlight.js/lib/languages/javascript';
+// import css from 'highlight.js/lib/languages/css';
+// import xml from 'highlight.js/lib/languages/xml';
+// import markdown from 'highlight.js/lib/languages/markdown';
+import hljs from 'highlight.js';
+// import QuoteImage from '../editor/QuoteImage.vue';
 
 export default {
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
-      HTMLtemp: null,
+      // HTMLtemp: null,
+      // convertor: null,
     };
   },
   computed: {
@@ -148,37 +150,37 @@ export default {
       book: (state) => state.book.book,
       sharePicContent: (state) => state.sharePicContent,
     }),
-    contentsRendered() {
-      const contentsRendered = [];
-      const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
-      this.sharePicContent.forEach((item) => {
-        const contentsTemp = { ...item };
+    // contentsRendered() {
+    //   const contentsRendered = [];
+    //   const regexp = /<img([^>]*)\ssrc="([^">]+)"\s([^>]*)\sdata-type="uploaded"([^>]*)>/gi;
+    //   this.sharePicContent.forEach((item) => {
+    //     const contentsTemp = { ...item };
 
-        const content = this.convert(item.content, true);
-        contentsTemp.content = content.replace(
-          regexp,
-          (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
-        );
-        if (item.comment) {
-          const comment = this.convert(item.comment, true);
-          contentsTemp.comment = comment.replace(
-            regexp,
-            (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
-          );
-        }
-        contentsRendered.push(contentsTemp);
-      });
-      return contentsRendered;
-    },
+    //     const content = this.convert(item.content, true);
+    //     contentsTemp.content = content.replace(
+    //       regexp,
+    //       (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+    //     );
+    //     if (item.comment) {
+    //       const comment = this.convert(item.comment, true);
+    //       contentsTemp.comment = comment.replace(
+    //         regexp,
+    //         (match, p1, p2, p3, p4) => `<img${p1} src="${this.imageBase}${p2}" ${p3} data-type="uploaded" ${p4}>`,
+    //       );
+    //     }
+    //     contentsRendered.push(contentsTemp);
+    //   });
+    //   return contentsRendered;
+    // },
   },
   methods: {
-    convert(content) {
-      // use tiptap editor getHTML() render HTML from JSON content
-      this.convertor.setContent(content, true);
-      const tempContent = this.HTMLtemp;
-      this.HTMLtemp = null;
-      return tempContent;
-    },
+    // convert(content) {
+    //   // use tiptap editor getHTML() render HTML from JSON content
+    //   this.convertor.setContent(content, true);
+    //   const tempContent = this.HTMLtemp;
+    //   this.HTMLtemp = null;
+    //   return tempContent;
+    // },
     downloadHandler(item) {
       const dom = this.$refs[item._id][0];
       const scale = 4;
@@ -212,40 +214,43 @@ export default {
         });
     },
   },
-  created() {
-    this.convertor = new Editor({
-      extensions: [
-        new Bold(),
-        new Blockquote(),
-        new BulletList(),
-        new Code(),
-        new CodeBlockHighlight({
-          languages: {
-            javascript,
-            css,
-            xml,
-            markdown,
-          },
-        }),
-        new Italic(),
-        new Link(),
-        new ListItem(),
-        new OrderedList(),
-        new Heading({
-          levels: [1, 2, 3, 4, 5, 6],
-        }),
-        new TodoItem(),
-        new TodoList(),
-        new QuoteImage(),
-      ],
-      onUpdate: ({ getHTML }) => {
-        this.HTMLtemp = getHTML();
-      },
-    });
+  mounted() {
+    hljs.highlightAll();
   },
-  beforeDestroy() {
-    this.convertor.destroy();
-  },
+  // created() {
+  // this.convertor = new Editor({
+  //   extensions: [
+  //     new Bold(),
+  //     new Blockquote(),
+  //     new BulletList(),
+  //     new Code(),
+  //     new CodeBlockHighlight({
+  //       languages: {
+  //         javascript,
+  //         css,
+  //         xml,
+  //         markdown,
+  //       },
+  //     }),
+  //     new Italic(),
+  //     new Link(),
+  //     new ListItem(),
+  //     new OrderedList(),
+  //     new Heading({
+  //       levels: [1, 2, 3, 4, 5, 6],
+  //     }),
+  //     new TodoItem(),
+  //     new TodoList(),
+  //     // new QuoteImage(),
+  //   ],
+  //   onUpdate: ({ getHTML }) => {
+  //     this.HTMLtemp = getHTML();
+  //   },
+  // });
+  // },
+  // beforeDestroy() {
+  // this.convertor.destroy();
+  // },
 };
 </script>
 

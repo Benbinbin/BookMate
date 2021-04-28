@@ -426,10 +426,19 @@ export default {
       this.$emit('active-editor');
     },
     shareHandler() {
-      this.$store.dispatch('sharePic', {
-        type: 'quote',
-        ids: [this.quote._id],
-      });
+      // this.$store.dispatch('sharePic', {
+      //   type: 'quote',
+      //   content: [this.quote.content],
+      // });
+      const content = {};
+      content._id = this.quote._id;
+      if (this.quote.chapter) content.chapter = this.quote.chapter;
+      if (this.quote.location) content.location = this.quote.location;
+      content.quote = this.quote.content;
+      if (this.quote.comment) {
+        content.comment = this.quote.comment;
+      }
+      this.$store.dispatch('sharePic', [content]);
     },
   },
 };

@@ -717,6 +717,9 @@ export default {
         if (book.quote_ids.length > 0) {
           this.$store.dispatch('getQuotes', { book_id: id }).then((quotes) => {
             this.$store.dispatch('setQuotes', quotes);
+            this.$nextTick(() => {
+              hljs.highlightAll();
+            });
           });
         }
       });
@@ -853,9 +856,6 @@ export default {
       this.quoteLocation = 0;
       this.newQuote = null;
     },
-  },
-  mounted() {
-    hljs.highlightAll();
   },
   created() {
     this.convertor = new Editor({
