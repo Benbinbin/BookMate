@@ -121,6 +121,7 @@
 import { mapState, mapGetters } from 'vuex';
 
 const filterMap = {
+  allBooks: '所有',
   readingBooks: '在读',
   laterReadingBooks: '待读',
   loveBooks: '喜欢',
@@ -164,7 +165,7 @@ export default {
           val: 'readingBooks',
         },
         {
-          icon: 'read-it-later',
+          icon: 'later',
           name: '待读',
           val: 'laterReadingBooks',
         },
@@ -174,7 +175,7 @@ export default {
           val: 'loveBooks',
         },
         {
-          icon: 'buy',
+          icon: 'cart',
           name: '待购',
           val: 'cartBooks',
         },

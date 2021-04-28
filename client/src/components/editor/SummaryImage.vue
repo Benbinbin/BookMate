@@ -71,8 +71,6 @@ export default {
   },
   methods: {
     changeSrc() {
-      console.log('change src');
-      console.log(this.changeSummaryImagesSrc);
       if (this.changeSummaryImagesSrc && this.dataType && this.dataSrc) {
         this.src = this.dataSrc;
       }
@@ -81,11 +79,7 @@ export default {
       }
     },
   },
-  mounted() {
-    console.log('mounted');
-  },
   beforeDestroy() {
-    console.log(this.summaryEditing);
     if (!this.summaryEditing) return;
     if (this.dataType === 'dropped') {
       this.$store.dispatch('addSummaryImages', {
@@ -100,9 +94,6 @@ export default {
         type: 'Summary',
       });
     }
-  },
-  destroyed() {
-    console.log('destroyed');
   },
 };
 </script>

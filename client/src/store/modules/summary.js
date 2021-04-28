@@ -147,7 +147,7 @@ export default {
               console.log(error);
             });
         } else {
-          console.log('no images uploaded');
+          // console.log('no images uploaded');
           context.dispatch('changeSummaryImagesSrc');
           resolve('no images uploaded');
         }
@@ -175,7 +175,6 @@ export default {
       context.commit('REMOVE_SUMMARY_IMAGES', payload);
     },
     saveSummaryEditing(context, payload) {
-      console.log(payload);
       return new Promise((resolve, reject) => {
         if (/new$/.test(payload.id)) {
           // if the summary is new to create

@@ -98,7 +98,7 @@
               <img
                 class="w-6 h-6"
                 :src="require(`@/assets/icons/${item.name}.svg`)"
-                :alt="`${item.icon} icon`"
+                :alt="`${item.name} icon`"
               />
             </button>
           </div>

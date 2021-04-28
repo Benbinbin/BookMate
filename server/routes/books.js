@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
 router.put('/:id/metadata', async (req, res) => {
   await BookModel.findByIdAndUpdate(
     req.params.id,
-    { [req.body.field]: req.body.value },
+    { [`metadata.${req.body.field}`]: req.body.value },
     { new: true },
     (err, data) => {
       if (err) {
@@ -62,7 +62,7 @@ router.put('/:id/metadata', async (req, res) => {
         res.send(`Oops, can't update this book  ${req.body.field}. ${err}`)
       } else {
         res.send({
-          value: data[req.body.field]
+          value: data.metadata[req.body.field]
         })
       }
     })

@@ -1127,11 +1127,11 @@ export default {
         active: false,
       },
       {
-        name: 'read-it-later',
+        name: 'later',
         active: false,
       },
       {
-        name: 'buy',
+        name: 'cart',
         active: false,
       },
     ];

@@ -114,16 +114,18 @@ export default {
     // * tags
     // * stars
     toggleDefaultCollections(context, payload) {
+      console.log(payload);
       const defaultCollectionsClone = JSON.parse(JSON.stringify(context.state.book.metadata.default_collections));
       const target = defaultCollectionsClone.find((item) => item.name === payload.name);
       target.active = !target.active; // toggle default collection
 
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
-          field: 'metadata.default_collections',
+          field: 'default_collections',
           value: defaultCollectionsClone,
         })
         .then((res) => {
+          console.log(res.data);
           context.commit('TOGGLE_DEFAULT_COLLECTIONS', res.data.value);
         })
         .catch((error) => {
@@ -133,7 +135,7 @@ export default {
     setCollections(context, payload) {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
-          field: 'metadata.collections',
+          field: 'collections',
           value: payload.collections,
         })
         .then((res) => {
@@ -146,8 +148,8 @@ export default {
     setTags(context, payload) {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
-          field: 'metadata.tags',
-          tags: payload.tags,
+          field: 'tags',
+          value: payload.tags,
         })
         .then((res) => {
           context.commit('SET_TAGS', res.data.value);
@@ -159,7 +161,7 @@ export default {
     setStars(context, payload) {
       Vue.axios.put(`${APIBASE}books/${context.state.book._id}/metadata`,
         {
-          field: 'metadata.stars',
+          field: 'stars',
           value: payload.stars,
         })
         .then((res) => {
