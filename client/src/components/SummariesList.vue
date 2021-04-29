@@ -40,31 +40,6 @@
         :summary-chapter.sync="summaryChapter"
         :editor="editor"
       >
-        <!-- <template v-slot:body>
-          <div class="card-body mx-8">
-            <editor-content :editor="editor"></editor-content>
-          </div>
-        </template>
-        <template v-slot:location>
-          <div class="summary-location text-xs flex items-center">
-            <label class="flex-shrink-0 opacity-30" for="summary-chapter"
-              >章节：</label
-            >
-            <treeselect
-              class="w-4/5 z-10"
-              v-model="summaryChapter"
-              placeholder="请选择章节"
-              :multiple="false"
-              :options="category"
-              :normalizer="categoryNormalizer"
-              :searchable="true"
-              :flatten-search-results="true"
-              :close-on-select="true"
-              :default-expand-level="1"
-              :max-height="150"
-            />
-          </div>
-        </template> -->
       </summary-card>
       <div
         v-if="summaries.length > 0 && summariesListMode === 'default'"
@@ -80,37 +55,6 @@
           :editor="editor"
           @active-editor="activeEditor(summary)"
         >
-          <!-- <template
-            v-slot:body
-            v-if="editingSummary && summary._id === editingSummary"
-          >
-            <div class="card-body mx-8">
-              <editor-content :editor="editor"></editor-content>
-            </div>
-          </template>
-          <template
-            v-slot:location
-            v-if="editingSummary && summary._id === editingSummary"
-          >
-            <div class="summary-location text-xs flex items-center">
-              <label class="flex-shrink-0 opacity-30" for="summary-chapter"
-                >章节：</label
-              >
-              <treeselect
-                class="w-4/5 z-10"
-                v-model="summaryChapter"
-                placeholder="请选择章节"
-                :multiple="false"
-                :options="category"
-                :normalizer="categoryNormalizer"
-                :searchable="true"
-                :flatten-search-results="true"
-                :close-on-select="true"
-                :default-expand-level="1"
-                :max-height="150"
-              />
-            </div>
-          </template> -->
         </summary-card>
       </div>
       <div v-if="summaries.length > 0 && summariesListMode === 'chapter'">
@@ -119,12 +63,12 @@
           :key="item.name"
           :ref="item.name"
         >
-          <div class="chapter py-3 flex justify-between opacity-50">
+          <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
                 class="flex items-center"
                 :class="{
-                  'opacity-30 hover:opacity-80': !summaryEditing,
+                  'opacity-40 hover:opacity-80': !summaryEditing,
                   'opacity-10': summaryEditing,
                 }"
                 :disabled="summaryEditing"
@@ -136,7 +80,7 @@
                   class="flex-shrink-0 w-6 h-6"
                 />
               </button>
-              <span class="ml-1">{{
+              <span class="ml-1 text-gray-500">{{
                 item.name !== "整书(whole)" ? item.name : "整书"
               }}</span>
             </div>
@@ -173,31 +117,6 @@
               :summary-chapter.sync="summaryChapter"
               :editor="editor"
             >
-              <!-- <template v-slot:body>
-                <div class="card-body mx-8">
-                  <editor-content :editor="editor"></editor-content>
-                </div>
-              </template>
-              <template v-slot:location>
-                <div class="summary-location text-xs flex items-center">
-                  <label class="flex-shrink-0 opacity-30" for="summary-chapter"
-                    >章节：</label
-                  >
-                  <treeselect
-                    class="w-4/5 z-10"
-                    v-model="summaryChapter"
-                    placeholder="请选择章节"
-                    :multiple="false"
-                    :options="category"
-                    :normalizer="categoryNormalizer"
-                    :searchable="true"
-                    :flatten-search-results="true"
-                    :close-on-select="true"
-                    :default-expand-level="1"
-                    :max-height="150"
-                  />
-                </div>
-              </template> -->
             </summary-card>
             <summary-card
               v-for="summary of item.summaries"
@@ -209,37 +128,6 @@
               :editor="editor"
               @active-editor="activeEditor(summary)"
             >
-              <!-- <template
-                v-slot:body
-                v-if="editingSummary && summary._id === editingSummary"
-              >
-                <div class="card-body mx-8">
-                  <editor-content :editor="editor"></editor-content>
-                </div>
-              </template>
-              <template
-                v-slot:location
-                v-if="editingSummary && summary._id === editingSummary"
-              >
-                <div class="summary-location text-xs flex items-center">
-                  <label class="flex-shrink-0 opacity-30" for="summary-chapter"
-                    >章节：</label
-                  >
-                  <treeselect
-                    class="w-4/5 z-10"
-                    v-model="summaryChapter"
-                    placeholder="请选择章节"
-                    :multiple="false"
-                    :options="category"
-                    :normalizer="categoryNormalizer"
-                    :searchable="true"
-                    :flatten-search-results="true"
-                    :close-on-select="true"
-                    :default-expand-level="1"
-                    :max-height="150"
-                  />
-                </div>
-              </template> -->
             </summary-card>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
@@ -263,10 +151,6 @@
 <script>
 import { mapState } from 'vuex';
 
-// import Treeselect from "@riophae/vue-treeselect";
-// import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
-// import { Editor, EditorContent } from "tiptap";
 import { Editor } from 'tiptap';
 import {
   Bold,

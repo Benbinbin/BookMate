@@ -7,7 +7,10 @@ const quoteSchema = new mongoose.Schema({
     type: String,
     default: 'annotation'
   },
-  location: Number,
+  location: {
+    type: Number,
+    default: 0
+  },
   content_origin: {
     type: String,
     default: ''

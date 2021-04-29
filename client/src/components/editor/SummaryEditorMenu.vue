@@ -1,7 +1,7 @@
 <template>
   <div class="menubar w-full h-full flex items-center space-x-2">
     <button
-      class="flex items-center justify-center bg-red-200 hover:bg-red-500 text-white p-1.5 rounded"
+      class="flex items-center justify-center bg-red-500 opacity-30 hover:opacity-100 text-white p-1.5 rounded"
       @click="$emit('inactive-editor', 'cancel')"
     >
       <svg
@@ -193,7 +193,7 @@
       </div>
     </editor-menu-bar>
     <button
-      class="flex items-center justify-center bg-green-500 hover:bg-green-600 text-white p-1.5 rounded"
+      class="flex items-center justify-center bg-green-500 opacity-60 hover:opacity-100 text-white p-1.5 rounded"
       @click="$emit('inactive-editor', 'save')"
     >
       <svg

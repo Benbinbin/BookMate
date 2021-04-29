@@ -22,10 +22,22 @@
         </button>
         <h2 class="text-xl font-bold">书摘</h2>
         <button
+          v-show="!showMoreModal"
           class="flex items-center opacity-30 hover:opacity-80"
           @click="showMoreModal = !showMoreModal"
         >
           <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
+        </button>
+        <button
+          v-show="showMoreModal"
+          class="flex items-center opacity-60 hover:opacity-100"
+          @click="showMoreModal = !showMoreModal"
+        >
+          <img
+            class="w-6 h-6"
+            src="@/assets/icons/close-circle.svg"
+            alt="menu icon"
+          />
         </button>
       </div>
       <quote-editor-menu
@@ -36,249 +48,231 @@
       ></quote-editor-menu>
       <div
         v-show="showMoreModal"
-        class="more-modal absolute top-12 right-6 z-10 flex flex-col rounded bg-gray-100 shadow-md"
+        class="more-modal p-4 absolute top-12 right-6 z-10 flex flex-col rounded bg-gray-100 shadow-md"
       >
-        <button
-          class="px-4 py-2 text-sm hover:bg-gray-200 rounded"
-          @click="showImportQuotesModalHandler"
-        >
-          导入书摘
-        </button>
-      </div>
-    </nav>
-    <div ref="quotesList" class="flex-grow quotes-list px-3 py-6 h-full">
-      <quote-card
-        v-if="newQuote && newQuote._id === 'whole_book_new'"
-        ref="whole_book_new"
-        :category="category"
-        :quote="newQuote"
-        :quote-chapter.sync="quoteChapter"
-        :quote-location.sync="quoteLocation"
-        :quote-type="quoteType"
-        :editor="editor"
-        :commentEditor="commentEditor"
-        @inactive-editor="inactiveEditor"
-      >
-        <!-- <template v-slot:body>
-          <div class="quote-editor-container card-body mx-8">
-            <quote-editor-floating-menu
-              :editor="editor"
-            ></quote-editor-floating-menu>
-            <editor-content :editor="editor"></editor-content>
-          </div>
-        </template>
-        <template v-slot:type>
-          <div class="quote-type flex-shrink-0 relative">
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">批量导入书摘</span>
+          </h3>
+          <div class="flex space-x-3 justify-start">
             <button
-              class="border p-1 border-gray-300 rounded"
-              @click="showTypesModal = true"
+              v-for="app of importAppList"
+              :key="app.name"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              @click="showImportQuotesModalHandler(app.name)"
             >
               <img
-                :src="require(`@/assets/icons/${quoteType}.svg`)"
-                :alt="`${quoteType} icon`"
-                class="w-5 h-5"
+                class="w-10"
+                :src="`apps/${app.img}`"
+                :alt="`${app.name} logo`"
               />
             </button>
-            <div
-              v-show="showTypesModal"
-              class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
-            >
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">书摘展示模式</span>
+          </h3>
+          <div class="flex flex-col space-y-1">
+            <div>
+              <input
+                type="checkbox"
+                name="sort-by-chapter"
+                id="sort-by-chapter"
+                v-model="classifyByChapter"
+              />
+              <label
+                for="sort-by-chapter"
+                class="ml-2"
+                style="user-select: none"
+                >按章节分类书摘</label
+              >
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                name="side-by-side"
+                id="side-by-side"
+                v-model="sideBySide"
+              />
+              <label for="side-by-side" class="ml-2" style="user-select: none"
+                >并列排布</label
+              >
+              <input
+                class="w-11 text-sm mx-1 pl-1 border-2 rounded-md"
+                type="number"
+                name="cols"
+                v-model="cols"
+                min="1"
+                max="5"
+                @input="colsInputHandler"
+              />
+              <span>篇书摘</span>
+            </div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">书摘排序方式</span>
+          </h3>
+          <div class="flex items-stretch space-x-6">
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="sort-by-location"
+                  name="sort-by-location"
+                  value="location"
+                  v-model="sortBy"
+                />
+                <label class="ml-2" for="sort-by-location">按页码顺序</label>
+              </div>
+              <div class="flex items-center">
+                <input
+                  type="radio"
+                  id="sort-by-updated-date"
+                  name="sort-by-updated-date"
+                  value="updated_date"
+                  v-model="sortBy"
+                />
+                <label class="ml-2" for="sort-by-updated-date"
+                  >按更新时间</label
+                >
+              </div>
+            </div>
+            <div class="space-x-2">
               <button
-                v-for="type of types"
-                :key="type"
-                class="p-1 hover:bg-gray-200 rounded"
-                @click="changeQuoteType(type)"
+                class="w-12 h-full p-2 bg-gray-200 hover:bg-gray-300 rounded"
+                :class="{ 'bg-gray-300': rank === 'ascending' }"
+                @click="rank = 'ascending'"
               >
                 <img
-                  :src="require(`@/assets/icons/${type}.svg`)"
-                  :alt="`${type} icon`"
-                  class="w-5 h-5"
+                  class="mx-auto"
+                  src="@/assets/icons/sort-ascend.svg"
+                  alt="sort ascending icon"
+                />
+              </button>
+              <button
+                class="w-12 h-full p-2 bg-gray-200 hover:bg-gray-300 rounded"
+                :class="{ 'bg-gray-300': rank === 'descending' }"
+                @click="rank = 'descending'"
+              >
+                <img
+                  class="mx-auto"
+                  src="@/assets/icons/sort-descend.svg"
+                  alt="sort descending icon"
                 />
               </button>
             </div>
           </div>
-        </template>
-        <template v-slot:location>
-          <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
+          <!-- <div class="flex mt-2 items-center">
+            <input
+              type="radio"
+              id="sort-by-custom"
+              name="sort-by-custom"
+              value="custom"
+              v-model="sortBy"
+            />
+            <label class="ml-2" for="sort-by-custom"
+              >自定义排序<span class="text-xs">（可拖拽实现重排）</span></label
+            >
+          </div> -->
+        </div>
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">批量导出书摘</span>
+          </h3>
+          <div class="flex space-x-2">
             <div class="flex items-center">
-              <label class="flex-shrink-0 opacity-30" for="quote-chapter"
-                >章节：</label
-              >
-              <treeselect
-                class="w-4/5 z-10"
-                v-model="quoteChapter"
-                placeholder="请选择章节"
-                :multiple="false"
-                :options="category"
-                :normalizer="categoryNormalizer"
-                :searchable="true"
-                :flatten-search-results="true"
-                :close-on-select="true"
-                :default-expand-level="1"
-                :max-height="150"
-              />
-            </div>
-            <div class="flex items-center">
-              <label class="flex-shrink-0 opacity-30" for="quote-location">
-                页码：</label
-              >
               <input
-                class="w-4/5"
-                id="quote-location"
-                type="number"
-                v-model="quoteLocation"
-                placeholder="请输入页码"
+                type="radio"
+                id="export-all"
+                name="export-all"
+                value="all"
+                v-model="exportQuotes"
               />
+              <label class="ml-2" for="export-all">全部书摘</label>
+            </div>
+            <div class="flex items-center">
+              <input
+                type="radio"
+                id="export-selected"
+                name="export-selected"
+                value="selected"
+                v-model="exportQuotes"
+              />
+              <label class="ml-2" for="export-selected"
+                >选中{{ selectQuotes.length }}篇书摘</label
+              >
             </div>
           </div>
-        </template>
-        <template
-          v-slot:comment
-          v-if="
-            (newQuote._id === editingQuote &&
-              newQuote.comment &&
-              newQuote.comment !== '<p></p>') ||
-            newQuote._id === addingCommentQuote
-          "
-        >
-          <div
-            class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-          >
-            <quote-editor-floating-menu
-              :editor="commentEditor"
-            ></quote-editor-floating-menu>
-            <editor-content :editor="commentEditor"></editor-content>
+          <div class="flex space-x-2 mt-2">
+            <button
+              v-for="app of exportAppList"
+              :key="app.name"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+            >
+              <img
+                class="w-10"
+                :src="`apps/${app.img}`"
+                :alt="`${app.name} logo`"
+              />
+            </button>
           </div>
-        </template> -->
-      </quote-card>
+        </div>
+      </div>
+    </nav>
+    <div ref="quotesList" class="flex-grow quotes-list px-3 py-6 h-full">
       <div
-        v-if="quotes.length > 0 && quotesListMode === 'default'"
-        class="quotes space-y-3"
+        v-if="newQuote && newQuote._id === 'whole_book_new'"
+        class="quote-card-container"
       >
         <quote-card
-          v-for="quote of item.quotes"
-          :key="quote._id"
-          :ref="quote._id"
+          ref="whole_book_new"
           :category="category"
-          :quote="quote"
+          :quote="newQuote"
           :quote-chapter.sync="quoteChapter"
           :quote-location.sync="quoteLocation"
           :quote-type="quoteType"
           :editor="editor"
           :commentEditor="commentEditor"
-          @active-editor="activeEditor(quote)"
           @inactive-editor="inactiveEditor"
         >
-          <!-- <template
-            v-slot:body
-            v-if="editingQuote && quote._id === editingQuote"
-          >
-            <div class="quote-editor-container card-body mx-8">
-              <quote-editor-floating-menu
-                :editor="editor"
-              ></quote-editor-floating-menu>
-              <editor-content :editor="editor"></editor-content>
-            </div>
-          </template>
-          <template
-            v-slot:type
-            v-if="editingQuote && quote._id === editingQuote"
-          >
-            <div class="quote-type flex-shrink-0 relative">
-              <button
-                class="border p-1 border-gray-300 rounded"
-                @click="showTypesModal = true"
-              >
-                <img
-                  :src="require(`@/assets/icons/${quoteType}.svg`)"
-                  :alt="`${quoteType} icon`"
-                  class="w-5 h-5"
-                />
-              </button>
-              <div
-                v-show="showTypesModal"
-                class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
-              >
-                <button
-                  v-for="type of types"
-                  :key="type"
-                  class="p-1 hover:bg-gray-200 rounded"
-                  @click="changeQuoteType(type)"
-                >
-                  <img
-                    :src="require(`@/assets/icons/${type}.svg`)"
-                    :alt="`${type} icon`"
-                    class="w-5 h-5"
-                  />
-                </button>
-              </div>
-            </div>
-          </template>
-          <template
-            v-slot:location
-            v-if="editingQuote && quote._id === editingQuote"
-          >
-            <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
-              <div class="flex items-center">
-                <label class="flex-shrink-0 opacity-30" for="quote-chapter"
-                  >章节：</label
-                >
-                <treeselect
-                  class="w-4/5 z-10"
-                  v-model="quoteChapter"
-                  placeholder="请选择章节"
-                  :multiple="false"
-                  :options="category"
-                  :normalizer="categoryNormalizer"
-                  :searchable="true"
-                  :flatten-search-results="true"
-                  :close-on-select="true"
-                  :default-expand-level="1"
-                  :max-height="150"
-                />
-              </div>
-              <div class="flex items-center">
-                <label class="flex-shrink-0 opacity-30" for="quote-location">
-                  页码：</label
-                >
-                <input
-                  class="w-4/5"
-                  id="quote-location"
-                  type="number"
-                  v-model="quoteLocation"
-                  placeholder="请输入页码"
-                />
-              </div>
-            </div>
-          </template>
-          <template
-            v-slot:comment
-            v-if="
-              (quote._id === editingQuote &&
-                quote.comment &&
-                quote.comment !== '<p></p>') ||
-              quote._id === addingCommentQuote
-            "
-          >
-            <div
-              class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-            >
-              <quote-editor-floating-menu
-                :editor="commentEditor"
-              ></quote-editor-floating-menu>
-              <editor-content :editor="commentEditor"></editor-content>
-            </div>
-          </template> -->
         </quote-card>
+      </div>
+      <div
+        v-if="quotes.length > 0 && quotesListMode === 'default'"
+        class="quotes space-y-3"
+        :class="gridLayout"
+      >
+        <div
+          v-for="quote of quotesSorted"
+          :key="quote._id"
+          class="quote-card-container"
+        >
+          <quote-card
+            :ref="quote._id"
+            :category="category"
+            :quote="quote"
+            :quote-chapter.sync="quoteChapter"
+            :quote-location.sync="quoteLocation"
+            :quote-type="quoteType"
+            :editor="editor"
+            :commentEditor="commentEditor"
+            @active-editor="activeEditor(quote)"
+            @inactive-editor="inactiveEditor"
+          >
+          </quote-card>
+        </div>
       </div>
       <div v-if="quotes.length > 0 && quotesListMode === 'chapter'">
         <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
-          <div class="chapter py-3 flex justify-between opacity-50">
+          <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
                 class="flex items-center"
                 :class="{
-                  'opacity-30 hover:opacity-80': !quoteEditing,
+                  'opacity-40 hover:opacity-80': !quoteEditing,
                   'opacity-10': quoteEditing,
                 }"
                 :disabled="quoteEditing"
@@ -290,7 +284,7 @@
                   class="flex-shrink-0 w-6 h-6"
                 />
               </button>
-              <span class="ml-1">{{
+              <span class="ml-1 text-gray-500">{{
                 item.name !== "未分类(NoChapter)" ? item.name : "未分类"
               }}</span>
             </div>
@@ -317,233 +311,46 @@
           </div>
           <div
             v-show="!hiddenQuotes.includes(item.name)"
-            class="quotes space-y-3"
+            class="quotes"
+            :class="gridLayout"
           >
-            <quote-card
+            <div
               v-if="newQuote && newQuote._id === `${item.name}_new`"
-              :ref="`${item.name}_new`"
-              :category="category"
-              :quote="newQuote"
-              :quote-chapter.sync="quoteChapter"
-              :quote-location.sync="quoteLocation"
-              :quote-type="quoteType"
-              :editor="editor"
-              :commentEditor="commentEditor"
-              @inactive-editor="inactiveEditor"
+              class="quote-card-container"
             >
-              <!-- <template v-slot:body>
-                <div class="quote-editor-container card-body mx-8">
-                  <quote-editor-floating-menu
-                    :editor="editor"
-                  ></quote-editor-floating-menu>
-                  <editor-content :editor="editor"></editor-content>
-                </div>
-              </template>
-              <template v-slot:type>
-                <div class="quote-type flex-shrink-0 relative">
-                  <button
-                    class="border p-1 border-gray-300 rounded"
-                    @click="showTypesModal = true"
-                  >
-                    <img
-                      :src="require(`@/assets/icons/${quoteType}.svg`)"
-                      :alt="`${quoteType} icon`"
-                      class="w-5 h-5"
-                    />
-                  </button>
-                  <div
-                    v-show="showTypesModal"
-                    class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
-                  >
-                    <button
-                      v-for="type of types"
-                      :key="type"
-                      class="p-1 hover:bg-gray-200 rounded"
-                      @click="changeQuoteType(type)"
-                    >
-                      <img
-                        :src="require(`@/assets/icons/${type}.svg`)"
-                        :alt="`${type} icon`"
-                        class="w-5 h-5"
-                      />
-                    </button>
-                  </div>
-                </div>
-              </template>
-              <template v-slot:location>
-                <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
-                  <div class="flex items-center">
-                    <label class="flex-shrink-0 opacity-30" for="quote-chapter"
-                      >章节：</label
-                    >
-                    <treeselect
-                      class="w-4/5 z-10"
-                      v-model="quoteChapter"
-                      placeholder="请选择章节"
-                      :multiple="false"
-                      :options="category"
-                      :normalizer="categoryNormalizer"
-                      :searchable="true"
-                      :flatten-search-results="true"
-                      :close-on-select="true"
-                      :default-expand-level="1"
-                      :max-height="150"
-                    />
-                  </div>
-                  <div class="flex items-center">
-                    <label
-                      class="flex-shrink-0 opacity-30"
-                      for="quote-location"
-                    >
-                      页码：</label
-                    >
-                    <input
-                      class="w-4/5"
-                      id="quote-location"
-                      type="number"
-                      v-model="quoteLocation"
-                      placeholder="请输入页码"
-                    />
-                  </div>
-                </div>
-              </template>
-              <template
-                v-slot:comment
-                v-if="
-                  (newQuote._id === editingQuote &&
-                    newQuote.comment &&
-                    newQuote.comment !== '<p></p>') ||
-                  newQuote._id === addingCommentQuote
-                "
+              <quote-card
+                class="h-auto"
+                :ref="`${item.name}_new`"
+                :category="category"
+                :quote="newQuote"
+                :quote-chapter.sync="quoteChapter"
+                :quote-location.sync="quoteLocation"
+                :quote-type="quoteType"
+                :editor="editor"
+                :commentEditor="commentEditor"
+                @inactive-editor="inactiveEditor"
               >
-                <div
-                  class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-                >
-                  <quote-editor-floating-menu
-                    :editor="commentEditor"
-                  ></quote-editor-floating-menu>
-                  <editor-content :editor="commentEditor"></editor-content>
-                </div>
-              </template> -->
-            </quote-card>
-            <quote-card
+              </quote-card>
+            </div>
+            <div
               v-for="quote of item.quotes"
               :key="quote._id"
-              :ref="quote._id"
-              :category="category"
-              :quote="quote"
-              :quote-chapter.sync="quoteChapter"
-              :quote-location.sync="quoteLocation"
-              :quote-type="quoteType"
-              :editor="editor"
-              :commentEditor="commentEditor"
-              @active-editor="activeEditor(quote)"
-              @inactive-editor="inactiveEditor"
+              class="quote-card-container"
             >
-              <!-- <template
-                v-slot:body
-                v-if="editingQuote && quote._id === editingQuote"
+              <quote-card
+                :ref="quote._id"
+                :category="category"
+                :quote="quote"
+                :quote-chapter.sync="quoteChapter"
+                :quote-location.sync="quoteLocation"
+                :quote-type="quoteType"
+                :editor="editor"
+                :commentEditor="commentEditor"
+                @active-editor="activeEditor(quote)"
+                @inactive-editor="inactiveEditor"
               >
-                <div class="quote-editor-container card-body mx-8">
-                  <quote-editor-floating-menu
-                    :editor="editor"
-                  ></quote-editor-floating-menu>
-                  <editor-content :editor="editor"></editor-content>
-                </div>
-              </template>
-              <template
-                v-slot:type
-                v-if="editingQuote && quote._id === editingQuote"
-              >
-                <div class="quote-type flex-shrink-0 relative">
-                  <button
-                    class="border p-1 border-gray-300 rounded"
-                    @click="showTypesModal = true"
-                  >
-                    <img
-                      :src="require(`@/assets/icons/${quoteType}.svg`)"
-                      :alt="`${quoteType} icon`"
-                      class="w-5 h-5"
-                    />
-                  </button>
-                  <div
-                    v-show="showTypesModal"
-                    class="types-modal-container absolute top-8 z-10 flex flex-col space-y-1 bg-gray-100 rounded shadow"
-                  >
-                    <button
-                      v-for="type of types"
-                      :key="type"
-                      class="p-1 hover:bg-gray-200 rounded"
-                      @click="changeQuoteType(type)"
-                    >
-                      <img
-                        :src="require(`@/assets/icons/${type}.svg`)"
-                        :alt="`${type} icon`"
-                        class="w-5 h-5"
-                      />
-                    </button>
-                  </div>
-                </div>
-              </template>
-              <template
-                v-slot:location
-                v-if="editingQuote && quote._id === editingQuote"
-              >
-                <div class="quote-location ml-1.5 text-xs flex-col space-y-1">
-                  <div class="flex items-center">
-                    <label class="flex-shrink-0 opacity-30" for="quote-chapter"
-                      >章节：</label
-                    >
-                    <treeselect
-                      class="w-4/5 z-10"
-                      v-model="quoteChapter"
-                      placeholder="请选择章节"
-                      :multiple="false"
-                      :options="category"
-                      :normalizer="categoryNormalizer"
-                      :searchable="true"
-                      :flatten-search-results="true"
-                      :close-on-select="true"
-                      :default-expand-level="1"
-                      :max-height="150"
-                    />
-                  </div>
-                  <div class="flex items-center">
-                    <label
-                      class="flex-shrink-0 opacity-30"
-                      for="quote-location"
-                    >
-                      页码：</label
-                    >
-                    <input
-                      class="w-4/5"
-                      id="quote-location"
-                      type="number"
-                      v-model="quoteLocation"
-                      placeholder="请输入页码"
-                    />
-                  </div>
-                </div>
-              </template>
-              <template
-                v-slot:comment
-                v-if="
-                  (quote._id === editingQuote &&
-                    quote.comment &&
-                    quote.comment !== '<p></p>') ||
-                  quote._id === addingCommentQuote
-                "
-              >
-                <div
-                  class="comment-editor-container px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
-                >
-                  <quote-editor-floating-menu
-                    :editor="commentEditor"
-                  ></quote-editor-floating-menu>
-                  <editor-content :editor="commentEditor"></editor-content>
-                </div>
-              </template> -->
-            </quote-card>
+              </quote-card>
+            </div>
           </div>
           <hr class="mx-auto my-8 border-gray-300 w-1/2" />
         </section>
@@ -564,6 +371,7 @@
       v-if="book && book.metadata && showImportQuotesModal"
       class="fixed w-screen h-screen inset-0"
       :book-id="book._id"
+      :init-tab="initTab"
       @close-import-quotes-modal="closeImportQuoteModelHandler"
     ></import-quotes-modal>
   </div>
@@ -572,10 +380,6 @@
 <script>
 import { mapState } from 'vuex';
 
-// import Treeselect from "@riophae/vue-treeselect";
-// import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-// editor
-// import { Editor, EditorContent } from "tiptap";
 import { Editor } from 'tiptap';
 import {
   Bold,
@@ -605,6 +409,14 @@ import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
 
 import ImportQuotesModal from './modal/ImportQuotesModal.vue';
 
+const appsMap = {
+  kindle: 'kindle-notes-parse',
+  duokan: 'duokan-notes-parse',
+  douban: 'douban-notes-parse',
+  douban_reading: 'douban-reading-notes-parse',
+  wechat_reading: 'wechat-reading-notes-parse',
+};
+
 export default {
   props: ['category', 'quotes', 'quotesChapters'],
   components: {
@@ -619,6 +431,58 @@ export default {
     return {
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
       showMoreModal: false,
+      importAppList: [
+        {
+          name: 'kindle',
+          img: 'kindle.png',
+        },
+        {
+          name: 'duokan',
+          img: 'duokan.png',
+        },
+        {
+          name: 'douban',
+          img: 'douban.png',
+        },
+        {
+          name: 'douban_reading',
+          img: 'douban_reading.png',
+        },
+        {
+          name: 'wechat_reading',
+          img: 'wechat_reading.png',
+        },
+      ],
+      initTab: 'kindle',
+      classifyByChapter: false,
+      sideBySide: false,
+      cols: 2,
+      sortBy: 'location',
+      rank: 'ascending',
+      exportQuotes: 'all',
+      selectQuotes: [],
+      exportAppList: [
+        {
+          name: 'markdown',
+          img: 'markdown.png',
+        },
+        {
+          name: 'word',
+          img: 'word.png',
+        },
+        {
+          name: 'image',
+          img: 'image.png',
+        },
+        {
+          name: 'json',
+          img: 'json.png',
+        },
+        {
+          name: 'html',
+          img: 'html.png',
+        },
+      ],
       showImportQuotesModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
@@ -689,12 +553,70 @@ export default {
             chaptersContainer[chaptersContainer.length - 1].quotes.push(quote);
           }
         });
+
+        chaptersContainer.forEach((item) => {
+          if (this.rank === 'ascending') {
+            item.quotes.sort((a, b) => {
+              if (this.sortBy === 'updated_date') {
+                return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
+              }
+              return a[this.sortBy] - b[this.sortBy];
+            });
+          } else if (this.rank === 'descending') {
+            item.quotes.sort((a, b) => {
+              if (this.sortBy === 'updated_date') {
+                return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
+              }
+              return b[this.sortBy] - a[this.sortBy];
+            });
+          }
+        });
         return chaptersContainer;
       }
+
+      this.quotesRendered.forEach((item) => {
+        if (this.rank === 'ascending') {
+          item.quotes.sort((a, b) => {
+            if (this.sortBy === 'updated_date') {
+              return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
+            }
+            return a[this.sortBy] - b[this.sortBy];
+          });
+        } else if (this.rank === 'descending') {
+          item.quotes.sort((a, b) => {
+            if (this.sortBy === 'updated_date') {
+              return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
+            }
+            return b[this.sortBy] - a[this.sortBy];
+          });
+        }
+      });
       return this.quotesRendered;
+    },
+    gridLayout() {
+      if (this.sideBySide) {
+        return `grid gap-x-2 gap-y-3 grid-cols-${this.cols}`;
+      }
+      return 'space-y-3';
     },
   },
   watch: {
+    classifyByChapter() {
+      if (this.classifyByChapter) {
+        this.$store.dispatch('changeDisplayMode', {
+          type: 'quotes',
+          mode: 'chapter',
+        });
+      } else {
+        this.$store.dispatch('changeDisplayMode', {
+          type: 'quotes',
+          mode: 'default',
+        });
+      }
+      this.$nextTick(() => {
+        hljs.highlightAll();
+      });
+    },
     currentQuotesChapter() {
       if (
         this.quotesListMode === 'chapter'
@@ -724,7 +646,13 @@ export default {
         }
       });
     },
-    showImportQuotesModalHandler() {
+    colsInputHandler() {
+      if (this.cols > 5) {
+        this.cols = 5;
+      }
+    },
+    showImportQuotesModalHandler(val) {
+      this.initTab = appsMap[val];
       this.showImportQuotesModal = true;
       this.showMoreModal = false;
     },
@@ -858,6 +786,7 @@ export default {
     },
   },
   created() {
+    this.classifyByChapter = this.quotesListMode === 'chapter';
     this.convertor = new Editor({
       extensions: [
         new Bold(),
@@ -963,6 +892,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.highlight {
+  text-decoration: none;
+  box-shadow: inset 0 -0.5em 0 rgba(243, 238, 102, 0.8);
+  color: inherit;
+}
+
 .quotes-list {
   overflow-y: overlay;
   &::-webkit-scrollbar-thumb {
@@ -973,11 +908,22 @@ export default {
   }
 }
 
-.menubar {
-  .is-active {
-    background: #e5e7eb;
+.more-modal {
+  max-height: 90vh;
+  overflow-y: overlay;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0);
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
   }
 }
+
+// .menubar {
+//   .is-active {
+//     background: #e5e7eb;
+//   }
+// }
 
 #quote-location {
   border: 1px solid #ddd;

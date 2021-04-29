@@ -1,11 +1,11 @@
 <template>
   <div
-    class="quote-card relative bg-white rounded-lg outline-none"
+    class="quote-card relative rounded-lg outline-none"
     :class="{ editing: quote._id === editingQuote }"
     tabindex="0"
   >
     <div
-      class="quote-content border"
+      class="quote-content bg-white border"
       :class="{
         'rounded-lg': !showComment && quote._id !== addingCommentQuote,
         'rounded-t-lg': showComment || quote._id === addingCommentQuote,
@@ -56,7 +56,7 @@
             </button>
             <button
               :class="{
-                'opacity-70 hover:opacity-100': !quoteEditing,
+                'opacity-80 hover:opacity-100': !quoteEditing,
                 'opacity-30': quoteEditing,
               }"
               :disabled="quoteEditing"
@@ -75,7 +75,7 @@
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
           <button
-            class="left flex items-center bg-red-300 rounded p-1 text-white opacity-50 hover:opacity-80"
+            class="left flex items-center bg-red-500 rounded p-1 text-white opacity-30 hover:opacity-100"
             @click="$emit('inactive-editor', 'cancel')"
           >
             <svg
@@ -94,7 +94,7 @@
             <span class="ml-0.5 text-xs">Cancel</span>
           </button>
           <button
-            class="right flex items-center bg-green-500 rounded p-1 text-white opacity-50 hover:opacity-80"
+            class="right flex items-center bg-green-500 rounded p-1 text-white opacity-60 hover:opacity-100"
             @click="$emit('inactive-editor', 'save')"
           >
             <svg
@@ -229,7 +229,7 @@
             </div>
             <!-- </slot> -->
           </div>
-          <div class="btns right flex flex-shrink-0 items-center space-x-1.5">
+          <div class="btns right hidden flex-shrink-0 items-center space-x-1.5">
             <button
               class="opacity-30 hover:opacity-80"
               v-show="!showComment"

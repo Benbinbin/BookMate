@@ -644,11 +644,11 @@ export default {
     KindleNotesParse,
     DuokanNotesParse,
   },
-  props: ['bookId'],
+  props: ['bookId', 'initTab'],
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      tab: 'kindle-notes-parse',
+      tab: this.initTab,
       loading: false,
       result: [],
       keyword: '',

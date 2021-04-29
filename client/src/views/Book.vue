@@ -16,10 +16,10 @@
         <button
           v-for="item of menuButtons"
           :key="item.icon"
-          class="w-9 h-9 flex-shrink-0 flex justify-center items-center rounded-full hover:opacity-80"
+          class="w-9 h-9 flex-shrink-0 flex justify-center items-center rounded-full"
           :class="{
-            'bg-gray-200 opacity-60': !item.active,
-            'bg-white': item.active,
+            'bg-gray-200 opacity-60 hover:opacity-100': !item.active,
+            'bg-gray-50 hover:bg-gray-200': item.active,
           }"
           @click="toggle(item)"
         >
@@ -32,7 +32,7 @@
       </div>
       <div class="back flex-shrink-0 py-4">
         <button
-          class="w-9 h-9 flex justify-center items-center rounded-full bg-gray-200 opacity-60 hover:opacity-80"
+          class="w-9 h-9 flex justify-center items-center rounded-full bg-gray-200 hover:bg-gray-300"
           @click="$router.push({ name: 'Home' })"
         >
           <img

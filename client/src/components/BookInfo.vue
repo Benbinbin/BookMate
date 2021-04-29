@@ -117,7 +117,7 @@
           <li
             v-for="item in metadata.collections"
             :key="item"
-            class="flex-shrink-0 py-1 px-1.5 bg-blue-300 text-white text-xs rounded"
+            class="flex-shrink-0 py-1 px-1.5 bg-blue-500 text-white text-xs rounded"
           >
             {{ item }}
           </li>

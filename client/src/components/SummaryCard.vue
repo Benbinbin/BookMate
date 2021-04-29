@@ -61,7 +61,7 @@
     <!-- </slot> -->
     <div class="card-footer-container h-14 flex items-end">
       <div
-        class="card-footer pb-4 px-4 flex-grow justify-between items-end flex"
+        class="card-footer pb-4 px-4 flex-grow hidden justify-between items-end"
       >
         <div class="left flex items-center">
           <!-- <slot name="location"> -->
