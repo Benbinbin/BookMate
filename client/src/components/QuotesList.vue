@@ -246,7 +246,7 @@
         :class="gridLayout"
       >
         <div
-          v-for="quote of quotesSorted"
+          v-for="quote of quotesRendered"
           :key="quote._id"
           class="quote-card-container"
         >
@@ -266,7 +266,7 @@
         </div>
       </div>
       <div v-if="quotes.length > 0 && quotesListMode === 'chapter'">
-        <section v-for="item of quotesSorted" :key="item.name" :ref="item.name">
+        <section v-for="item of quotesClassifyByChapter" :key="item.name" :ref="item.name">
           <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
@@ -527,54 +527,51 @@ export default {
         }
         quotesRendered.push(quoteTemp);
       });
+
+      if (this.quotesListMode === 'default') {
+        if (this.rank === 'ascending') {
+          quotesRendered.sort((a, b) => {
+            if (this.sortBy === 'updated_date') {
+              return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
+            }
+            return a[this.sortBy] - b[this.sortBy];
+          });
+        } else if (this.rank === 'descending') {
+          quotesRendered.sort((a, b) => {
+            if (this.sortBy === 'updated_date') {
+              return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
+            }
+            return b[this.sortBy] - a[this.sortBy];
+          });
+        }
+      }
       return quotesRendered;
     },
-    quotesSorted() {
-      if (this.quotesListMode === 'chapter') {
-        const chaptersContainer = [];
-        this.quotesChapters.forEach((chapter) => {
-          chaptersContainer.push({
-            name: chapter,
-            quotes: [],
-          });
-        });
+    quotesClassifyByChapter() {
+      const chaptersContainer = [];
+      this.quotesChapters.forEach((chapter) => {
         chaptersContainer.push({
-          name: '未分类(NoChapter)',
+          name: chapter,
           quotes: [],
         });
-        this.quotesRendered.forEach((quote) => {
-          const index = chaptersContainer.findIndex(
-            (item) => item.name === quote.chapter,
-          );
+      });
+      chaptersContainer.push({
+        name: '未分类(NoChapter)',
+        quotes: [],
+      });
+      this.quotesRendered.forEach((quote) => {
+        const index = chaptersContainer.findIndex(
+          (item) => item.name === quote.chapter,
+        );
 
-          if (index !== -1) {
-            chaptersContainer[index].quotes.push(quote);
-          } else {
-            chaptersContainer[chaptersContainer.length - 1].quotes.push(quote);
-          }
-        });
+        if (index !== -1) {
+          chaptersContainer[index].quotes.push(quote);
+        } else {
+          chaptersContainer[chaptersContainer.length - 1].quotes.push(quote);
+        }
+      });
 
-        chaptersContainer.forEach((item) => {
-          if (this.rank === 'ascending') {
-            item.quotes.sort((a, b) => {
-              if (this.sortBy === 'updated_date') {
-                return new Date(a[this.sortBy]) - new Date(b[this.sortBy]);
-              }
-              return a[this.sortBy] - b[this.sortBy];
-            });
-          } else if (this.rank === 'descending') {
-            item.quotes.sort((a, b) => {
-              if (this.sortBy === 'updated_date') {
-                return new Date(b[this.sortBy]) - new Date(a[this.sortBy]);
-              }
-              return b[this.sortBy] - a[this.sortBy];
-            });
-          }
-        });
-        return chaptersContainer;
-      }
-
-      this.quotesRendered.forEach((item) => {
+      chaptersContainer.forEach((item) => {
         if (this.rank === 'ascending') {
           item.quotes.sort((a, b) => {
             if (this.sortBy === 'updated_date') {
@@ -591,7 +588,7 @@ export default {
           });
         }
       });
-      return this.quotesRendered;
+      return chaptersContainer;
     },
     gridLayout() {
       if (this.sideBySide) {
@@ -683,13 +680,13 @@ export default {
     },
     activeEditor(quote) {
       if (!this.editingQuote) {
+        if (quote.chapter) this.quoteChapter = quote.chapter;
+        if (quote.location) this.quoteLocation = quote.location;
+        this.quoteType = quote.type;
         this.editor.setContent(quote.content, true);
         if (quote.comment) {
           this.commentEditor.setContent(quote.comment, true);
         }
-        if (quote.chapter) this.quoteChapter = encodeURIComponent(quote.chapter);
-        if (quote.location) this.quoteLocation = quote.location;
-        this.quoteType = quote.type;
         this.$store.dispatch('setEditingQuote', quote._id);
       }
 
@@ -756,7 +753,7 @@ export default {
           .dispatch('saveQuoteEditing', {
             id: this.editingQuote,
             book: this.book._id,
-            chapter: decodeURIComponent(this.quoteChapter),
+            chapter: this.quoteChapter,
             location: this.quoteLocation,
             content: this.JSONtemp,
             comment: this.commentJSONtemp,

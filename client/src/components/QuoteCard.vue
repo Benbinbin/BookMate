@@ -280,7 +280,7 @@
 
     <!-- <slot name="comment"> -->
     <div
-      v-if="!quoteEditing && showComment"
+      v-if="editingQuote !== quote._id && showComment"
       class="quote-comment px-8 py-6 rounded-b-lg m-0 bg-gray-200 text-blue-900"
       v-html="quote.comment"
     ></div>
@@ -353,7 +353,7 @@ export default {
   data() {
     return {
       types: ['annotation', 'question', 'deep-reading', 'inspiration'],
-      quoteChapterTemp: this.quoteChapter,
+      quoteChapterTemp: encodeURIComponent(this.quote.chapter || ''),
       quoteLocationTemp: 0,
       addComment: false,
       showDeleteModal: false,
@@ -376,7 +376,7 @@ export default {
   },
   watch: {
     quoteChapterTemp() {
-      this.$emit('update:quoteChapter', this.quoteChapterTemp);
+      this.$emit('update:quoteChapter', decodeURIComponent(this.quoteChapterTemp));
     },
     quoteLocationTemp() {
       this.$emit('update:quoteLocation', this.quoteLocationTemp);
