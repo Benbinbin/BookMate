@@ -132,22 +132,22 @@
       <!-- </slot> -->
       <div class="card-footer-container h-16 flex items-end">
         <div
-          class="card-footer pb-3 px-3 flex justify-between items-end flex-grow"
+          class="card-footer pb-3 px-3 flex justify-between items-end flex-grow space-x-2"
         >
           <div class="left flex items-center">
             <!-- <slot name="type"> -->
             <div
               v-if="!quoteEditing || quote._id !== editingQuote"
               class="quote-type p-1"
+              :class="{
+                'hidden opacity-30':
+                  quote.type === 'annotation' && !showComment,
+              }"
             >
               <img
                 :src="require(`@/assets/icons/${quote.type}.svg`)"
                 :alt="`${quote.type} icon`"
-                class="quote-type w-5 h-5"
-                :class="{
-                  'hidden opacity-30':
-                    quote.type === 'annotation' && !showComment,
-                }"
+                class="w-5 h-5"
               />
             </div>
             <div
@@ -229,9 +229,24 @@
             </div>
             <!-- </slot> -->
           </div>
-          <div class="btns right hidden flex-shrink-0 items-center space-x-1.5">
+          <div
+            class="right flex-shrink-0 items-center space-x-1.5"
+            :class="{
+              'hidden': !quoteEditing || quote._id !== editingQuote,
+              'flex': quoteEditing && quote._id === editingQuote
+            }"
+          >
             <button
-              class="opacity-30 hover:opacity-80"
+              :class="{
+                'opacity-30 hover:opacity-80':
+                  !quoteEditing ||
+                  (quoteEditing &&
+                    quote._id === editingQuote &&
+                    !addingCommentQuote),
+                'opacity-10':
+                  addingCommentQuote ||
+                  (quoteEditing && quote._id !== editingQuote),
+              }"
               v-show="!showComment"
               :disabled="
                 addingCommentQuote ||
@@ -376,7 +391,10 @@ export default {
   },
   watch: {
     quoteChapterTemp() {
-      this.$emit('update:quoteChapter', decodeURIComponent(this.quoteChapterTemp));
+      this.$emit(
+        'update:quoteChapter',
+        decodeURIComponent(this.quoteChapterTemp),
+      );
     },
     quoteLocationTemp() {
       this.$emit('update:quoteLocation', this.quoteLocationTemp);
@@ -422,8 +440,10 @@ export default {
       });
     },
     addCommentHandler() {
+      if (!this.quoteEditing) {
+        this.$emit('active-editor');
+      }
       this.$store.dispatch('activeAddingComment', this.quote._id);
-      this.$emit('active-editor');
     },
     shareHandler() {
       // this.$store.dispatch('sharePic', {
@@ -488,8 +508,11 @@ export default {
         opacity: 30%;
       }
     }
-    .btns {
-      display: flex;
+
+    .card-footer {
+      .right {
+        display: flex;
+      }
     }
   }
 }
