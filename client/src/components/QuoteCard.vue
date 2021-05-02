@@ -232,8 +232,8 @@
           <div
             class="right flex-shrink-0 items-center space-x-1.5"
             :class="{
-              'hidden': !quoteEditing || quote._id !== editingQuote,
-              'flex': quoteEditing && quote._id === editingQuote
+              hidden: !quoteEditing || quote._id !== editingQuote,
+              flex: quoteEditing && quote._id === editingQuote,
             }"
           >
             <button
@@ -446,19 +446,18 @@ export default {
       this.$store.dispatch('activeAddingComment', this.quote._id);
     },
     shareHandler() {
-      // this.$store.dispatch('sharePic', {
-      //   type: 'quote',
-      //   content: [this.quote.content],
-      // });
-      const content = {};
-      content._id = this.quote._id;
-      if (this.quote.chapter) content.chapter = this.quote.chapter;
-      if (this.quote.location) content.location = this.quote.location;
-      content.quote = this.quote.content;
-      if (this.quote.comment) {
-        content.comment = this.quote.comment;
-      }
-      this.$store.dispatch('sharePic', [content]);
+      // const content = {};
+      // content._id = this.quote._id;
+      // if (this.quote.chapter) content.chapter = this.quote.chapter;
+      // if (this.quote.location) content.location = this.quote.location;
+      // content.quote = this.quote.content;
+      // if (this.quote.comment) {
+      //   content.comment = this.quote.comment;
+      // }
+      this.$store.dispatch('sharePic', {
+        content: [this.quote],
+        action: 'download',
+      });
     },
   },
 };
@@ -470,22 +469,6 @@ export default {
 }
 
 .quote-card {
-  // overflow-x: overlay;
-  // position: relative;
-  // &::before {
-  //   content: "";
-  //   position: absolute;
-  //   top: 0px;
-  //   right: 0px;
-  //   bottom: 0px;
-  //   left: 0px;
-  //   background-image: url("../assets/icons/quote.svg");
-  //   background-repeat: no-repeat;
-  //   background-position: 10px 10px;
-  //   opacity: 0.05;
-  //   z-index: -10;
-  // }
-
   .quote-link:hover {
     opacity: 80%;
   }

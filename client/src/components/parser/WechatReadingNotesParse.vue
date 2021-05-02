@@ -1,6 +1,6 @@
 <template>
   <div>
-      多看阅读
+      微信阅读
   </div>
 </template>
 

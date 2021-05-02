@@ -90,10 +90,6 @@
         ></quotes-list>
       </div>
     </div>
-    <share-pic-modal
-      v-if="showSharePicModal"
-      class="fixed w-screen h-screen inset-0"
-    ></share-pic-modal>
   </div>
 </template>
 
@@ -106,7 +102,6 @@ import 'highlight.js/styles/googlecode.css'; // 样式文件
 import BookInfo from '../components/BookInfo.vue';
 import QuotesList from '../components/QuotesList.vue';
 import SummariesList from '../components/SummariesList.vue';
-import SharePicModal from '../components/modal/SharePicModal.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -126,7 +121,6 @@ export default {
     BookInfo,
     QuotesList,
     SummariesList,
-    SharePicModal,
   },
   data() {
     return {
@@ -160,7 +154,6 @@ export default {
   },
   computed: {
     ...mapState({
-      showSharePicModal: (state) => state.showSharePicModal,
       book: (state) => state.book.book,
       quotes: (state) => state.quote.quotes,
       summaries: (state) => state.summary.summaries,

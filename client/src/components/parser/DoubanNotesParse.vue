@@ -1,6 +1,6 @@
 <template>
   <div>
-      多看阅读
+      豆瓣
   </div>
 </template>
 

@@ -31,24 +31,25 @@
         class="modal-body w-full"
         style="max-height: calc(100% - 34px)"
       >
-        <div class="tabs-list flex justify-center space-x-4 p-4">
-          <button
-            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200"
-            :class="{ 'bg-gray-200': tab === 'kindle-notes-parse' }"
-            @click="tab = 'kindle-notes-parse'"
-          >
-            <img class="w-8" src="apps/kindle.png" alt="kindle app icon" />
-            <span class="ml-2 text-sm text-gray-800">Kindle</span>
-          </button>
-          <button
-            class="py-4 px-3 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200"
-            :class="{ 'bg-gray-200': tab === 'duokan-notes-parse' }"
-            @click="tab = 'duokan-notes-parse'"
-          >
-            <img class="w-8" src="apps/duokan.png" alt="duokan app icon" />
-            <span class="ml-2 text-sm text-gray-800">多看阅读</span>
-          </button>
+        <div class="tabs-container m-8 flex justify-center ">
+          <div class="tabs-list py-4 flex space-x-4">
+            <button
+              v-for="btn of tabList"
+              :key="btn.name"
+              class="py-4 px-3 flex-shrink-0 flex justify-center items-center rounded bg-gray-50 hover:bg-gray-200"
+              :class="{ 'bg-gray-200': tab === btn.component }"
+              @click="tab = btn.component"
+            >
+              <img
+                class="w-8"
+                :src="`apps/${btn.image}`"
+                :alt="`${btn.name} app icon`"
+              />
+              <span class="ml-2 text-sm text-gray-800">{{ btn.name }}</span>
+            </button>
+          </div>
         </div>
+
         <component :is="tab" @add-files="setResult"></component>
         <hr class="w-1/2 mx-auto my-8" />
         <div class="result-container m-4 md:mx-10 lg:mx-20 space-y-4">
@@ -625,6 +626,9 @@ import { mapState } from 'vuex';
 import { Editor } from 'tiptap';
 import KindleNotesParse from '../parser/KindleNotesParse.vue';
 import DuokanNotesParse from '../parser/DuokanNotesParse.vue';
+import DoubanNotesParse from '../parser/DoubanNotesParse.vue';
+import DoubanReadingNotesParse from '../parser/DoubanReadingNotesParse.vue';
+import WechatReadingNotesParse from '../parser/WechatReadingNotesParse.vue';
 
 function flatten(root, arr) {
   if (root && Array.isArray(root)) {
@@ -643,12 +647,42 @@ export default {
   components: {
     KindleNotesParse,
     DuokanNotesParse,
+    DoubanNotesParse,
+    DoubanReadingNotesParse,
+    WechatReadingNotesParse,
   },
-  props: ['bookId', 'initTab'],
+  props: ['bookId', 'importQuotesInitTab'],
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      tab: this.initTab,
+      tab: this.importQuotesInitTab,
+      tabList: [
+        {
+          name: 'Kindle',
+          component: 'kindle-notes-parse',
+          image: 'kindle.png',
+        },
+        {
+          name: '多看阅读',
+          component: 'duokan-notes-parse',
+          image: 'duokan.png',
+        },
+        {
+          name: '豆瓣',
+          component: 'douban-notes-parse',
+          image: 'douban.png',
+        },
+        {
+          name: '豆瓣阅读',
+          component: 'douban-reading-notes-parse',
+          image: 'douban_reading.png',
+        },
+        {
+          name: '微信阅读',
+          component: 'wechat-reading-notes-parse',
+          image: 'wechat_reading.png',
+        },
+      ],
       loading: false,
       result: [],
       keyword: '',
@@ -687,7 +721,6 @@ export default {
     backToTopHandler() {
       this.$refs['modal-body'].scrollTop = 0;
     },
-
     deleteFile(fileName) {
       const index = this.result.findIndex((item) => item.fileName === fileName);
       if (index !== -1) {
@@ -1134,6 +1167,16 @@ export default {
 .import-quotes-modal-container {
   .modal-body {
     overflow-y: overlay;
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0);
+    }
+    &:hover::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+    }
+  }
+
+  .tabs-container {
+    overflow-x: overlay;
     &::-webkit-scrollbar-thumb {
       background-color: rgba(156, 163, 175, 0);
     }

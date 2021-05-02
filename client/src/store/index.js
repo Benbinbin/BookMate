@@ -4,6 +4,7 @@ import Qs from 'qs';
 import book from './modules/book';
 import quote from './modules/quote';
 import summary from './modules/summary';
+import share from './modules/share';
 
 const APIBASE = 'http://localhost:3000/api/';
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     book,
     quote,
     summary,
+    share,
   },
   state: {
     booksList: [],
@@ -25,8 +27,6 @@ export default new Vuex.Store({
     currentQuotesChapter: '',
     summariesListMode: 'chapter',
     currentSummariesChapter: '',
-    showSharePicModal: false,
-    sharePicContent: [],
   },
   getters: {
     allCollections(state) {
@@ -51,16 +51,6 @@ export default new Vuex.Store({
     },
     CLEAR_NAV_CHAPTER(state, payload) {
       state[`current${capFirstLetter(payload.type)}Chapter`] = null;
-    },
-    // share picture
-    SHARE_PIC(state, payload) {
-      // eslint-disable-next-line no-param-reassign
-      state.showSharePicModal = true;
-      state.sharePicContent = payload;
-    },
-    CLOSE_SHARE_PIC_MODAL(state) {
-      state.showSharePicModal = false;
-      state.sharePicContent = [];
     },
   },
   actions: {
@@ -110,25 +100,6 @@ export default new Vuex.Store({
     },
     clearNavChapter(context, payload) {
       context.commit('CLEAR_NAV_CHAPTER', payload);
-    },
-    // share
-    sharePic(context, payload) {
-      // const content = [];
-      // if (payload.type === 'quote') {
-      //   payload.ids.forEach((id) => {
-      //     const target = context.rootState.quote.quotes.find((item) => item._id === id);
-      //     if (target) content.push(target);
-      //   });
-      // } else if (payload.type === 'summary') {
-      //   payload.ids.forEach((id) => {
-      //     const target = context.rootState.summary.summaries.find((item) => item._id === id);
-      //     content.push(target);
-      //   });
-      // }
-      context.commit('SHARE_PIC', payload);
-    },
-    closeSharePicModal(context) {
-      context.commit('CLOSE_SHARE_PIC_MODAL');
     },
   },
 });

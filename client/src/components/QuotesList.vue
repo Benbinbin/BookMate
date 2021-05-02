@@ -180,37 +180,15 @@
         </div>
         <div class="mb-4">
           <h3 class="font-bold my-4">
-            <span class="highlight">批量导出书摘</span>
+            <span class="highlight">分享书摘设置</span>
           </h3>
-          <div class="flex space-x-2">
-            <div class="flex items-center">
-              <input
-                type="radio"
-                id="export-all"
-                name="export-all"
-                value="all"
-                v-model="exportQuotes"
-              />
-              <label class="ml-2" for="export-all">全部书摘</label>
-            </div>
-            <div class="flex items-center">
-              <input
-                type="radio"
-                id="export-selected"
-                name="export-selected"
-                value="selected"
-                v-model="exportQuotes"
-              />
-              <label class="ml-2" for="export-selected"
-                >选中{{ selectQuotes.length }}篇书摘</label
-              >
-            </div>
-          </div>
           <div class="flex space-x-2 mt-2">
             <button
-              v-for="app of exportAppList"
+              v-for="app of shareAppList"
               :key="app.name"
+              :title="app.name"
               class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              @click="showShareSettingModalHandler(app.name)"
             >
               <img
                 class="w-10"
@@ -266,7 +244,11 @@
         </div>
       </div>
       <div v-if="quotes.length > 0 && quotesListMode === 'chapter'">
-        <section v-for="item of quotesClassifyByChapter" :key="item.name" :ref="item.name">
+        <section
+          v-for="item of quotesClassifyByChapter"
+          :key="item.name"
+          :ref="item.name"
+        >
           <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
@@ -371,9 +353,15 @@
       v-if="book && book.metadata && showImportQuotesModal"
       class="fixed w-screen h-screen inset-0"
       :book-id="book._id"
-      :init-tab="initTab"
+      :import-quotes-init-tab="importQuotesInitTab"
       @close-import-quotes-modal="closeImportQuoteModelHandler"
     ></import-quotes-modal>
+    <share-quotes-setting-modal
+      v-if="showShareQuotesSettingModal"
+      class="fixed w-screen h-screen inset-0"
+      :share-quotes-init-tab="shareQuotesInitTab"
+      @close-share-quotes-setting-modal="showShareQuotesSettingModal = false"
+    ></share-quotes-setting-modal>
   </div>
 </template>
 
@@ -408,13 +396,22 @@ import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
 // import QuoteEditorFloatingMenu from "./editor/QuoteEditorFloatingMenu.vue";
 
 import ImportQuotesModal from './modal/ImportQuotesModal.vue';
+import ShareQuotesSettingModal from './modal/ShareQuotesSettingModal.vue';
 
-const appsMap = {
+const importQuotesAppsMap = {
   kindle: 'kindle-notes-parse',
   duokan: 'duokan-notes-parse',
   douban: 'douban-notes-parse',
   douban_reading: 'douban-reading-notes-parse',
   wechat_reading: 'wechat-reading-notes-parse',
+};
+
+const shareQuotesAppsMap = {
+  image: 'share-quotes-as-image',
+  markdown: 'share-quotes-as-markdown',
+  json: 'share-quotes-as-json',
+  html: 'share-quotes-as-html',
+  word: 'share-quotes-as-word',
 };
 
 export default {
@@ -426,6 +423,7 @@ export default {
     QuoteEditorMenu,
     // QuoteEditorFloatingMenu,
     ImportQuotesModal,
+    ShareQuotesSettingModal,
   },
   data() {
     return {
@@ -453,26 +451,22 @@ export default {
           img: 'wechat_reading.png',
         },
       ],
-      initTab: 'kindle',
+      importQuotesInitTab: 'kindle-notes-parse',
+      showImportQuotesModal: false,
       classifyByChapter: false,
       sideBySide: false,
       cols: 2,
       sortBy: 'location',
       rank: 'ascending',
-      exportQuotes: 'all',
       selectQuotes: [],
-      exportAppList: [
-        {
-          name: 'markdown',
-          img: 'markdown.png',
-        },
-        {
-          name: 'word',
-          img: 'word.png',
-        },
+      shareAppList: [
         {
           name: 'image',
           img: 'image.png',
+        },
+        {
+          name: 'markdown',
+          img: 'markdown.png',
         },
         {
           name: 'json',
@@ -482,8 +476,13 @@ export default {
           name: 'html',
           img: 'html.png',
         },
+        {
+          name: 'word',
+          img: 'word.png',
+        },
       ],
-      showImportQuotesModal: false,
+      shareQuotesInitTab: 'share-quote-as-image',
+      showShareQuotesSettingModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
@@ -507,6 +506,7 @@ export default {
       quoteEditing: (state) => state.quote.quoteEditing,
       editingQuote: (state) => state.quote.editingQuote,
       addingCommentQuote: (state) => state.quote.addingCommentQuote,
+      showShareQuotesSetting: (state) => state.share.showShareQuotesSetting,
     }),
     quotesRendered() {
       const quotesRendered = [];
@@ -649,7 +649,7 @@ export default {
       }
     },
     showImportQuotesModalHandler(val) {
-      this.initTab = appsMap[val];
+      this.importQuotesInitTab = importQuotesAppsMap[val];
       this.showImportQuotesModal = true;
       this.showMoreModal = false;
     },
@@ -657,6 +657,14 @@ export default {
       this.showImportQuotesModal = false;
       this.getQuotes();
     },
+    showShareSettingModalHandler(val) {
+      this.shareQuotesInitTab = shareQuotesAppsMap[val];
+      this.showShareQuotesSettingModal = true;
+      this.showMoreModal = false;
+    },
+    // closeShareQuoteSettingModelHandler() {
+    //   this.showShareQuotesSettingModal = false;
+    // },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;
     },
