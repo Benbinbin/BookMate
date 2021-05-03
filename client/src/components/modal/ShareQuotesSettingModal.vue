@@ -7,7 +7,7 @@
         class="modal-header px-1 flex justify-between items-center border-b-2 border-gray-100"
       >
         <div></div>
-        <h1 class="font-bold text-sm text-gray-400">分享书摘</h1>
+        <h1 class="font-bold text-sm text-gray-400">分享书摘设置</h1>
         <button
           class="left w-8 h-8 flex items-center rounded-full p-1 text-red-300 opacity-60 hover:opacity-100"
           @click="$emit('close-share-quotes-setting-modal')"
@@ -57,19 +57,19 @@
 
 <script>
 import { mapState } from 'vuex';
-import ShareQuotesAsImage from '../share/ShareQuotesAsImage.vue';
-import ShareQuotesAsMarkdown from '../share/ShareQuotesAsMarkdown.vue';
-import ShareQuotesAsJson from '../share/ShareQuotesAsJson.vue';
-import shareQuotesAsHtml from '../share/shareQuotesAsHtml.vue';
-import ShareQuotesAsWord from '../share/ShareQuotesAsWord.vue';
+import ShareQuotesAsImageSetting from './share/ShareQuotesAsImageSetting.vue';
+import ShareQuotesAsMarkdownSetting from './share/ShareQuotesAsMarkdownSetting.vue';
+import ShareQuotesAsJsonSetting from './share/ShareQuotesAsJsonSetting.vue';
+import shareQuotesAsHtmlSetting from './share/shareQuotesAsHtmlSetting.vue';
+import ShareQuotesAsWordSetting from './share/ShareQuotesAsWordSetting.vue';
 
 export default {
   components: {
-    ShareQuotesAsImage,
-    ShareQuotesAsMarkdown,
-    ShareQuotesAsJson,
-    shareQuotesAsHtml,
-    ShareQuotesAsWord,
+    ShareQuotesAsImageSetting,
+    ShareQuotesAsMarkdownSetting,
+    ShareQuotesAsJsonSetting,
+    shareQuotesAsHtmlSetting,
+    ShareQuotesAsWordSetting,
   },
   props: ['shareQuotesInitTab'],
   data() {
@@ -78,39 +78,35 @@ export default {
       tabList: [
         {
           name: '图片',
-          component: 'share-quotes-as-image',
+          component: 'share-quotes-as-image-setting',
           image: 'image.png',
         },
         {
           name: 'Markdown',
-          component: 'share-quotes-as-markdown',
+          component: 'share-quotes-as-markdown-setting',
           image: 'markdown.png',
         },
         {
           name: 'JSON',
-          component: 'share-quotes-as-json',
+          component: 'share-quotes-as-json-setting',
           image: 'json.png',
         },
         {
           name: 'HTML',
-          component: 'share-quotes-as-html',
+          component: 'share-quotes-as-html-setting',
           image: 'html.png',
         },
         {
           name: 'Word',
-          component: 'share-quotes-as-word',
+          component: 'share-quotes-as-word-setting',
           image: 'word.png',
         },
       ],
     };
   },
   computed: {
-    ...mapState({
-      book: (state) => state.book.book,
-    }),
   },
   methods: {
-
   },
   mounted() {},
 };

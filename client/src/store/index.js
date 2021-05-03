@@ -6,7 +6,11 @@ import quote from './modules/quote';
 import summary from './modules/summary';
 import share from './modules/share';
 
+import initLocalStorage from './initLocalStorage';
+
 const APIBASE = 'http://localhost:3000/api/';
+
+initLocalStorage();
 
 Vue.use(Vuex);
 

@@ -203,7 +203,7 @@ export default {
   computed: {
     ...mapState({
       summariesListMode: (state) => state.summariesListMode,
-      currentSummariesChapter: (state) => state.summariesListMode,
+      currentSummariesChapter: (state) => state.currentSummariesChapter,
       book: (state) => state.book.book,
       summaryEditing: (state) => state.summary.summaryEditing,
       editingSummary: (state) => state.summary.editingSummary,

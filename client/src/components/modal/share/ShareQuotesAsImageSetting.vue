@@ -9,7 +9,7 @@
             type="range"
             id="width"
             name="width"
-            v-model="width"
+            v-model.number="width"
             min="20"
             max="40"
           />
@@ -39,7 +39,7 @@
     </div>
     <div ref="right" class="right col-span-2 max-h-full">
       <h2 class="text-lg text-center font-bold">参考样式</h2>
-      <div class="flex flex-col items-center">
+      <div class="flex flex-col items-center space-y-4">
         <div class="card-container relative">
           <quotes-image
             class="transform scale-75"
@@ -54,7 +54,7 @@
           ></quotes-image>
           <button
             class="w-full h-full absolute inset-0 z-10 focus:outline-none"
-            @click="selected = 'default'"
+            @click="setSelected('default')"
           ></button>
         </div>
         <div class="card-container relative">
@@ -71,12 +71,12 @@
           ></quotes-image>
           <button
             class="w-full h-full absolute inset-0 z-10 focus:outline-none"
-            @click="selected = 'defaultDark'"
+            @click="setSelected('defaultDark')"
           ></button>
         </div>
 
         <footer class="mt-8 mb-4 items-center">
-          <hr class="mx-auto w-1/2" />
+          <hr class="mx-auto" />
           <div class="flex justify-center items-center">
             <button
               @click="backToTopHandler"
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import QuotesImage from './style/QuotesImage.vue';
+import QuotesImage from './QuotesImage.vue';
 
 export default {
   components: {
@@ -120,10 +120,33 @@ export default {
       },
     };
   },
+  watch: {
+    width() {
+      localStorage.setItem('shareQuoteAsImageWidth', this.width);
+    },
+    show: {
+      handler() {
+        localStorage.setItem(
+          'shareQuotesAsImageShow',
+          JSON.stringify(this.show),
+        );
+      },
+      deep: true,
+    },
+  },
   methods: {
     backToTopHandler() {
       this.$refs.right.scrollTop = 0;
     },
+    setSelected(val) {
+      this.selected = val;
+      localStorage.setItem('shareQuotesAsImageSelectedType', val);
+    },
+  },
+  created() {
+    this.width = +localStorage.getItem('shareQuoteAsImageWidth');
+    this.selected = localStorage.getItem('shareQuotesAsImageSelectedType');
+    this.show = JSON.parse(localStorage.getItem('shareQuotesAsImageShow'));
   },
 };
 </script>

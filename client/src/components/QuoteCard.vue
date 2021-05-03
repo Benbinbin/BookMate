@@ -281,7 +281,7 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80" @click="shareHandler">
+            <button class="opacity-30 hover:opacity-80" @click="$emit('share-quotes-as-image')">
               <img
                 src="@/assets/icons/share.svg"
                 alt="share icon"
@@ -444,20 +444,6 @@ export default {
         this.$emit('active-editor');
       }
       this.$store.dispatch('activeAddingComment', this.quote._id);
-    },
-    shareHandler() {
-      // const content = {};
-      // content._id = this.quote._id;
-      // if (this.quote.chapter) content.chapter = this.quote.chapter;
-      // if (this.quote.location) content.location = this.quote.location;
-      // content.quote = this.quote.content;
-      // if (this.quote.comment) {
-      //   content.comment = this.quote.comment;
-      // }
-      this.$store.dispatch('sharePic', {
-        content: [this.quote],
-        action: 'download',
-      });
     },
   },
 };

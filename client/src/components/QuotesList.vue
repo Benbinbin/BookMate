@@ -239,6 +239,7 @@
             :commentEditor="commentEditor"
             @active-editor="activeEditor(quote)"
             @inactive-editor="inactiveEditor"
+            @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
           >
           </quote-card>
         </div>
@@ -330,6 +331,7 @@
                 :commentEditor="commentEditor"
                 @active-editor="activeEditor(quote)"
                 @inactive-editor="inactiveEditor"
+                @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
               >
               </quote-card>
             </div>
@@ -362,6 +364,11 @@
       :share-quotes-init-tab="shareQuotesInitTab"
       @close-share-quotes-setting-modal="showShareQuotesSettingModal = false"
     ></share-quotes-setting-modal>
+    <share-quotes-as-image-modal
+      v-if="showShareQuotesAsImageModal"
+      class="fixed w-screen h-screen inset-0"
+      @close-share-quotes-as-image-modal="showShareQuotesAsImageModal = false"
+    ></share-quotes-as-image-modal>
   </div>
 </template>
 
@@ -395,8 +402,10 @@ import QuoteCard from './QuoteCard.vue';
 import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
 // import QuoteEditorFloatingMenu from "./editor/QuoteEditorFloatingMenu.vue";
 
+// modal
 import ImportQuotesModal from './modal/ImportQuotesModal.vue';
 import ShareQuotesSettingModal from './modal/ShareQuotesSettingModal.vue';
+import ShareQuotesAsImageModal from './modal/ShareQuotesAsImageModal.vue';
 
 const importQuotesAppsMap = {
   kindle: 'kindle-notes-parse',
@@ -407,11 +416,11 @@ const importQuotesAppsMap = {
 };
 
 const shareQuotesAppsMap = {
-  image: 'share-quotes-as-image',
-  markdown: 'share-quotes-as-markdown',
-  json: 'share-quotes-as-json',
-  html: 'share-quotes-as-html',
-  word: 'share-quotes-as-word',
+  image: 'share-quotes-as-image-setting',
+  markdown: 'share-quotes-as-markdown-setting',
+  json: 'share-quotes-as-json-setting',
+  html: 'share-quotes-as-html-setting',
+  word: 'share-quotes-as-word-setting',
 };
 
 export default {
@@ -424,9 +433,11 @@ export default {
     // QuoteEditorFloatingMenu,
     ImportQuotesModal,
     ShareQuotesSettingModal,
+    ShareQuotesAsImageModal,
   },
   data() {
     return {
+      coverBase: process.env.VUE_APP_COVER_BASE,
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
       showMoreModal: false,
       importAppList: [
@@ -483,6 +494,7 @@ export default {
       ],
       shareQuotesInitTab: 'share-quote-as-image',
       showShareQuotesSettingModal: false,
+      showShareQuotesAsImageModal: false,
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
@@ -662,9 +674,21 @@ export default {
       this.showShareQuotesSettingModal = true;
       this.showMoreModal = false;
     },
-    // closeShareQuoteSettingModelHandler() {
-    //   this.showShareQuotesSettingModal = false;
-    // },
+    shareQuotesHandler(quote, format) {
+      // console.log(quote);
+      // console.log(format);
+      const title = this.book.metadata.titles[0];
+      let cover = '';
+      if (this.book.metadata.covers.length > 0) cover = `${this.coverBase}${this.book.metadata.covers[0]}`;
+      this.$store.dispatch('setShareQuotesContent', {
+        quotes: [quote],
+        title,
+        cover,
+      });
+      if (format === 'image') {
+        this.showShareQuotesAsImageModal = true;
+      }
+    },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;
     },

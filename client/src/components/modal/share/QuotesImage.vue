@@ -41,11 +41,20 @@
         class="card-footer py-6 px-5 flex justify-between bg-gray-200 rounded-b-lg"
       >
         <div class="left flex items-end">
-          <img v-if="show.cover && cover" :src="cover" alt="book cover" class="w-12" />
+          <img
+            v-if="show.cover && cover"
+            :src="cover"
+            alt="book cover"
+            class="w-12"
+          />
           <div class="ml-2 text-xs text-gray-400 space-y-1">
             <p v-if="show.title">书籍：《{{ title }}》</p>
-            <p v-if="show.chapter && quote.chapter">章节：{{ quote.chapter }}</p>
-            <p v-if="show.location && quote.location">页码：{{ quote.location }}</p>
+            <p v-if="show.chapter && quote.chapter">
+              章节：{{ quote.chapter }}
+            </p>
+            <p v-if="show.location && quote.location">
+              页码：{{ quote.location }}
+            </p>
           </div>
         </div>
         <div v-show="show.logo" class="right flex items-end">
@@ -111,11 +120,20 @@
         class="card-footer py-6 px-5 flex justify-between bg-gray-300 rounded-b-lg"
       >
         <div class="left flex items-end">
-          <img v-if="show.cover && cover" :src="cover" alt="book cover" class="w-12" />
+          <img
+            v-if="show.cover && cover"
+            :src="cover"
+            alt="book cover"
+            class="w-12"
+          />
           <div class="ml-2 text-xs text-gray-400 space-y-1">
             <p v-if="show.title">书籍：《{{ title }}》</p>
-            <p v-if="show.chapter && quote.chapter">章节：{{ quote.chapter }}</p>
-            <p v-if="show.location && quote.location">页码：{{ quote.location }}</p>
+            <p v-if="show.chapter && quote.chapter">
+              章节：{{ quote.chapter }}
+            </p>
+            <p v-if="show.location && quote.location">
+              页码：{{ quote.location }}
+            </p>
           </div>
         </div>
         <div v-show="show.logo" class="right flex items-end">
@@ -132,42 +150,48 @@
 
 <script>
 import { mapState } from 'vuex';
-import * as htmlToImage from 'html-to-image';
 
 import hljs from 'highlight.js';
 
 export default {
-  props: ['width', 'cover', 'title', 'quote', 'show', 'action', 'type'],
+  props: {
+    width: {
+      type: Number,
+      default: 36,
+    },
+    cover: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    quote: {
+      type: Object,
+    },
+    show: {
+      type: Object,
+      default() {
+        return {
+          logo: true,
+          cover: true,
+          comment: true,
+          title: true,
+          chapter: true,
+          location: true,
+        };
+      },
+    },
+    type: {
+      type: String,
+    },
+  },
   data() {
     return {
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
     };
   },
-  computed: {
-    ...mapState({}),
-  },
-  methods: {},
   mounted() {
     hljs.highlightAll();
-    if (this.action === 'download') {
-      const dom = this.$refs.container;
-      console.log(dom);
-      // htmlToImage
-      //   .toPng(dom, param)
-      //   .then((dataUrl) => {
-      //     const link = document.createElement('a');
-      //     link.download = `书名-《${
-      //       this.book.metadata.titles[0] || 'book'
-      //     }》-章节-${item.chapter || '未分类'}-页码-${
-      //       item.location || '未知'
-      //     }.png`;
-      //     link.href = dataUrl;
-      //     link.click();
-      //   })
-      //   .catch((error) => {
-      //     console.error('oops, something went wrong!', error);
-      //   });
-    }
   },
 };
 </script>
