@@ -15,15 +15,15 @@
                   id="blockquote"
                   v-model="show.blockquote"
                 />
-                <label class="text-sm" for="blockquote">显示引用符</label>
+                <label class="text-sm select-none" for="blockquote">显示引用符</label>
               </div>
               <div class="flex items-center space-x-2">
                 <input type="checkbox" id="cover" v-model="show.cover" />
-                <label class="text-sm" for="cover">显示封面</label>
+                <label class="text-sm select-none" for="cover">显示封面</label>
               </div>
               <div class="flex items-center space-x-2">
                 <input type="checkbox" id="chapter" v-model="show.chapter" />
-                <label class="text-sm" for="chapter">显示章节</label>
+                <label class="text-sm select-none" for="chapter">显示章节</label>
               </div>
               <div class="ml-4 flex items-center space-x-2">
                 <input
@@ -33,7 +33,7 @@
                   value="heading"
                   v-model="show.chapterType"
                 />
-                <label class="ml-2" for="chapter-as-heading">按章节分类</label>
+                <label class="ml-2 select-none" for="chapter-as-heading">按章节分类</label>
               </div>
               <div class="ml-4 flex items-center">
                 <input
@@ -43,13 +43,13 @@
                   value="paragraph"
                   v-model="show.chapterType"
                 />
-                <label class="ml-2" for="chapter-as-paragraph"
+                <label class="ml-2 select-none" for="chapter-as-paragraph"
                   >章节作为段落</label
                 >
               </div>
               <div class="flex items-center space-x-2">
                 <input type="checkbox" id="location" v-model="show.location" />
-                <label class="text-sm" for="location">显示页码</label>
+                <label class="text-sm select-none" for="location">显示页码</label>
               </div>
             </div>
           </div>

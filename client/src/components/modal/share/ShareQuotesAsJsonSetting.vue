@@ -8,14 +8,20 @@
             <span class="highlight">可选字段</span>
           </h3>
           <div class="m-4 flex flex-col justify-center items-center">
-            <div class="grid grid-cols-2 gap-2 mb-4">
+            <div class="space-y-4">
               <div
                 v-for="(value, name) in show"
                 :key="name"
                 class="flex items-center space-x-2"
               >
                 <input type="checkbox" :id="name" v-model="show[name]" />
-                <label class="text-sm" :for="name">导出 {{ name }}</label>
+                <label class="text-sm select-none" :for="name"
+                  >导出<span
+                    class="ml-2 bg-green-300 py-0.5 px-1 text-sm rounded"
+                  >
+                    {{ name }}</span
+                  ></label
+                >
               </div>
             </div>
           </div>

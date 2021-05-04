@@ -404,14 +404,14 @@ export default {
           title: 'json',
           image: 'json.png',
         },
-        {
-          title: 'html',
-          image: 'html.png',
-        },
-        {
-          title: 'word',
-          image: 'word.png',
-        },
+        // {
+        //   title: 'html',
+        //   image: 'html.png',
+        // },
+        // {
+        //   title: 'word',
+        //   image: 'word.png',
+        // },
       ],
     };
   },

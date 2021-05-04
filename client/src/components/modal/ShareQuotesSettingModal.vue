@@ -60,16 +60,16 @@ import { mapState } from 'vuex';
 import ShareQuotesAsImageSetting from './share/ShareQuotesAsImageSetting.vue';
 import ShareQuotesAsMarkdownSetting from './share/ShareQuotesAsMarkdownSetting.vue';
 import ShareQuotesAsJsonSetting from './share/ShareQuotesAsJsonSetting.vue';
-import shareQuotesAsHtmlSetting from './share/shareQuotesAsHtmlSetting.vue';
-import ShareQuotesAsWordSetting from './share/ShareQuotesAsWordSetting.vue';
+// import shareQuotesAsHtmlSetting from './share/shareQuotesAsHtmlSetting.vue';
+// import ShareQuotesAsWordSetting from './share/ShareQuotesAsWordSetting.vue';
 
 export default {
   components: {
     ShareQuotesAsImageSetting,
     ShareQuotesAsMarkdownSetting,
     ShareQuotesAsJsonSetting,
-    shareQuotesAsHtmlSetting,
-    ShareQuotesAsWordSetting,
+    // shareQuotesAsHtmlSetting,
+    // ShareQuotesAsWordSetting,
   },
   props: ['shareQuotesInitTab'],
   data() {
@@ -91,16 +91,16 @@ export default {
           component: 'share-quotes-as-json-setting',
           image: 'json.png',
         },
-        {
-          name: 'HTML',
-          component: 'share-quotes-as-html-setting',
-          image: 'html.png',
-        },
-        {
-          name: 'Word',
-          component: 'share-quotes-as-word-setting',
-          image: 'word.png',
-        },
+        // {
+        //   name: 'HTML',
+        //   component: 'share-quotes-as-html-setting',
+        //   image: 'html.png',
+        // },
+        // {
+        //   name: 'Word',
+        //   component: 'share-quotes-as-word-setting',
+        //   image: 'word.png',
+        // },
       ],
     };
   },

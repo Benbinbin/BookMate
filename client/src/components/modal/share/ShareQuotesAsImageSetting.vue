@@ -41,23 +41,23 @@
               </div>
               <div class="flex justify-start items-center space-x-2">
                 <input type="checkbox" id="logo" v-model="show.logo" />
-                <label class="text-sm" for="logo">显示 Logo</label>
+                <label class="text-sm select-none" for="logo">显示 Logo</label>
               </div>
               <div class="flex justify-start items-center space-x-2">
                 <input type="checkbox" id="cover" v-model="show.cover" />
-                <label class="text-sm" for="cover">显示封面</label>
+                <label class="text-sm select-none" for="cover">显示封面</label>
               </div>
               <div class="flex justify-start items-center space-x-2">
                 <input type="checkbox" id="title" v-model="show.title" />
-                <label class="text-sm" for="title">显示书名</label>
+                <label class="text-sm select-none" for="title">显示书名</label>
               </div>
               <div class="flex justify-start items-center space-x-2">
                 <input type="checkbox" id="chapter" v-model="show.chapter" />
-                <label class="text-sm" for="chapter">显示章节</label>
+                <label class="text-sm select-none" for="chapter">显示章节</label>
               </div>
               <div class="flex justify-start items-center space-x-2">
                 <input type="checkbox" id="location" v-model="show.location" />
-                <label class="text-sm" for="location">显示页码</label>
+                <label class="text-sm select-none" for="location">显示页码</label>
               </div>
             </div>
           </div>

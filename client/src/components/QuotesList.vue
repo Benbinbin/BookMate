@@ -526,14 +526,14 @@ export default {
           name: 'json',
           img: 'json.png',
         },
-        {
-          name: 'html',
-          img: 'html.png',
-        },
-        {
-          name: 'word',
-          img: 'word.png',
-        },
+        // {
+        //   name: 'html',
+        //   img: 'html.png',
+        // },
+        // {
+        //   name: 'word',
+        //   img: 'word.png',
+        // },
       ],
       shareQuotesInitTab: 'share-quote-as-image',
       showShareQuotesSettingModal: false,
