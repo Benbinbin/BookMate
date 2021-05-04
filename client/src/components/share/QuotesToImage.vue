@@ -120,30 +120,49 @@ import { mapState } from 'vuex';
 import hljs from 'highlight.js';
 
 export default {
-  props: ['cover', 'title', 'quotes'],
+  props: {
+    width: {
+      type: Number,
+      default: +localStorage.getItem('shareQuoteAsImageWidth'),
+    },
+    cover: {
+      type: String,
+    },
+    title: {
+      type: String,
+    },
+    quotes: {
+      type: Array,
+    },
+    type: {
+      type: String,
+      default: localStorage.getItem('shareQuotesAsImageSelectedType'),
+    },
+    show: {
+      type: Object,
+      default: () => (JSON.parse(localStorage.getItem('shareQuotesAsImageShow'))),
+    },
+  },
   data() {
     return {
       imageBase: process.env.VUE_APP_QUOTE_IMAGES_BASE,
-      width: 36,
-      type: 'default',
-      show: {
-        logo: true,
-        cover: true,
-        comment: true,
-        title: true,
-        chapter: true,
-        location: true,
-      },
+      // width: 36,
+      // type: 'default',
+      // show: {
+      //   logo: true,
+      //   cover: true,
+      //   comment: true,
+      //   title: true,
+      //   chapter: true,
+      //   location: true,
+      // },
     };
   },
   mounted() {
     hljs.highlightAll();
   },
-  created() {
-    this.width = +localStorage.getItem('shareQuoteAsImageWidth');
-    this.type = localStorage.getItem('shareQuotesAsImageSelectedType');
-    this.show = JSON.parse(localStorage.getItem('shareQuotesAsImageShow'));
-  },
+  // created() {
+  // },
 };
 </script>
 

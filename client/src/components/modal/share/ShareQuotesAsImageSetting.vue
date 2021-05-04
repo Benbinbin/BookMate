@@ -77,9 +77,8 @@
               :width="width"
               :cover="cover"
               :title="title"
-              :quote="quote"
+              :quotes="quotes"
               :show="show"
-              :action="'show'"
             ></quotes-to-image>
           </div>
         </div>
@@ -121,13 +120,12 @@ export default {
       type: 'default',
       cover: 'logos/BookMate.svg',
       title: '书名',
-      quote: {
+      quotes: [{
         content: '书摘内容',
         comment: '批注内容',
         chapter: '第一章',
         location: '1',
-      },
-      selected: 'default',
+      }],
       show: {
         logo: true,
         cover: true,
@@ -163,7 +161,7 @@ export default {
   },
   created() {
     this.width = +localStorage.getItem('shareQuoteAsImageWidth');
-    this.selected = localStorage.getItem('shareQuotesAsImageSelectedType');
+    this.type = localStorage.getItem('shareQuotesAsImageSelectedType');
     this.show = JSON.parse(localStorage.getItem('shareQuotesAsImageShow'));
   },
 };

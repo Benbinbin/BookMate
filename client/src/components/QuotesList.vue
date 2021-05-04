@@ -388,14 +388,14 @@
       <div class="btns absolute inset-0 z-10">
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-80"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-60 hover:bg-opacity-90"
           @click="downloadShareQuotesAsImageHandler('save')"
         >
           <p class="text-3xl font-bold">点击下载</p>
         </button>
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-80"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-60 hover:bg-opacity-90"
           @click="downloadShareQuotesAsImageHandler('cancel')"
         >
           <p class="text-3xl font-bold text-red-500">点击取消</p>
@@ -432,6 +432,8 @@ import hljs from 'highlight.js';
 import QuoteImage from '@/assets/js/plugins/QuoteImage';
 
 import * as htmlToImage from 'html-to-image';
+import TurndownService from 'turndown';
+import { saveAs } from 'file-saver';
 import QuoteCard from './QuoteCard.vue';
 import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
 // import QuoteEditorFloatingMenu from "./editor/QuoteEditorFloatingMenu.vue";
@@ -729,7 +731,6 @@ export default {
       this.shareQuotesContent = quotes;
       this.shareQuotesTitle = title;
       this.shareQuotesCover = cover;
-      console.log(this.shareQuotesTitle);
       if (format === 'image') {
         this.shareQuotesComponent = 'quotes-to-image';
       } else if (format === 'markdown') {
@@ -737,9 +738,22 @@ export default {
       }
       this.$nextTick(() => {
         const dom = this.$refs.shareDom.$el;
+        console.log(dom);
 
         if (format === 'markdown') {
-          console.log('markdown');
+          const turndownService = new TurndownService({
+            headingStyle: 'atx',
+            codeBlockStyle: 'fenced',
+            fence: '```',
+            emDelimiter: '*',
+          });
+          const markdownContent = turndownService.turndown(dom);
+          // console.log(markdownContent);
+          const blob = new Blob([markdownContent], {
+            type: 'text/plain;charset=utf-8',
+          });
+          saveAs(blob, `《${title}》书摘.md`);
+          this.clearShareContent();
         }
       });
     },
@@ -767,17 +781,20 @@ export default {
             link.href = dataUrl;
             link.click();
             // clear share content
-            // const delayTimer = setTimeout(() => {
-            this.shareQuotesComponent = '';
-            //   clearTimeout(delayTimer);
-            // }, 1000);
+            this.clearShareContent();
           })
           .catch((error) => {
             console.error('oops, something went wrong!', error);
           });
       } else if (val === 'cancel') {
-        this.shareQuotesComponent = '';
+        this.clearShareContent();
       }
+    },
+    clearShareContent() {
+      this.shareQuotesCotent = [];
+      this.shareQuotesTitle = '';
+      this.shareQuotesCover = '';
+      this.shareQuotesComponent = '';
     },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;

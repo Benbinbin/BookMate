@@ -14,4 +14,15 @@ export default function initLocalStorage() {
         location: true,
       }));
   }
+  if (!localStorage.getItem('shareQuotesAsMarkdownShow')) {
+    localStorage.setItem('shareQuotesAsMarkdownShow',
+      JSON.stringify({
+        blockquote: true,
+        cover: false,
+        comment: true,
+        location: true,
+        chapter: true,
+        chapterType: 'heading',
+      }));
+  }
 }
