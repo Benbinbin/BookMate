@@ -230,7 +230,7 @@
             <!-- </slot> -->
           </div>
           <div
-            class="right flex-shrink-0 items-center space-x-1.5"
+            class="right relative flex-shrink-0 items-center space-x-1.5"
             :class="{
               hidden: !quoteEditing || quote._id !== editingQuote,
               flex: quoteEditing && quote._id === editingQuote,
@@ -281,13 +281,30 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80" @click="$emit('share-quotes-as-image')">
+            <button
+              class="opacity-30 hover:opacity-80"
+              @click="showShareModal = !showShareModal"
+            >
               <img
                 src="@/assets/icons/share.svg"
                 alt="share icon"
                 class="w-5 h-5"
               />
             </button>
+            <div
+              v-show="showShareModal"
+              class="share-modal absolute bottom-6 right-0 z-10 flex items-center space-x-0.5 bg-gray-100 p-1 rounded"
+            >
+              <button
+                v-for="item of shareFormatList"
+                :key="item.title"
+                class="w-7 p-1 rounded hover:bg-gray-200"
+                :title="item.title"
+                @click="shareHandler(item.title)"
+              >
+                <img :src="`apps/${item.image}`" :alt="`${item.title} icon`" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -373,6 +390,29 @@ export default {
       addComment: false,
       showDeleteModal: false,
       showTypesModal: false,
+      showShareModal: false,
+      shareFormatList: [
+        {
+          title: 'image',
+          image: 'image.png',
+        },
+        {
+          title: 'markdown',
+          image: 'markdown.png',
+        },
+        {
+          title: 'json',
+          image: 'json.png',
+        },
+        {
+          title: 'html',
+          image: 'html.png',
+        },
+        {
+          title: 'word',
+          image: 'word.png',
+        },
+      ],
     };
   },
   computed: {
@@ -444,6 +484,10 @@ export default {
         this.$emit('active-editor');
       }
       this.$store.dispatch('activeAddingComment', this.quote._id);
+    },
+    shareHandler(val) {
+      this.$emit(`share-quotes-as-${val}`);
+      this.showShareModal = false;
     },
   },
 };

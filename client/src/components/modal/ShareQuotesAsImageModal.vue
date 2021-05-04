@@ -3,7 +3,7 @@
     <div
       class="result row-span-5 relative flex justify-center items-center overflow-y-auto"
     >
-      <quotes-image
+      <quotes-to-image
         ref="target"
         :width="width"
         :quote="shareQuote"
@@ -11,7 +11,7 @@
         :title="shareQuotesContent.title"
         :type="type"
         :show="show"
-      ></quotes-image>
+      ></quotes-to-image>
       <button
         class="download-btn w-full h-full absolute inset-0 z-10 focus:outline-none hidden justify-center items-center bg-white bg-opacity-50"
         @click="downloadHandler"
@@ -50,11 +50,11 @@
 import { mapState } from 'vuex';
 import * as htmlToImage from 'html-to-image';
 
-import QuotesImage from './share/QuotesImage.vue';
+import QuotesToImage from '../share/QuotesToImage.vue';
 
 export default {
   components: {
-    QuotesImage,
+    QuotesToImage,
   },
   data() {
     return {

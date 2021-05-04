@@ -1,78 +1,95 @@
 <template>
-  <div class="grid grid-cols-3 gap-x-1" style="height: calc(100% - 160px)">
-    <div class="left flex flex-col items-center col-span-1 max-h-full">
-      <h2 class="text-lg text-center font-bold">参数设置</h2>
-      <div class="py-8 space-y-4">
-        <div class="flex items-center space-x-2">
-          <label for="width">宽度</label>
-          <input
-            type="range"
-            id="width"
-            name="width"
-            v-model.number="width"
-            min="20"
-            max="40"
-          />
-          <span class="text-xs">{{ width }} rem</span>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" id="logo" v-model="show.logo" />
-          <label for="logo">显示 Logo</label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" id="cover" v-model="show.cover" />
-          <label for="cover">显示封面</label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" id="title" v-model="show.title" />
-          <label for="title">显示书名</label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" id="chapter" v-model="show.chapter" />
-          <label for="chapter">显示章节</label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <input type="checkbox" id="location" v-model="show.location" />
-          <label for="location">显示页码</label>
+  <div class="grid grid-cols-2 gap-x-1" style="height: calc(100% - 160px)">
+    <div class="left col-span-1 max-h-full">
+      <h2 class="mb-4 text-lg text-center font-bold">参数设置</h2>
+      <div class="px-4">
+        <div>
+          <h3 class="font-bold">
+            <span class="highlight">单篇书摘</span>
+          </h3>
+          <div class="flex flex-col justify-center items-center">
+            <div class=" mb-4 space-y-4">
+              <div class="flex justify-center space-x-2">
+                <button
+                  class="w-12 h-12 rounded-full border border-gray-800 bg-white text-xs focus:outline-none"
+                  :class="{ 'ring-4 ring-blue-300': type === 'default' }"
+                  @click="setType('default')"
+                >
+                  默认
+                </button>
+                <button
+                  class="w-12 h-12 rounded-full border border-gray-800 bg-gray-600 text-xs text-white focus:outline-none"
+                  :class="{
+                    'ring-4 ring-blue-300': type === 'defaultDark',
+                  }"
+                  @click="setType('defaultDark')"
+                >
+                  暗黑
+                </button>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <label class="text-sm" for="width">宽度</label>
+                <input
+                  type="range"
+                  id="width"
+                  name="width"
+                  v-model.number="width"
+                  min="25"
+                  max="40"
+                />
+                <span class="text-xs">{{ width }} rem</span>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <input type="checkbox" id="logo" v-model="show.logo" />
+                <label class="text-sm" for="logo">显示 Logo</label>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <input type="checkbox" id="cover" v-model="show.cover" />
+                <label class="text-sm" for="cover">显示封面</label>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <input type="checkbox" id="title" v-model="show.title" />
+                <label class="text-sm" for="title">显示书名</label>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <input type="checkbox" id="chapter" v-model="show.chapter" />
+                <label class="text-sm" for="chapter">显示章节</label>
+              </div>
+              <div class="flex justify-start items-center space-x-2">
+                <input type="checkbox" id="location" v-model="show.location" />
+                <label class="text-sm" for="location">显示页码</label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div ref="right" class="right col-span-2 max-h-full">
-      <h2 class="text-lg text-center font-bold">参考样式</h2>
-      <div class="flex flex-col items-center space-y-4">
-        <div class="card-container relative">
-          <quotes-image
-            class="transform scale-75"
-            :class="{ 'ring-4 ring-blue-300': selected === 'default' }"
-            :type="'default'"
-            :width="width"
-            :cover="cover"
-            :title="title"
-            :quote="quote"
-            :show="show"
-            :action="'show'"
-          ></quotes-image>
-          <button
-            class="w-full h-full absolute inset-0 z-10 focus:outline-none"
-            @click="setSelected('default')"
-          ></button>
+    <div ref="right" class="right col-span-1 max-h-full">
+      <h2 class="mb-4 text-lg text-center font-bold">参考样式</h2>
+      <div class="px-4">
+        <div>
+          <h3 class="font-bold">
+            <span class="highlight">单篇书摘</span>
+          </h3>
+          <div class="w-full transform origin-top scale-75 flex justify-center">
+            <quotes-to-image
+              :type="type"
+              :width="width"
+              :cover="cover"
+              :title="title"
+              :quote="quote"
+              :show="show"
+              :action="'show'"
+            ></quotes-to-image>
+          </div>
         </div>
-        <div class="card-container relative">
-          <quotes-image
-            class="transform scale-75"
-            :class="{ 'ring-4 ring-blue-300': selected === 'defaultDark' }"
-            :type="'defaultDark'"
-            :width="width"
-            :cover="cover"
-            :title="title"
-            :quote="quote"
-            :show="show"
-            :action="'show'"
-          ></quotes-image>
-          <button
-            class="w-full h-full absolute inset-0 z-10 focus:outline-none"
-            @click="setSelected('defaultDark')"
-          ></button>
+        <div>
+          <h3 class="font-bold">
+            <span class="highlight">多篇书摘</span>
+          </h3>
+          <div class="w-full transform origin-top scale-75 flex justify-center">
+
+          </div>
         </div>
 
         <footer class="mt-8 mb-4 items-center">
@@ -92,15 +109,16 @@
 </template>
 
 <script>
-import QuotesImage from './QuotesImage.vue';
+import QuotesToImage from '../../share/QuotesToImage.vue';
 
 export default {
   components: {
-    QuotesImage,
+    QuotesToImage,
   },
   data() {
     return {
       width: 36,
+      type: 'default',
       cover: 'logos/BookMate.svg',
       title: '书名',
       quote: {
@@ -138,8 +156,8 @@ export default {
     backToTopHandler() {
       this.$refs.right.scrollTop = 0;
     },
-    setSelected(val) {
-      this.selected = val;
+    setType(val) {
+      this.type = val;
       localStorage.setItem('shareQuotesAsImageSelectedType', val);
     },
   },

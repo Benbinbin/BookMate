@@ -239,7 +239,8 @@
             :commentEditor="commentEditor"
             @active-editor="activeEditor(quote)"
             @inactive-editor="inactiveEditor"
-            @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
+            @share-quotes-as-image="shareQuotesHandler([quote], 'image')"
+            @share-quotes-as-markdown="shareQuotesHandler([quote], 'markdown')"
           >
           </quote-card>
         </div>
@@ -331,7 +332,10 @@
                 :commentEditor="commentEditor"
                 @active-editor="activeEditor(quote)"
                 @inactive-editor="inactiveEditor"
-                @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
+                @share-quotes-as-image="shareQuotesHandler([quote], 'image')"
+                @share-quotes-as-markdown="
+                  shareQuotesHandler([quote], 'markdown')
+                "
               >
               </quote-card>
             </div>
@@ -364,11 +368,40 @@
       :share-quotes-init-tab="shareQuotesInitTab"
       @close-share-quotes-setting-modal="showShareQuotesSettingModal = false"
     ></share-quotes-setting-modal>
-    <share-quotes-as-image-modal
-      v-if="showShareQuotesAsImageModal"
-      class="fixed w-screen h-screen inset-0"
-      @close-share-quotes-as-image-modal="showShareQuotesAsImageModal = false"
-    ></share-quotes-as-image-modal>
+    <div
+      v-show="shareQuotesComponent === 'quotes-to-image'"
+      class="share-quotes-container w-screen h-screen flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50"
+    >
+      <!-- <share-quotes-as-image-modal
+        v-if="showShareQuotesAsImageModal"
+        class="fixed w-screen h-screen inset-0"
+        @close-share-quotes-as-image-modal="showShareQuotesAsImageModal = false"
+      ></share-quotes-as-image-modal> -->
+      <component
+        v-if="shareQuotesComponent"
+        :is="shareQuotesComponent"
+        ref="shareDom"
+        :quotes="shareQuotesContent"
+        :cover="shareQuotesCover"
+        :title="shareQuotesTitle"
+      ></component>
+      <div class="btns absolute inset-0 z-10">
+        <button
+          v-if="shareQuotesComponent === 'quotes-to-image'"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-80"
+          @click="downloadShareQuotesAsImageHandler('save')"
+        >
+          <p class="text-3xl font-bold">点击下载</p>
+        </button>
+        <button
+          v-if="shareQuotesComponent === 'quotes-to-image'"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-80"
+          @click="downloadShareQuotesAsImageHandler('cancel')"
+        >
+          <p class="text-3xl font-bold text-red-500">点击取消</p>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -398,14 +431,18 @@ import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
 import QuoteImage from '@/assets/js/plugins/QuoteImage';
 
+import * as htmlToImage from 'html-to-image';
 import QuoteCard from './QuoteCard.vue';
 import QuoteEditorMenu from './editor/QuoteEditorMenu.vue';
 // import QuoteEditorFloatingMenu from "./editor/QuoteEditorFloatingMenu.vue";
 
+import QuotesToImage from './share/QuotesToImage.vue';
+import QuotesToMarkdown from './share/QuotesToMarkdown.vue';
+
 // modal
 import ImportQuotesModal from './modal/ImportQuotesModal.vue';
 import ShareQuotesSettingModal from './modal/ShareQuotesSettingModal.vue';
-import ShareQuotesAsImageModal from './modal/ShareQuotesAsImageModal.vue';
+// import ShareQuotesAsImageModal from "./modal/ShareQuotesAsImageModal.vue";
 
 const importQuotesAppsMap = {
   kindle: 'kindle-notes-parse',
@@ -433,7 +470,9 @@ export default {
     // QuoteEditorFloatingMenu,
     ImportQuotesModal,
     ShareQuotesSettingModal,
-    ShareQuotesAsImageModal,
+    // ShareQuotesAsImageModal,
+    QuotesToImage,
+    QuotesToMarkdown,
   },
   data() {
     return {
@@ -494,7 +533,11 @@ export default {
       ],
       shareQuotesInitTab: 'share-quote-as-image',
       showShareQuotesSettingModal: false,
-      showShareQuotesAsImageModal: false,
+      // showShareQuotesAsImageModal: false,
+      shareQuotesCotent: [],
+      shareQuotesTitle: '',
+      shareQuotesCover: '',
+      shareQuotesComponent: '',
       hiddenQuotes: [],
       HTMLtemp: null,
       JSONtemp: null,
@@ -674,19 +717,66 @@ export default {
       this.showShareQuotesSettingModal = true;
       this.showMoreModal = false;
     },
-    shareQuotesHandler(quote, format) {
-      // console.log(quote);
-      // console.log(format);
+    shareQuotesHandler(quotes, format) {
       const title = this.book.metadata.titles[0];
       let cover = '';
       if (this.book.metadata.covers.length > 0) cover = `${this.coverBase}${this.book.metadata.covers[0]}`;
-      this.$store.dispatch('setShareQuotesContent', {
-        quotes: [quote],
-        title,
-        cover,
-      });
+      // this.$store.dispatch('setShareQuotesContent', {
+      //   quotes: [quote],
+      //   title,
+      //   cover,
+      // });
+      this.shareQuotesContent = quotes;
+      this.shareQuotesTitle = title;
+      this.shareQuotesCover = cover;
+      console.log(this.shareQuotesTitle);
       if (format === 'image') {
-        this.showShareQuotesAsImageModal = true;
+        this.shareQuotesComponent = 'quotes-to-image';
+      } else if (format === 'markdown') {
+        this.shareQuotesComponent = 'quotes-to-markdown';
+      }
+      this.$nextTick(() => {
+        const dom = this.$refs.shareDom.$el;
+
+        if (format === 'markdown') {
+          console.log('markdown');
+        }
+      });
+    },
+    downloadShareQuotesAsImageHandler(val) {
+      if (val === 'save') {
+        const title = this.book.metadata.titles[0];
+        const dom = this.$refs.shareDom.$el;
+        const scale = 4;
+        const style = {
+          transform: `scale(${scale})`,
+          'transform-origin': 'top left',
+          width: `${dom.offsetWidth}px`,
+          height: `${dom.offsetHeight}px`,
+        };
+        const param = {
+          height: dom.offsetHeight * scale,
+          width: dom.offsetWidth * scale,
+          style,
+        };
+        htmlToImage
+          .toPng(dom, param)
+          .then((dataUrl) => {
+            const link = document.createElement('a');
+            link.download = `《${title || 'book'}》书摘.png`;
+            link.href = dataUrl;
+            link.click();
+            // clear share content
+            // const delayTimer = setTimeout(() => {
+            this.shareQuotesComponent = '';
+            //   clearTimeout(delayTimer);
+            // }, 1000);
+          })
+          .catch((error) => {
+            console.error('oops, something went wrong!', error);
+          });
+      } else if (val === 'cancel') {
+        this.shareQuotesComponent = '';
       }
     },
     backToTopHandler() {
@@ -960,6 +1050,14 @@ export default {
   padding: 0 0 0 10px;
   &:focus {
     outline: none;
+  }
+}
+
+.share-quotes-container {
+  &:hover {
+    .download-btn {
+      display: flex;
+    }
   }
 }
 </style>
