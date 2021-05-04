@@ -25,4 +25,26 @@ export default function initLocalStorage() {
         chapterType: 'heading',
       }));
   }
+  if (!localStorage.getItem('shareQuotesAsJsonShow')) {
+    localStorage.setItem('shareQuotesAsJsonShow',
+      JSON.stringify({
+        // _id: true,
+        // book: true,
+        title: true,
+        // chapter: true,
+        // location: true,
+        // content: true,
+        // content_origin: true,
+        content_rendered: true,
+        // comment: true,
+        // comment_origin: true,
+        comment_rendered: true,
+        // tags: true,
+        // type: true,
+        // summary_links: true,
+        // note_links: true,
+        // created_date: true,
+        // updated_date: true,
+      }));
+  }
 }

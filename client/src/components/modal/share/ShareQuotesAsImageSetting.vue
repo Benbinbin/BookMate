@@ -1,6 +1,6 @@
 <template>
-  <div class="grid grid-cols-2 gap-x-1" style="height: calc(100% - 160px)">
-    <div class="left col-span-1 max-h-full">
+  <div class="grid grid-cols-2" style="height: calc(100% - 160px)">
+    <div class="left col-span-1 max-h-full border-r">
       <h2 class="mb-4 text-lg text-center font-bold">参数设置</h2>
       <div class="px-4">
         <div>
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-    <div ref="right" class="right col-span-1 max-h-full">
+    <div ref="right" class="right col-span-1 max-h-full border-l">
       <h2 class="mb-4 text-lg text-center font-bold">参考样式</h2>
       <div class="px-4">
         <div>

@@ -241,6 +241,7 @@
             @inactive-editor="inactiveEditor"
             @share-quotes-as-image="shareQuotesHandler([quote], 'image')"
             @share-quotes-as-markdown="shareQuotesHandler([quote], 'markdown')"
+            @share-quotes-as-json="shareQuotesHandler([quote], 'json')"
           >
           </quote-card>
         </div>
@@ -336,6 +337,7 @@
                 @share-quotes-as-markdown="
                   shareQuotesHandler([quote], 'markdown')
                 "
+                @share-quotes-as-json="shareQuotesHandler([quote], 'json')"
               >
               </quote-card>
             </div>
@@ -388,14 +390,14 @@
       <div class="btns absolute inset-0 z-10">
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-60 hover:bg-opacity-90"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-50 hover:bg-opacity-80"
           @click="downloadShareQuotesAsImageHandler('save')"
         >
           <p class="text-3xl font-bold">点击下载</p>
         </button>
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-60 hover:bg-opacity-90"
+          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-50 hover:bg-opacity-80"
           @click="downloadShareQuotesAsImageHandler('cancel')"
         >
           <p class="text-3xl font-bold text-red-500">点击取消</p>
@@ -731,31 +733,54 @@ export default {
       this.shareQuotesContent = quotes;
       this.shareQuotesTitle = title;
       this.shareQuotesCover = cover;
-      if (format === 'image') {
-        this.shareQuotesComponent = 'quotes-to-image';
-      } else if (format === 'markdown') {
-        this.shareQuotesComponent = 'quotes-to-markdown';
-      }
-      this.$nextTick(() => {
-        const dom = this.$refs.shareDom.$el;
-        console.log(dom);
+      if (format === 'image' || format === 'markdown') {
+        this.shareQuotesComponent = `quotes-to-${format}`;
 
-        if (format === 'markdown') {
-          const turndownService = new TurndownService({
-            headingStyle: 'atx',
-            codeBlockStyle: 'fenced',
-            fence: '```',
-            emDelimiter: '*',
-          });
-          const markdownContent = turndownService.turndown(dom);
-          // console.log(markdownContent);
-          const blob = new Blob([markdownContent], {
-            type: 'text/plain;charset=utf-8',
-          });
-          saveAs(blob, `《${title}》书摘.md`);
-          this.clearShareContent();
-        }
-      });
+        this.$nextTick(() => {
+          const dom = this.$refs.shareDom.$el;
+
+          if (format === 'markdown') {
+            const turndownService = new TurndownService({
+              headingStyle: 'atx',
+              codeBlockStyle: 'fenced',
+              fence: '```',
+              emDelimiter: '*',
+            });
+            const markdownContent = turndownService.turndown(dom);
+            // console.log(markdownContent);
+            const blob = new Blob([markdownContent], {
+              type: 'text/plain;charset=utf-8',
+            });
+            saveAs(blob, `《${title}》书摘.md`);
+            this.clearShareContent();
+          }
+        });
+      } else if (format === 'json') {
+        const quotesArr = [];
+        const show = JSON.parse(localStorage.getItem('shareQuotesAsJsonShow'));
+
+        quotes.forEach((quote) => {
+          const quoteTemp = { ...quote };
+          // show book title
+          if (show.title) quoteTemp.title = title;
+          // quote conent
+          quoteTemp.content = this.quotes.find((item) => item._id === quote._id).content;
+          if (show.content_rendered) quoteTemp.content_rendered = quote.content;
+          // quote comment
+          if (quote.comment) {
+            quoteTemp.comment = this.quotes.find((item) => item._id === quote._id).comment;
+          }
+          if (quote.comment && quote.comment !== '<p></p>' && show.comment_rendered) {
+            quoteTemp.comment_rendered = quote.comment;
+          }
+          quotesArr.push(quoteTemp);
+        });
+        const blob = new Blob([JSON.stringify(quotesArr, null, 2)], {
+          type: 'application/json',
+        });
+        saveAs(blob, `《${title}》书摘.json`);
+        this.clearShareContent();
+      }
     },
     downloadShareQuotesAsImageHandler(val) {
       if (val === 'save') {
