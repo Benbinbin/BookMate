@@ -16,9 +16,9 @@
           v-if="!quoteEditing || quote._id !== editingQuote"
           class="card-header pt-3 px-3 flex justify-between items-start"
         >
-          <div class="left flex items-center space-x-1.5">
+          <div class="left flex items-center space-x-0.5">
             <button
-              class="quote-link opacity-30 flex items-center"
+              class="quote-link flex items-center hover:bg-gray-100 p-1 rounded opacity-80"
               @click="insertQuote(quote)"
               @drag="setCandidateQuote(quote)"
             >
@@ -29,7 +29,26 @@
               />
             </button>
             <button
-              class="notes-link opacity-30 hover:opacity-80 hidden items-center"
+              class="hover:bg-gray-100 p-1 rounded"
+              :class="{
+                'text-blue-500': pinQuotesSet.has(quote._id),
+                'text-gray-500': !pinQuotesSet.has(quote._id),
+              }"
+              @click="pinHandler"
+            >
+              <svg
+                class="w-5 h-5"
+                viewBox="0 0 50 50"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22.9167 24.7917V35.4167C22.9167 35.9692 23.1362 36.4991 23.5269 36.8898C23.9176 37.2805 24.4475 37.5 25 37.5C25.5525 37.5 26.0824 37.2805 26.4731 36.8898C26.8638 36.4991 27.0833 35.9692 27.0833 35.4167V24.7917C29.6126 24.2754 31.86 22.8384 33.39 20.7592C34.9199 18.68 35.6234 16.1069 35.3639 13.5385C35.1045 10.9702 33.9006 8.58967 31.9857 6.8585C30.0709 5.12732 27.5814 4.16882 25 4.16882C22.4186 4.16882 19.9291 5.12732 18.0143 6.8585C16.0994 8.58967 14.8955 10.9702 14.6361 13.5385C14.3766 16.1069 15.0801 18.68 16.61 20.7592C18.1399 22.8384 20.3874 24.2754 22.9167 24.7917ZM25 8.33336C26.2361 8.33336 27.4445 8.69992 28.4723 9.38668C29.5001 10.0734 30.3012 11.0496 30.7742 12.1916C31.2473 13.3336 31.3711 14.5903 31.1299 15.8027C30.8888 17.0151 30.2935 18.1287 29.4194 19.0028C28.5453 19.8769 27.4317 20.4721 26.2193 20.7133C25.0069 20.9544 23.7503 20.8307 22.6082 20.3576C21.4662 19.8846 20.4901 19.0835 19.8033 18.0557C19.1166 17.0279 18.75 15.8195 18.75 14.5834C18.75 12.9258 19.4085 11.336 20.5806 10.1639C21.7527 8.99184 23.3424 8.33336 25 8.33336ZM33.7708 30.0417C33.4972 29.9842 33.215 29.9812 32.9403 30.0329C32.6655 30.0845 32.4036 30.1897 32.1696 30.3425C31.9355 30.4954 31.7338 30.6928 31.576 30.9236C31.4182 31.1544 31.3075 31.4139 31.25 31.6875C31.1925 31.9611 31.1895 32.2433 31.2412 32.5181C31.2928 32.7928 31.398 33.0547 31.5508 33.2888C31.7037 33.5229 31.9011 33.7246 32.1319 33.8824C32.3627 34.0401 32.6222 34.1509 32.8958 34.2084C37.625 35.1459 39.5833 36.8334 39.5833 37.5C39.5833 38.7084 34.4792 41.6667 25 41.6667C15.5208 41.6667 10.4167 38.7084 10.4167 37.5C10.4167 36.8334 12.375 35.1459 17.1042 34.125C17.3778 34.0676 17.6373 33.9568 17.8681 33.799C18.0989 33.6412 18.2963 33.4396 18.4492 33.2055C18.602 32.9714 18.7072 32.7095 18.7588 32.4348C18.8105 32.16 18.8075 31.8778 18.75 31.6042C18.6925 31.3306 18.5818 31.071 18.424 30.8402C18.2662 30.6095 18.0645 30.412 17.8304 30.2592C17.5964 30.1064 17.3345 30.0011 17.0597 29.9495C16.785 29.8979 16.5028 29.9009 16.2292 29.9584C9.89583 31.4167 6.25 34.1459 6.25 37.5C6.25 42.9792 15.6875 45.8334 25 45.8334C34.3125 45.8334 43.75 42.9792 43.75 37.5C43.75 34.1459 40.1042 31.4167 33.7708 30.0417Z"
+                />
+              </svg>
+            </button>
+            <button
+              class="notes-link hover:bg-gray-100 p-1 rounded opacity-60 hidden items-center"
             >
               <img
                 src="@/assets/icons/notes.svg"
@@ -39,25 +58,18 @@
               <span class="text-sm font-bold">2</span>
             </button>
           </div>
-          <div class="right hidden items-center space-x-1.5">
-            <button class="opacity-30 hover:opacity-80">
+          <div class="right hidden items-center space-x-0.5">
+            <button class="hover:bg-gray-100 p-1 rounded opacity-60">
               <img
                 src="@/assets/icons/flip.svg"
                 alt="flip icon"
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80">
-              <img
-                src="@/assets/icons/pin.svg"
-                alt="pin icon"
-                class="w-5 h-5"
-              />
-            </button>
             <button
+              class="hover:bg-gray-100 p-1 rounded"
               :class="{
-                'opacity-80 hover:opacity-100': !quoteEditing,
-                'opacity-30': quoteEditing,
+                'opacity-10': quoteEditing,
               }"
               :disabled="quoteEditing"
               @click="showDeleteModal = true"
@@ -130,15 +142,15 @@
         <editor-content :editor="editor"></editor-content>
       </div>
       <!-- </slot> -->
-      <div class="card-footer-container h-16 flex items-end">
+      <div class="card-footer-container flex items-end">
         <div
           class="card-footer pb-3 px-3 flex justify-between items-end flex-grow space-x-2"
         >
-          <div class="left flex items-center">
+          <div class="left  flex items-center">
             <!-- <slot name="type"> -->
             <div
               v-if="!quoteEditing || quote._id !== editingQuote"
-              class="quote-type p-1"
+              class="quote-type p-1 flex-shrink-0"
               :class="{
                 'hidden opacity-30':
                   quote.type === 'annotation' && !showComment,
@@ -230,15 +242,16 @@
             <!-- </slot> -->
           </div>
           <div
-            class="right relative flex-shrink-0 items-center space-x-1.5"
+            class="right relative flex-shrink-0 items-center space-x-0.5"
             :class="{
               hidden: !quoteEditing || quote._id !== editingQuote,
               flex: quoteEditing && quote._id === editingQuote,
             }"
           >
             <button
+            class="hover:bg-gray-100 p-1 rounded"
               :class="{
-                'opacity-30 hover:opacity-80':
+                'opacity-80':
                   !quoteEditing ||
                   (quoteEditing &&
                     quote._id === editingQuote &&
@@ -261,8 +274,9 @@
               />
             </button>
             <button
+            class="hover:bg-gray-100 p-1 rounded"
               :class="{
-                'opacity-30 hover:opacity-80': !quoteEditing,
+                'opacity-80': !quoteEditing,
                 'opacity-10': quoteEditing,
               }"
               :disabled="quoteEditing"
@@ -274,15 +288,15 @@
                 class="w-5 h-5"
               />
             </button>
-            <button class="opacity-30 hover:opacity-80">
+            <!-- <button class="opacity-30 hover:opacity-80">
               <img
                 src="@/assets/icons/copy.svg"
                 alt="copy icon"
                 class="w-5 h-5"
               />
-            </button>
+            </button> -->
             <button
-              class="opacity-30 hover:opacity-80"
+              class="hover:bg-gray-100 p-1 rounded opacity-80"
               @click="showShareModal = !showShareModal"
             >
               <img
@@ -293,7 +307,7 @@
             </button>
             <div
               v-show="showShareModal"
-              class="share-modal absolute bottom-6 right-0 z-10 flex items-center space-x-0.5 bg-gray-100 p-1 rounded"
+              class="share-modal absolute bottom-8 right-0 z-10 flex items-center space-x-0.5 bg-gray-100 p-1 rounded"
             >
               <button
                 v-for="item of shareFormatList"
@@ -421,6 +435,7 @@ export default {
       quoteEditing: (state) => state.quote.quoteEditing,
       editingQuote: (state) => state.quote.editingQuote,
       addingCommentQuote: (state) => state.quote.addingCommentQuote,
+      pinQuotesSet: (state) => state.pin.pinQuotesSet,
     }),
     showComment() {
       if (this.quote.comment && this.quote.comment !== '<p></p>') {
@@ -441,6 +456,10 @@ export default {
     },
   },
   methods: {
+    // pinState(id) {
+    //   console.log(this.pinQuotesSet.has(id));
+    //   return this.pinQuotesSet.has(id);
+    // },
     changeQuoteType(type) {
       this.$emit('update:quoteType', type);
       this.showTypesModal = false;
@@ -479,6 +498,10 @@ export default {
         this.$store.dispatch('clearQuote');
       });
     },
+    pinHandler() {
+      this.$store.dispatch('setPinQuotes', [this.quote._id]);
+      this.$forceUpdate();
+    },
     addCommentHandler() {
       if (!this.quoteEditing) {
         this.$emit('active-editor');
@@ -499,9 +522,9 @@ export default {
 }
 
 .quote-card {
-  .quote-link:hover {
-    opacity: 80%;
-  }
+  // .quote-link:hover {
+  //   opacity: 80%;
+  // }
 
   &:focus-within {
     box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
@@ -527,6 +550,10 @@ export default {
         display: flex;
       }
     }
+  }
+
+  .card-footer-container {
+    min-height: 4rem
   }
 }
 </style>

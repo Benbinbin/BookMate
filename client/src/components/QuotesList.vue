@@ -200,7 +200,10 @@
         </div>
       </div>
     </nav>
-    <div ref="quotesList" class="flex-grow quotes-list px-3 py-6 h-full">
+    <div
+      ref="quotesList"
+      class="flex-grow quotes-list px-3 py-6 h-full relative"
+    >
       <div
         v-if="newQuote && newQuote._id === 'whole_book_new'"
         class="quote-card-container"
@@ -239,7 +242,7 @@
             :commentEditor="commentEditor"
             @active-editor="activeEditor(quote)"
             @inactive-editor="inactiveEditor"
-            @share-quotes-as-image="shareQuotesHandler([quote], 'image')"
+            @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
             @share-quotes-as-markdown="shareQuotesHandler([quote], 'markdown')"
             @share-quotes-as-json="shareQuotesHandler([quote], 'json')"
           >
@@ -255,9 +258,8 @@
           <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
-                class="flex items-center"
+                class="flex justify-center items-center hover:bg-gray-200 p-1 rounded opacity-60"
                 :class="{
-                  'opacity-40 hover:opacity-80': !quoteEditing,
                   'opacity-10': quoteEditing,
                 }"
                 :disabled="quoteEditing"
@@ -266,33 +268,54 @@
                 <img
                   src="@/assets/icons/add-circle.svg"
                   alt="add icon"
-                  class="flex-shrink-0 w-6 h-6"
+                  class="flex-shrink-0 w-5 h-5"
                 />
               </button>
-              <span class="ml-1 text-gray-500">{{
+              <span class="text-gray-500">{{
                 item.name !== "未分类(NoChapter)" ? item.name : "未分类"
               }}</span>
             </div>
-            <button
-              class="flex items-center"
-              :class="{
-                'text-blue-500': !hiddenQuotes.includes(item.name),
-                'text-black': hiddenQuotes.includes(item.name),
-              }"
-              @click="toggleQuotes(item.name)"
-            >
-              <svg
-                class="w-6 h-6"
-                viewBox="0 0 50 50"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
+            <div class="flex-shrink-0 flex items-center space-x-0.5">
+              <button
+                class="flex justify-center items-center hover:bg-gray-100 p-1 rounded"
+                :class="{
+                  'text-blue-500': chapterPinState(item.quotes),
+                  'text-gray-500': !chapterPinState(item.quotes),
+                }"
+                @click="chapterPinHandler(item.quotes)"
               >
-                <path
-                  d="M16.6667 8.33329C16.1142 8.33329 15.5842 8.55279 15.1935 8.94349C14.8028 9.33419 14.5834 9.86409 14.5834 10.4166V41.6666L20.7875 36.0062C21.9389 34.9557 23.4414 34.3733 25 34.3733C26.5587 34.3733 28.0611 34.9557 29.2125 36.0062L35.4167 41.6666V10.4166C35.4167 9.86409 35.1972 9.33419 34.8065 8.94349C34.4158 8.55279 33.8859 8.33329 33.3334 8.33329H16.6667ZM16.6667 4.16663H33.3334C34.991 4.16663 36.5807 4.82511 37.7528 5.99721C38.9249 7.16931 39.5834 8.75902 39.5834 10.4166V41.6666C39.5832 42.4744 39.3482 43.2647 38.907 43.9413C38.4658 44.618 37.8375 45.1518 37.0985 45.4778C36.3594 45.8039 35.5415 45.9081 34.7444 45.7777C33.9472 45.6474 33.2051 45.2881 32.6084 44.7437L26.4042 39.0833C26.0204 38.7331 25.5196 38.539 25 38.539C24.4805 38.539 23.9797 38.7331 23.5959 39.0833L17.3917 44.7437C16.795 45.2881 16.0529 45.6474 15.2557 45.7777C14.4585 45.9081 13.6406 45.8039 12.9016 45.4778C12.1625 45.1518 11.5342 44.618 11.093 43.9413C10.6519 43.2647 10.4169 42.4744 10.4167 41.6666V10.4166C10.4167 8.75902 11.0752 7.16931 12.2473 5.99721C13.4194 4.82511 15.0091 4.16663 16.6667 4.16663Z"
-                />
-              </svg>
-              <span>{{ item.quotes.length }}</span>
-            </button>
+                <svg
+                  class="w-5 h-5"
+                  viewBox="0 0 50 50"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22.9167 24.7917V35.4167C22.9167 35.9692 23.1362 36.4991 23.5269 36.8898C23.9176 37.2805 24.4475 37.5 25 37.5C25.5525 37.5 26.0824 37.2805 26.4731 36.8898C26.8638 36.4991 27.0833 35.9692 27.0833 35.4167V24.7917C29.6126 24.2754 31.86 22.8384 33.39 20.7592C34.9199 18.68 35.6234 16.1069 35.3639 13.5385C35.1045 10.9702 33.9006 8.58967 31.9857 6.8585C30.0709 5.12732 27.5814 4.16882 25 4.16882C22.4186 4.16882 19.9291 5.12732 18.0143 6.8585C16.0994 8.58967 14.8955 10.9702 14.6361 13.5385C14.3766 16.1069 15.0801 18.68 16.61 20.7592C18.1399 22.8384 20.3874 24.2754 22.9167 24.7917ZM25 8.33336C26.2361 8.33336 27.4445 8.69992 28.4723 9.38668C29.5001 10.0734 30.3012 11.0496 30.7742 12.1916C31.2473 13.3336 31.3711 14.5903 31.1299 15.8027C30.8888 17.0151 30.2935 18.1287 29.4194 19.0028C28.5453 19.8769 27.4317 20.4721 26.2193 20.7133C25.0069 20.9544 23.7503 20.8307 22.6082 20.3576C21.4662 19.8846 20.4901 19.0835 19.8033 18.0557C19.1166 17.0279 18.75 15.8195 18.75 14.5834C18.75 12.9258 19.4085 11.336 20.5806 10.1639C21.7527 8.99184 23.3424 8.33336 25 8.33336ZM33.7708 30.0417C33.4972 29.9842 33.215 29.9812 32.9403 30.0329C32.6655 30.0845 32.4036 30.1897 32.1696 30.3425C31.9355 30.4954 31.7338 30.6928 31.576 30.9236C31.4182 31.1544 31.3075 31.4139 31.25 31.6875C31.1925 31.9611 31.1895 32.2433 31.2412 32.5181C31.2928 32.7928 31.398 33.0547 31.5508 33.2888C31.7037 33.5229 31.9011 33.7246 32.1319 33.8824C32.3627 34.0401 32.6222 34.1509 32.8958 34.2084C37.625 35.1459 39.5833 36.8334 39.5833 37.5C39.5833 38.7084 34.4792 41.6667 25 41.6667C15.5208 41.6667 10.4167 38.7084 10.4167 37.5C10.4167 36.8334 12.375 35.1459 17.1042 34.125C17.3778 34.0676 17.6373 33.9568 17.8681 33.799C18.0989 33.6412 18.2963 33.4396 18.4492 33.2055C18.602 32.9714 18.7072 32.7095 18.7588 32.4348C18.8105 32.16 18.8075 31.8778 18.75 31.6042C18.6925 31.3306 18.5818 31.071 18.424 30.8402C18.2662 30.6095 18.0645 30.412 17.8304 30.2592C17.5964 30.1064 17.3345 30.0011 17.0597 29.9495C16.785 29.8979 16.5028 29.9009 16.2292 29.9584C9.89583 31.4167 6.25 34.1459 6.25 37.5C6.25 42.9792 15.6875 45.8334 25 45.8334C34.3125 45.8334 43.75 42.9792 43.75 37.5C43.75 34.1459 40.1042 31.4167 33.7708 30.0417Z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="flex justify-center items-center hover:bg-gray-200 p-1 rounded"
+                :class="{
+                  'text-blue-500': !hiddenQuotes.includes(item.name),
+                  'text-gray-500': hiddenQuotes.includes(item.name),
+                }"
+                @click="toggleQuotes(item.name)"
+              >
+                <svg
+                  class="w-5 h-5"
+                  viewBox="0 0 50 50"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16.6667 8.33329C16.1142 8.33329 15.5842 8.55279 15.1935 8.94349C14.8028 9.33419 14.5834 9.86409 14.5834 10.4166V41.6666L20.7875 36.0062C21.9389 34.9557 23.4414 34.3733 25 34.3733C26.5587 34.3733 28.0611 34.9557 29.2125 36.0062L35.4167 41.6666V10.4166C35.4167 9.86409 35.1972 9.33419 34.8065 8.94349C34.4158 8.55279 33.8859 8.33329 33.3334 8.33329H16.6667ZM16.6667 4.16663H33.3334C34.991 4.16663 36.5807 4.82511 37.7528 5.99721C38.9249 7.16931 39.5834 8.75902 39.5834 10.4166V41.6666C39.5832 42.4744 39.3482 43.2647 38.907 43.9413C38.4658 44.618 37.8375 45.1518 37.0985 45.4778C36.3594 45.8039 35.5415 45.9081 34.7444 45.7777C33.9472 45.6474 33.2051 45.2881 32.6084 44.7437L26.4042 39.0833C26.0204 38.7331 25.5196 38.539 25 38.539C24.4805 38.539 23.9797 38.7331 23.5959 39.0833L17.3917 44.7437C16.795 45.2881 16.0529 45.6474 15.2557 45.7777C14.4585 45.9081 13.6406 45.8039 12.9016 45.4778C12.1625 45.1518 11.5342 44.618 11.093 43.9413C10.6519 43.2647 10.4169 42.4744 10.4167 41.6666V10.4166C10.4167 8.75902 11.0752 7.16931 12.2473 5.99721C13.4194 4.82511 15.0091 4.16663 16.6667 4.16663Z"
+                  />
+                </svg>
+                <!-- <span>{{ item.quotes.length }}</span> -->
+              </button>
+            </div>
           </div>
           <div
             v-show="!hiddenQuotes.includes(item.name)"
@@ -333,7 +356,7 @@
                 :commentEditor="commentEditor"
                 @active-editor="activeEditor(quote)"
                 @inactive-editor="inactiveEditor"
-                @share-quotes-as-image="shareQuotesHandler([quote], 'image')"
+                @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
                 @share-quotes-as-markdown="
                   shareQuotesHandler([quote], 'markdown')
                 "
@@ -366,7 +389,7 @@
     ></import-quotes-modal>
     <share-quotes-setting-modal
       v-if="showShareQuotesSettingModal"
-      class="fixed w-screen h-screen inset-0"
+      class="fixed w-screen h-screen inset-0 z-20"
       :share-quotes-init-tab="shareQuotesInitTab"
       @close-share-quotes-setting-modal="showShareQuotesSettingModal = false"
     ></share-quotes-setting-modal>
@@ -374,19 +397,19 @@
       v-show="shareQuotesComponent === 'quotes-to-image'"
       class="share-quotes-container w-screen h-screen flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50"
     >
-      <!-- <share-quotes-as-image-modal
-        v-if="showShareQuotesAsImageModal"
-        class="fixed w-screen h-screen inset-0"
-        @close-share-quotes-as-image-modal="showShareQuotesAsImageModal = false"
-      ></share-quotes-as-image-modal> -->
       <component
         v-if="shareQuotesComponent"
         :is="shareQuotesComponent"
         ref="shareDom"
         :quotes="shareQuotesContent"
+        :quote="shareQuoteContent"
         :cover="shareQuotesCover"
         :title="shareQuotesTitle"
+        :authors="shareQuotesAuthors"
+        :translators="shareQuotesTranslators"
+        :isbn="shareQuotesIsbn"
       ></component>
+
       <div class="btns absolute inset-0 z-10">
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
@@ -538,9 +561,13 @@ export default {
       shareQuotesInitTab: 'share-quote-as-image',
       showShareQuotesSettingModal: false,
       // showShareQuotesAsImageModal: false,
-      shareQuotesCotent: [],
+      shareQuoteContent: undefined,
+      shareQuotesContent: [],
       shareQuotesTitle: '',
       shareQuotesCover: '',
+      shareQuotesAuthors: [],
+      shareQuotesTranslators: [],
+      shareQuotesIsbn: undefined,
       shareQuotesComponent: '',
       hiddenQuotes: [],
       HTMLtemp: null,
@@ -566,6 +593,11 @@ export default {
       editingQuote: (state) => state.quote.editingQuote,
       addingCommentQuote: (state) => state.quote.addingCommentQuote,
       showShareQuotesSetting: (state) => state.share.showShareQuotesSetting,
+      pinQuotesSet: (state) => state.pin.pinQuotesSet,
+      pinQuotesSetTracker: (state) => state.pin.pinQuotesSetTracker,
+      showPinQuotes: (state) => state.pin.showPinQuotes,
+      sharePinQuotes: (state) => state.pin.sharePinQuotes,
+      sharePinQuotesFormat: (state) => state.pin.sharePinQuotesFormat,
     }),
     quotesRendered() {
       const quotesRendered = [];
@@ -687,6 +719,55 @@ export default {
         this.commentEditor.focus();
       }
     },
+    pinQuotesSetTracker() {
+      this.$forceUpdate();
+    },
+    sharePinQuotes() {
+      if (this.sharePinQuotes) {
+        const quotesSortByChapter = [];
+        this.quotesChapters.forEach((chapter) => {
+          quotesSortByChapter.push({
+            chapter,
+            quotes: [],
+          });
+        });
+        quotesSortByChapter.push({
+          chapter: '未分类',
+          quotes: [],
+        });
+
+        const quotes = [];
+
+        [...this.pinQuotesSet].forEach((id) => {
+          const target = this.quotesRendered.find((item) => item._id === id);
+          quotes.push(target);
+          if (
+            this.sharePinQuotesFormat === 'image'
+            || this.sharePinQuotesFormat === 'markdown'
+          ) {
+            const index = quotesSortByChapter.findIndex(
+              (item) => item.chapter === target.chapter,
+            );
+            if (index !== -1) {
+              quotesSortByChapter[index].quotes.push(target);
+            } else {
+              quotesSortByChapter[quotesSortByChapter.length - 1].quotes.push(
+                target,
+              );
+            }
+          }
+        });
+
+        if (this.sharePinQuotesFormat === 'image') {
+          this.shareQuotesHandler(quotesSortByChapter, 'image');
+        } else if (this.sharePinQuotesFormat === 'markdown') {
+          this.shareQuotesHandler(quotesSortByChapter, 'markdown');
+        } else if (this.sharePinQuotesFormat === 'json') {
+          this.shareQuotesHandler(quotes, 'json');
+        }
+      }
+      this.$store.dispatch('toggleSharePinQuotes');
+    },
   },
   methods: {
     getQuotes() {
@@ -721,18 +802,52 @@ export default {
       this.showShareQuotesSettingModal = true;
       this.showMoreModal = false;
     },
+    chapterPinState(quotes) {
+      const ids = [];
+      quotes.forEach((quote) => {
+        ids.push(quote._id);
+      });
+      const arr = [...this.pinQuotesSet];
+      const unionSet = new Set([...arr, ...ids]);
+      return unionSet.size === this.pinQuotesSet.size;
+    },
+    chapterPinHandler(quotes) {
+      const ids = [];
+      quotes.forEach((quote) => {
+        ids.push(quote._id);
+      });
+      // console.log(ids);
+      this.$store.dispatch('setPinQuotes', ids);
+      this.$forceUpdate();
+    },
+    clearShareContent() {
+      this.shareQuoteContent = undefined;
+      this.shareQuotesContent = [];
+      this.shareQuotesTitle = '';
+      this.shareQuotesCover = '';
+      this.shareQuotesAuthors = [];
+      this.shareQuotesTranslators = [];
+      this.shareQuotesIsbn = undefined;
+      this.shareQuotesComponent = '';
+    },
     shareQuotesHandler(quotes, format) {
       const title = this.book.metadata.titles[0];
-      let cover = '';
-      if (this.book.metadata.covers.length > 0) cover = `${this.coverBase}${this.book.metadata.covers[0]}`;
-      // this.$store.dispatch('setShareQuotesContent', {
-      //   quotes: [quote],
-      //   title,
-      //   cover,
-      // });
-      this.shareQuotesContent = quotes;
       this.shareQuotesTitle = title;
-      this.shareQuotesCover = cover;
+
+      if (this.book.metadata.covers.length > 0) this.shareQuotesCover = `${this.coverBase}${this.book.metadata.covers[0]}`;
+
+      if (this.book.metadata.authors.length > 0) this.shareQuotesAuthors = this.book.metadata.authors;
+
+      if (this.book.metadata.translators.length > 0) this.shareQuotesTranslators = this.book.metadata.translators;
+
+      if (this.book.metadata.isbn) this.shareQuotesIsbn = this.book.metadata.isbn;
+
+      if (quotes instanceof Array) {
+        this.shareQuotesContent = quotes;
+      } else {
+        this.shareQuoteContent = quotes;
+      }
+
       if (format === 'image' || format === 'markdown') {
         this.shareQuotesComponent = `quotes-to-${format}`;
 
@@ -764,13 +879,21 @@ export default {
           // show book title
           if (show.title) quoteTemp.title = title;
           // quote conent
-          quoteTemp.content = this.quotes.find((item) => item._id === quote._id).content;
+          quoteTemp.content = this.quotes.find(
+            (item) => item._id === quote._id,
+          ).content;
           if (show.content_rendered) quoteTemp.content_rendered = quote.content;
           // quote comment
           if (quote.comment) {
-            quoteTemp.comment = this.quotes.find((item) => item._id === quote._id).comment;
+            quoteTemp.comment = this.quotes.find(
+              (item) => item._id === quote._id,
+            ).comment;
           }
-          if (quote.comment && quote.comment !== '<p></p>' && show.comment_rendered) {
+          if (
+            quote.comment
+            && quote.comment !== '<p></p>'
+            && show.comment_rendered
+          ) {
             quoteTemp.comment_rendered = quote.comment;
           }
           quotesArr.push(quoteTemp);
@@ -786,7 +909,7 @@ export default {
       if (val === 'save') {
         const title = this.book.metadata.titles[0];
         const dom = this.$refs.shareDom.$el;
-        const scale = 4;
+        const scale = 1.5;
         const style = {
           transform: `scale(${scale})`,
           'transform-origin': 'top left',
@@ -814,12 +937,6 @@ export default {
       } else if (val === 'cancel') {
         this.clearShareContent();
       }
-    },
-    clearShareContent() {
-      this.shareQuotesCotent = [];
-      this.shareQuotesTitle = '';
-      this.shareQuotesCover = '';
-      this.shareQuotesComponent = '';
     },
     backToTopHandler() {
       this.$refs.quotesList.scrollTop = 0;

@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+// import { mapState } from 'vuex';
 import ShareQuotesAsImageSetting from './share/ShareQuotesAsImageSetting.vue';
 import ShareQuotesAsMarkdownSetting from './share/ShareQuotesAsMarkdownSetting.vue';
 import ShareQuotesAsJsonSetting from './share/ShareQuotesAsJsonSetting.vue';

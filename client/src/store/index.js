@@ -5,6 +5,7 @@ import book from './modules/book';
 import quote from './modules/quote';
 import summary from './modules/summary';
 import share from './modules/share';
+import pin from './modules/pin';
 
 import initLocalStorage from './initLocalStorage';
 
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     quote,
     summary,
     share,
+    pin,
   },
   state: {
     booksList: [],
