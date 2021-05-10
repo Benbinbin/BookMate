@@ -400,7 +400,7 @@ export default {
     return {
       types: ['annotation', 'question', 'deep-reading', 'inspiration'],
       quoteChapterTemp: encodeURIComponent(this.quote.chapter || ''),
-      quoteLocationTemp: 0,
+      quoteLocationTemp: this.quote.location || 0,
       addComment: false,
       showDeleteModal: false,
       showTypesModal: false,

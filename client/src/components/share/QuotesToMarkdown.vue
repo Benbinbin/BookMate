@@ -1,36 +1,54 @@
 import TurndownService from 'turndown';
 
 <template>
-  <div v-if="quotes.length > 0">
-    <!-- single quote -->
-    <div v-if="quotes.length === 1" ref="singleQuote">
-      <h1>《{{ title }}》书摘</h1>
-      <img v-if="show.cover && cover" :src="cover" alt="book cover" />
-      <h2
-        v-if="
-          show.chapter && show.chapterType === 'heading' && quotes[0].chapter
-        "
-      >
-        章节：{{ quotes[0].chapter || "未分类" }}
-      </h2>
-      <blockquote
-        v-if="show.blockquote"
-        v-html="quotes[0].content"
-      ></blockquote>
-      <p v-if="!show.blockquote" v-html="quotes[0].content"></p>
-      <p
-        v-if="
-          show.chapter && show.chapterType === 'paragraph' && quotes[0].chapter
-        "
-      >
-        <i>章节：第 {{ quotes[0].location || 0 }} 章</i>
-      </p>
-      <p v-if="show.location && quotes[0].location">
-        <i>页码：第 {{ quotes[0].location }} 页</i>
-      </p>
-      <div v-if="show.comment && quotes[0].comment && quotes[0].comment !== '<p></p>'">
-        <p><strong>批注：</strong></p>
-        <p v-html="quotes[0].comment"></p>
+  <div>
+    <h1>《{{ title }}》书摘</h1>
+    <img v-if="show.cover && cover" :src="cover" alt="book cover" />
+    <div v-for="item of quotesReArrange" :key="item.chapter">
+      <div v-if="item.quotes.length > 0">
+        <h2 v-if="show.chapterType === 'heading' && show.chapter">
+          章节：{{ item.chapter }}
+        </h2>
+        <div v-for="quote of item.quotes" :key="quote._id">
+          <blockquote
+            v-if="show.blockquote"
+            v-html="quote.content"
+          ></blockquote>
+          <p v-if="!show.blockquote" v-html="quote.content"></p>
+
+          <i>
+            <span
+              v-if="
+                show.chapter &&
+                show.chapterType === 'paragraph' &&
+                quote.chapter
+              "
+            >
+            章节：{{ quote.chapter }}
+            </span>
+            <span
+              v-if="
+                show.chapter &&
+                show.chapterType === 'paragraph' &&
+                quote.chapter &&
+                show.location
+              "
+            >
+              -
+            </span>
+            <span v-if="show.location">页码：第 {{ quote.location }} 页</span>
+          </i>
+
+          <div
+            v-if="show.comment && quote.comment && quote.comment !== '<p></p>'"
+          >
+            <p><strong>批注：</strong></p>
+            <div v-html="quote.comment"></div>
+          </div>
+          <p></p>
+          <hr>
+          <p></p>
+        </div>
       </div>
     </div>
   </div>
@@ -45,12 +63,44 @@ export default {
     title: {
       type: String,
     },
+    quote: {
+      type: Object,
+    },
     quotes: {
       type: Array,
     },
     show: {
       type: Object,
       default: () => JSON.parse(localStorage.getItem('shareQuotesAsMarkdownShow')),
+    },
+  },
+  computed: {
+    quotesReArrange() {
+      // if (this.quotesShow.chapterType === 'heading') {
+      if (this.quote) {
+        return [
+          {
+            chapter: this.quote.chapter || '未分类',
+            quotes: [this.quote],
+          },
+        ];
+      }
+      return this.quotes;
+
+      // }
+      // const quotesAssemble = [];
+      // // eslint-disable-next-line no-restricted-syntax
+      // for (const item of this.quotes) {
+      //   if (item.quotes.length > 0) {
+      //     quotesAssemble.push(...item.quotes);
+      //   }
+      // }
+      // return [
+      //   {
+      //     chapter: '合集',
+      //     quotes: quotesAssemble,
+      //   },
+      // ];
     },
   },
 };
@@ -89,6 +139,7 @@ h6 {
 
 p {
   margin: 0.5rem 0;
+  padding: 0.5rem 0;
   line-height: 1.65rem;
   word-break: break-all;
 }
@@ -140,14 +191,6 @@ pre {
   padding: 6px 10px;
   border-radius: 3px;
 
-  &::before {
-    content: attr(data-language);
-    text-transform: uppercase;
-    display: block;
-    text-align: right;
-    font-weight: bold;
-    font-size: 0.6rem;
-  }
   code {
     margin: 0;
     padding: 0;

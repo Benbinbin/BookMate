@@ -4,9 +4,9 @@
       <h2 class="mb-4 text-lg text-center font-bold">参数设置</h2>
       <div class="px-4">
         <div>
-          <h3 class="font-bold">
+          <!-- <h3 class="font-bold">
             <span class="highlight">单篇书摘</span>
-          </h3>
+          </h3> -->
           <div class="flex flex-col justify-center items-center">
             <div class="mb-4 space-y-2">
               <div class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2">
@@ -124,10 +124,103 @@ export default {
       title: '书名',
       quotes: [
         {
-          content: '书摘内容',
-          comment: '批注内容',
           chapter: '第一章',
-          location: '1',
+          quotes: [
+            {
+              content: '书摘内容',
+              comment: '批注内容',
+              chapter: '第一章',
+              location: '1',
+            },
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum sunt qui at aperiam quae tempore repellendus molestiae ratione ex omnis magni, dolore nostrum ipsam, vero perferendis earum dolorum. Obcaecati, officiis.',
+              chapter: '第一章',
+              location: '10',
+            },
+            {
+              content: '书摘内容',
+              comment:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente consequuntur optio consectetur error? Assumenda obcaecati animi delectus sapiente accusamus beatae id itaque dicta totam facere, numquam nisi ex deleniti et. Amet, exercitationem magni voluptate laudantium odit neque libero deleniti dolorem aliquam esse, quo, velit quibusdam pariatur animi dignissimos voluptas beatae.',
+              chapter: '第一章',
+              location: '11',
+            },
+          ],
+        },
+        {
+          chapter: '第二章',
+          quotes: [
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum maxime quas cum quaerat hic tempora, exercitationem eveniet nesciunt amet harum ipsam modi dolore, commodi maiores expedita non enim vero ipsa repellat corporis illum doloremque deleniti voluptatum dolor? Sit vitae, doloremque molestiae, maxime fugit repudiandae, molestias sapiente iure nostrum magni expedita.',
+              comment: '批注内容',
+              chapter: '第二章',
+              location: '20',
+            },
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quia quas maiores dolorum optio natus. Est, nemo ipsum! Fugit, voluptatum. Tempora vel perspiciatis consequuntur voluptate sint explicabo reiciendis laborum minima!',
+              comment: '批注内容',
+              chapter: '第二章',
+              location: '22',
+            },
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quia quas maiores dolorum optio natus. Est, nemo ipsum! Fugit, voluptatum. Tempora vel perspiciatis consequuntur voluptate sint explicabo reiciendis laborum minima!',
+              comment: '批注内容',
+              chapter: '第二章',
+              location: '22',
+            },
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quia quas maiores dolorum optio natus. Est, nemo ipsum! Fugit, voluptatum. Tempora vel perspiciatis consequuntur voluptate sint explicabo reiciendis laborum minima!',
+              comment: '批注内容',
+              chapter: '第二章',
+              location: '22',
+            },
+            {
+              content:
+                'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quia quas maiores dolorum optio natus. Est, nemo ipsum! Fugit, voluptatum. Tempora vel perspiciatis consequuntur voluptate sint explicabo reiciendis laborum minima!',
+              comment: '批注内容',
+              chapter: '第二章',
+              location: '22',
+            },
+          ],
+        },
+        {
+          chapter: '第三章',
+          quotes: [
+            {
+              content: '书摘内容',
+              comment: '批注内容',
+              chapter: '第三章',
+              location: '30',
+            },
+
+            {
+              content: '书摘内容',
+              comment: '批注内容',
+              chapter: '第三章',
+              location: '30',
+            },
+            {
+              content: '书摘内容',
+              comment: '批注内容',
+              chapter: '第三章',
+              location: '30',
+            },
+
+            {
+              content: '书摘内容',
+              comment: '批注内容',
+              chapter: '第三章',
+              location: '30',
+            },
+          ],
+        },
+        {
+          chapter: '未分类',
+          quotes: [],
         },
       ],
       show: {
