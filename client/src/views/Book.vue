@@ -94,6 +94,7 @@
             </button>
             <button
               class="px-2 py-1 bg-gray-200 hover:bg-gray-300 text-xs rounded"
+              @click="clearPinContent('Quotes')"
             >
               取消所有 <span class="text-blue-500">Pin</span> 书摘
             </button>
@@ -414,6 +415,10 @@ export default {
       }
 
       return chaptersSorted;
+    },
+    clearPinContent(val) {
+      this.$store.dispatch(`setPin${val}`);
+      this.showPinModal = false;
     },
     shareHandler(val) {
       if (val.type === 'quotes') {

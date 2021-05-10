@@ -14,14 +14,14 @@ export default {
   getters: {},
   mutations: {
     SET_PIN_QUOTES(state, payload) {
-      if (payload.length === 1) {
+      if (payload && payload.length === 1) {
         const id = payload[0];
         if (state.pinQuotesSet.has(id)) {
           state.pinQuotesSet.delete(id);
         } else {
           state.pinQuotesSet.add(id);
         }
-      } else if (payload.length > 1) {
+      } else if (payload && payload.length > 1) {
         const arr = [...state.pinQuotesSet];
         const unionSet = new Set([...arr, ...payload]);
         if (unionSet.size === state.pinQuotesSet.size) {
@@ -31,6 +31,9 @@ export default {
         } else {
           state.pinQuotesSet = unionSet;
         }
+      } else {
+        console.log('clear pin quotes');
+        state.pinQuotesSet.clear();
       }
       state.pinQuotesSetTracker = !state.pinQuotesSetTracker;
     },
