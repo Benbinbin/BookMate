@@ -436,6 +436,7 @@ export default {
       editingQuote: (state) => state.quote.editingQuote,
       addingCommentQuote: (state) => state.quote.addingCommentQuote,
       pinQuotesSet: (state) => state.pin.pinQuotesSet,
+      pinQuotesSetTracker: (state) => state.pin.pinQuotesSetTracker,
     }),
     showComment() {
       if (this.quote.comment && this.quote.comment !== '<p></p>') {
@@ -445,6 +446,9 @@ export default {
     },
   },
   watch: {
+    pinQuotesSetTracker() {
+      this.$forceUpdate();
+    },
     quoteChapterTemp() {
       this.$emit(
         'update:quoteChapter',
