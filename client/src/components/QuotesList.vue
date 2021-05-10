@@ -396,9 +396,10 @@
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
       class="share-quotes-container w-screen h-screen fixed inset-0 bg-gray-500 bg-opacity-50"
+      :class="{'flex justify-center items-center': shareQuoteContent}"
     >
       <component
-        style="padding: 10rem; margin: auto; width: fit-content"
+        :style="shareQuotesStyle"
         v-if="shareQuotesComponent"
         :is="shareQuotesComponent"
         ref="shareDom"
@@ -689,6 +690,12 @@ export default {
         return `grid gap-x-2 gap-y-3 grid-cols-${this.cols}`;
       }
       return 'space-y-3';
+    },
+    shareQuotesStyle() {
+      if (this.shareQuotesContent.length > 0) {
+        return 'padding: 10rem; margin: auto; width: fit-content';
+      }
+      return '';
     },
   },
   watch: {
