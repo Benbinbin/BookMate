@@ -79,28 +79,26 @@
         //     white-space: pre-wrap;
         // }
         white-space: pre-wrap;
-        // overflow-x: auto;
+        overflow-x: auto;
         // word-wrap:break-word;
         // word-break: break-all;
         // overflow-wrap: break-word;
         margin: 0.5rem 0;
-        padding: 0.5rem;
+        padding: 6px 10px;
         background-color: #f8f8f8;
         border: 1px solid #cccccc;
-        font-size: 13px;
-        line-height: 19px;
-        overflow: auto;
-        padding: 6px 10px;
+        // font-size: 13px;
+        // line-height: 19px;
         border-radius: 3px;
 
-        &::before {
-            content: attr(data-language);
-            text-transform: uppercase;
-            display: block;
-            text-align: right;
-            font-weight: bold;
-            font-size: 0.6rem;
-        }
+        // &::before {
+        //     content: attr(data-language);
+        //     text-transform: uppercase;
+        //     display: block;
+        //     text-align: right;
+        //     font-weight: bold;
+        //     font-size: 0.6rem;
+        // }
         code {
             margin: 0;
             padding: 0;

@@ -395,9 +395,10 @@
     ></share-quotes-setting-modal>
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
-      class="share-quotes-container w-screen h-screen flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50"
+      class="share-quotes-container w-screen h-screen fixed inset-0 bg-gray-500 bg-opacity-50"
     >
       <component
+        style="padding: 10rem; margin: auto; width: fit-content"
         v-if="shareQuotesComponent"
         :is="shareQuotesComponent"
         ref="shareDom"
@@ -410,20 +411,22 @@
         :isbn="shareQuotesIsbn"
       ></component>
 
-      <div class="btns absolute inset-0 z-10">
+      <div
+        class="btns w-full pl-2 py-2 fixed top-0 right-2 z-10 flex justify-center space-x-4"
+      >
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-white bg-opacity-50 hover:bg-opacity-80"
+          class="download-btn h-12 p-10 focus:outline-none flex justify-center items-center bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-lg"
           @click="downloadShareQuotesAsImageHandler('save')"
         >
-          <p class="text-3xl font-bold">点击下载</p>
+          <p class="text-xl font-bold text-gray-100">点击下载</p>
         </button>
         <button
           v-if="shareQuotesComponent === 'quotes-to-image'"
-          class="download-btn w-full h-1/2 focus:outline-none flex justify-center items-center bg-gray-400 bg-opacity-50 hover:bg-opacity-80"
+          class="download-btn h-12 p-10 focus:outline-none flex justify-center items-center bg-red-500 bg-opacity-80 hover:bg-opacity-100 rounded-lg"
           @click="downloadShareQuotesAsImageHandler('cancel')"
         >
-          <p class="text-3xl font-bold text-red-500">点击取消</p>
+          <p class="text-xl font-bold text-gray-100">点击取消</p>
         </button>
       </div>
     </div>
@@ -1197,6 +1200,13 @@ export default {
   }
 }
 
+.share-quotes-container {
+  overflow: auto;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(31, 41, 55, 0.6)
+  }
+}
+
 // .menubar {
 //   .is-active {
 //     background: #e5e7eb;
@@ -1212,13 +1222,13 @@ export default {
   }
 }
 
-.share-quotes-container {
-  &:hover {
-    .download-btn {
-      display: flex;
-    }
-  }
-}
+// .share-quotes-container {
+//   &:hover {
+//     .download-btn {
+//       display: flex;
+//     }
+//   }
+// }
 </style>
 
 <style lang="scss">

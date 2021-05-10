@@ -37,9 +37,9 @@
           </svg>
         </div>
         <div class="card-header pt-4 px-5 flex justify-end"></div>
-        <div class="card-body m-8">
+        <div class="m-8">
           <div
-            class="my-4 text-lg"
+            class="card-body my-4 text-lg"
             :class="{
               'text-gray-800 ': quoteType === 'default',
               'text-gray-300': quoteType === 'defaultDark',
@@ -77,7 +77,7 @@
             </div>
 
             <div
-              class="comment-content text-sm"
+              class="quote-comment text-sm"
               :class="{
                 'text-blue-900': quoteType === 'default',
                 'text-blue-300': quoteType === 'defaultDark',
@@ -290,9 +290,9 @@
                     >
                   </div>
                 </div>
-                <div class="card-body p-8">
+                <div class="p-8">
                   <div
-                    class="my-4 text-lg"
+                    class="card-body my-4 text-lg"
                     :class="{
                       'text-gray-800 ': quotesType === 'default',
                       'text-gray-300': quotesType === 'defaultDark',
@@ -331,7 +331,7 @@
                   </svg>
                 </div>
                 <div
-                  class="comment-content text-sm"
+                  class="quote-comment text-sm"
                   :class="{
                     'text-blue-900': quotesType === 'default',
                     'text-blue-800': quotesType === 'defaultDark',
@@ -495,7 +495,7 @@ export default {
         const masonry = new Masonry(dom, {
           itemSelector: '.quote-card',
           gutter: 14,
-          horizontalOrder: true,
+          // horizontalOrder: true,
         });
         this.masonryControllers.push(masonry);
       });
