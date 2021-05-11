@@ -12,7 +12,7 @@
         class="card-header pt-4 px-4 flex-grow hidden justify-between items-start"
       >
         <div class="left">
-          <button class="opacity-30 hover:opacity-80 flex items-center">
+          <button class="opacity-60 flex items-center hover:bg-gray-100 p-1 rounded">
             <img
               src="@/assets/icons/bookmark.svg"
               alt="bookmark icon"
@@ -21,7 +21,7 @@
             <span class="text-sm font-bold">2</span>
           </button>
         </div>
-        <div class="right flex items-center space-x-1.5">
+        <!-- <div class="right flex items-center space-x-1.5">
           <button class="opacity-30 hover:opacity-80">
             <img
               src="@/assets/icons/minus-rectangle.svg"
@@ -43,7 +43,7 @@
               class="w-5 h-5"
             />
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- <slot name="body"> -->
@@ -61,15 +61,15 @@
     <!-- </slot> -->
     <div class="card-footer-container h-14 flex items-end">
       <div
-        class="card-footer pb-4 px-4 flex-grow hidden justify-between items-end"
+        class="card-footer pb-4 px-4 flex-grow flex justify-between items-center space-x-2"
       >
         <div class="left flex items-center">
           <!-- <slot name="location"> -->
           <div
             v-if="!summaryEditing || summary._id !== editingSummary"
-            class="summary-location text-xs opacity-30"
+            class="summary-location text-xs"
           >
-            <p>章节：{{ summary.chapter || "未分类" }}</p>
+            <p class="opacity-0">章节：{{ summary.chapter || "未分类" }}</p>
           </div>
           <div
             v-if="summaryEditing && summary._id === editingSummary"
@@ -94,10 +94,17 @@
           </div>
           <!-- </slot> -->
         </div>
-        <div class="right flex-shrink-0 flex items-center space-x-1.5">
+        <div
+          class="right flex-shrink-0 flex items-center space-x-1.5"
+          :class="{
+            hidden: !summaryEditing || summary._id !== editingSummary,
+            flex: summaryEditing && summary._id === editingSummary,
+          }"
+        >
           <button
+            class="hover:bg-gray-100 p-1 rounded"
             :class="{
-              'opacity-30 hover:opacity-80': !summaryEditing,
+              'opacity-60': !summaryEditing,
               'opacity-10': summaryEditing,
             }"
             :disabled="summaryEditing"
@@ -109,14 +116,14 @@
               class="w-5 h-5"
             />
           </button>
-          <button class="opacity-30 hover:opacity-80">
+          <!-- <button class="opacity-80 hover:bg-gray-100 p-1 rounded">
             <img
               src="@/assets/icons/copy.svg"
               alt="copy icon"
               class="w-5 h-5"
             />
-          </button>
-          <button class="opacity-30 hover:opacity-80">
+          </button> -->
+          <button class="opacity-60 hover:bg-gray-100 p-1 rounded">
             <img
               src="@/assets/icons/export.svg"
               alt="export icon"
@@ -124,9 +131,9 @@
             />
           </button>
           <button
+          class="hover:bg-gray-100 p-1 rounded"
             :class="{
-              'opacity-70 hover:opacity-100': !summaryEditing,
-              'opacity-30': summaryEditing,
+              'opacity-10': summaryEditing,
             }"
             :disabled="summaryEditing"
             @click="showDeleteModal = true"
@@ -184,7 +191,7 @@ export default {
   },
   data() {
     return {
-      summaryChapterTemp: this.summaryChapter,
+      summaryChapterTemp: encodeURIComponent(this.summary.chapter || ''),
       showDeleteModal: false,
     };
   },
@@ -197,7 +204,10 @@ export default {
   },
   watch: {
     summaryChapterTemp() {
-      this.$emit('update:summaryChapter', this.summaryChapterTemp);
+      this.$emit(
+        'update:summaryChapter',
+        decodeURIComponent(this.summaryChapterTemp),
+      );
     },
   },
   methods: {
@@ -220,9 +230,16 @@ export default {
 .summary-card {
   &:focus-within {
     box-shadow: 0px 8px 32px rgba(43, 41, 46, 0.15);
-    .card-header,
-    .card-footer {
+    .card-header {
       display: flex;
+    }
+    .summary-location > p {
+      opacity: 30%;
+    }
+    .card-footer {
+      .right {
+        display: flex;
+      }
     }
   }
 }

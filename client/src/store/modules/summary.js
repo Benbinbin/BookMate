@@ -6,6 +6,7 @@ export default {
   state: {
     summaries: [],
     summaryEditing: false,
+    summaryEditingState: false,
     editingSummary: null,
     candidateQuote: null,
     insertQuote: false,
@@ -28,6 +29,9 @@ export default {
     // editing summary
     TOGGLE_SUMMARY_EDITING(state) {
       state.summaryEditing = !state.summaryEditing;
+    },
+    TOGGLE_SUMMARY_EDITING_STATE(state) {
+      state.summaryEditingState = !state.summaryEditingState;
     },
     SET_EDITING_SUMMARY(state, payload) {
       state.editingSummary = payload;
@@ -121,6 +125,9 @@ export default {
     toggleSummaryEditing(context) {
       context.commit('TOGGLE_SUMMARY_EDITING');
     },
+    toggleSummaryEditingState(context) {
+      context.commit('TOGGLE_SUMMARY_EDITING_STATE');
+    },
     setEditingSummary(context, payload) {
       context.commit('SET_EDITING_SUMMARY', payload);
     },
@@ -140,7 +147,7 @@ export default {
           })
             .then(() => {
               context.dispatch('changeSummaryImagesSrc');
-              context.commit('ADD_SUMMARY_IMAGES', { action: 'clear' });
+              context.dispatch('addSummaryImages', { action: 'clear' });
               resolve('images uploaded');
             })
             .catch((error) => {
@@ -218,6 +225,8 @@ export default {
       context.commit('CLEAR_INSERT_QUOTE');
     },
     cancelSummaryEditing(context) {
+      context.dispatch('addSummaryImages', { action: 'clear' });
+      context.dispatch('removeSummaryImages', { action: 'clear' });
       context.commit('CANCEL_SUMMARY_EDITING');
     },
     // delete summary

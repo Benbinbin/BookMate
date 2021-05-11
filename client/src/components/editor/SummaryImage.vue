@@ -1,20 +1,19 @@
 <template>
-  <div class="m-4">
-    <img
-      :src="src"
-      :alt="node.attrs.alt"
-      :title="node.attrs.title"
-      :data-src="dataSrc"
-      :data-type="dataType"
-    />
-  </div>
+  <img
+    class="my-4"
+    :src="src"
+    :alt="node.attrs.alt"
+    :title="node.attrs.title"
+    :data-src="dataSrc"
+    :data-type="dataType"
+  />
 </template>
 
 <script>
 import { mapState } from 'vuex';
 
 export default {
-  props: ['editor', 'node', 'updateAttrs'],
+  props: ['node', 'updateAttrs'],
   data() {
     return {
       imageBase: process.env.VUE_APP_SUMMARY_IMAGES_BASE,
@@ -22,7 +21,7 @@ export default {
   },
   computed: {
     ...mapState({
-      summaryEditing: (state) => state.summary.summaryEditing,
+      summaryEditingState: (state) => state.summary.summaryEditingState,
       changeSummaryImagesSrc: (state) => state.summary.changeSummaryImagesSrc,
     }),
     src: {
@@ -66,11 +65,6 @@ export default {
   },
   watch: {
     changeSummaryImagesSrc() {
-      this.changeSrc();
-    },
-  },
-  methods: {
-    changeSrc() {
       if (this.changeSummaryImagesSrc && this.dataType && this.dataSrc) {
         this.src = this.dataSrc;
       }
@@ -80,7 +74,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if (!this.summaryEditing) return;
+    if (!this.summaryEditingState) return;
     if (this.dataType === 'dropped') {
       this.$store.dispatch('addSummaryImages', {
         action: 'remove',

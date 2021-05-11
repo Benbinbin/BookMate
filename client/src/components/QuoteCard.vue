@@ -146,7 +146,7 @@
         <div
           class="card-footer pb-3 px-3 flex justify-between items-end flex-grow space-x-2"
         >
-          <div class="left  flex items-center">
+          <div class="left flex items-center">
             <!-- <slot name="type"> -->
             <div
               v-if="!quoteEditing || quote._id !== editingQuote"
@@ -249,7 +249,7 @@
             }"
           >
             <button
-            class="hover:bg-gray-100 p-1 rounded"
+              class="hover:bg-gray-100 p-1 rounded"
               :class="{
                 'opacity-80':
                   !quoteEditing ||
@@ -274,7 +274,7 @@
               />
             </button>
             <button
-            class="hover:bg-gray-100 p-1 rounded"
+              class="hover:bg-gray-100 p-1 rounded"
               :class="{
                 'opacity-80': !quoteEditing,
                 'opacity-10': quoteEditing,
@@ -557,7 +557,7 @@ export default {
   }
 
   .card-footer-container {
-    min-height: 4rem
+    min-height: 4rem;
   }
 }
 </style>

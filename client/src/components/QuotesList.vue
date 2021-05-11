@@ -7,6 +7,7 @@
       >
         <button
           class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
+          title="新增书摘"
           :disabled="quoteEditing"
           @click="addNewQuote('whole_book_new')"
         >
@@ -20,13 +21,14 @@
         <button
           v-show="!showMoreModal"
           class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
+          title="更多选项"
           @click="showMoreModal = !showMoreModal"
         >
           <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
         </button>
         <button
           v-show="showMoreModal"
-          class="flex items-center p-1 hover:bg-gray-100 opacity-100 rounded-md "
+          class="flex items-center p-1 hover:bg-gray-100 opacity-100 rounded-md"
           @click="showMoreModal = !showMoreModal"
         >
           <img
@@ -239,7 +241,7 @@
             @active-editor="activeEditor(quote)"
             @inactive-editor="inactiveEditor"
             @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
-            @share-quotes-as-markdown="shareQuotesHandler([quote], 'markdown')"
+            @share-quotes-as-markdown="shareQuotesHandler(quote, 'markdown')"
             @share-quotes-as-json="shareQuotesHandler([quote], 'json')"
           >
           </quote-card>
@@ -254,8 +256,9 @@
           <div class="chapter py-3 flex justify-between">
             <div class="flex items-center">
               <button
-                class="flex justify-center items-center hover:bg-gray-200 p-1 rounded opacity-60"
+                class="flex justify-center items-center hover:bg-gray-200 p-1 rounded"
                 :class="{
+                  'opacity-50': !quoteEditing,
                   'opacity-10': quoteEditing,
                 }"
                 :disabled="quoteEditing"
@@ -354,7 +357,7 @@
                 @inactive-editor="inactiveEditor"
                 @share-quotes-as-image="shareQuotesHandler(quote, 'image')"
                 @share-quotes-as-markdown="
-                  shareQuotesHandler([quote], 'markdown')
+                  shareQuotesHandler(quote, 'markdown')
                 "
                 @share-quotes-as-json="shareQuotesHandler([quote], 'json')"
               >
@@ -392,7 +395,7 @@
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
       class="share-quotes-container w-screen h-screen fixed inset-0 bg-gray-500 bg-opacity-50"
-      :class="{'flex justify-center items-center': shareQuoteContent}"
+      :class="{ 'flex justify-center items-center': shareQuoteContent }"
     >
       <component
         :style="shareQuotesStyle"
@@ -981,6 +984,7 @@ export default {
         }
         this.$store.dispatch('setEditingQuote', quote._id);
       }
+      this.$store.dispatch('toggleQuoteEditing');
 
       this.$nextTick(() => {
         if (this.editingQuote === 'whole_book_new') {
@@ -998,8 +1002,10 @@ export default {
           this.editor.focus();
         }
 
+        // the tiptap mounted the Vue component as view twice
+        // so add addition state to mark the real editing state
         const delayTimer = setTimeout(() => {
-          this.$store.dispatch('toggleQuoteEditing');
+          this.$store.dispatch('toggleQuoteEditingState');
           clearTimeout(delayTimer);
         }, 0);
       });
@@ -1027,6 +1033,8 @@ export default {
     },
     async inactiveEditor(type) {
       this.$store.dispatch('toggleQuoteEditing');
+      this.$store.dispatch('toggleQuoteEditingState');
+
       await this.$store.dispatch('saveQuoteImagesChange');
 
       let target = this.editingQuote;
@@ -1211,7 +1219,7 @@ export default {
 .share-quotes-container {
   overflow: auto;
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(31, 41, 55, 0.6)
+    background-color: rgba(31, 41, 55, 0.6);
   }
 }
 

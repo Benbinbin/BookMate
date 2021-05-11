@@ -3,9 +3,19 @@
     <aside
       class="w-16 flex-shrink-0 flex flex-col justify-center items-center relative bg-gray-100"
     >
-      <div class="profile flex-shrink-0 h-16 flex justify-center items-center">
+      <!-- <div class="profile flex-shrink-0 h-16 flex justify-center items-center">
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
-      </div>
+      </div> -->
+      <button
+        class="back-to-home flex-shrink-0 p-2 my-4 flex justify-center items-center hover:bg-gray-200 rounded-md"
+        @click="$router.push({ name: 'Home' })"
+      >
+        <img
+          :src="require(`@/assets/icons/bookmate.svg`)"
+          alt="back to home icon"
+          class="w-8 h-8"
+        />
+      </button>
       <div
         class="book-cover w-14 h-16 bg-center bg-no-repeat bg-contain"
         :style="{
@@ -63,7 +73,7 @@
             </svg>
           </div>
         </button>
-        <button
+        <!-- <button
           class="back-to-home w-9 h-9 flex justify-center items-center rounded-full bg-gray-200 hover:bg-gray-300"
           @click="$router.push({ name: 'Home' })"
         >
@@ -72,7 +82,7 @@
             alt="back to home icon"
             class="w-5 h-5"
           />
-        </button>
+        </button> -->
       </div>
       <div
         v-show="showPinModal"

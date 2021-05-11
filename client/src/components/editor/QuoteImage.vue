@@ -1,5 +1,6 @@
 <template>
   <img
+    class="my-4"
     :src="src"
     :alt="node.attrs.alt"
     :title="node.attrs.title"
@@ -20,7 +21,8 @@ export default {
   },
   computed: {
     ...mapState({
-      quoteEditing: (state) => state.quote.quoteEditing,
+      editingQuote: (state) => state.quote.editingQuote,
+      quoteEditingState: (state) => state.quote.quoteEditingState,
       changeQuoteImagesSrc: (state) => state.quote.changeQuoteImagesSrc,
     }),
     src: {
@@ -71,7 +73,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if (!this.quoteEditing) return;
+    if (!this.quoteEditingState) return;
     if (this.dataType === 'dropped') {
       this.$store.dispatch('addQuoteImages', {
         action: 'remove',

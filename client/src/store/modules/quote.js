@@ -6,6 +6,7 @@ export default {
   state: {
     quotes: [],
     quoteEditing: false,
+    quoteEditingState: false,
     editingQuote: null,
     addingCommentQuote: null,
     addQuoteImages: [],
@@ -42,6 +43,9 @@ export default {
     TOGGLE_QUOTE_EDITING(state) {
       state.quoteEditing = !state.quoteEditing;
     },
+    TOGGLE_QUOTE_EDITING_STATE(state) {
+      state.quoteEditingState = !state.quoteEditingState;
+    },
     SET_EDITING_QUOTE(state, payload) {
       state.editingQuote = payload;
     },
@@ -67,6 +71,7 @@ export default {
       if (payload.action === 'add') {
         state.removeQuoteImages.push(payload.imageName);
       } else if (payload.action === 'clear') {
+        // console.log('clear removeQuoteImages');
         state.removeQuoteImages = [];
       }
     },
@@ -190,6 +195,9 @@ export default {
     toggleQuoteEditing(context) {
       context.commit('TOGGLE_QUOTE_EDITING');
     },
+    toggleQuoteEditingState(context, payload) {
+      context.commit('TOGGLE_QUOTE_EDITING_STATE');
+    },
     setEditingQuote(context, payload) {
       context.commit('SET_EDITING_QUOTE', payload);
     },
@@ -212,7 +220,7 @@ export default {
           })
             .then(() => {
               context.dispatch('changeQuoteImagesSrc');
-              context.commit('ADD_QUOTE_IMAGES', { action: 'clear' });
+              context.dispatch('addQuoteImages', { action: 'clear' });
               resolve('images uploaded');
             })
             .catch((error) => {
@@ -224,6 +232,7 @@ export default {
         }
 
         if (context.state.removeQuoteImages.length > 0) {
+          console.log(`remove images: ${context.state.removeQuoteImages}`);
           Vue.axios.delete(`${APIBASE}images/quote`, {
             data: { removeImages: context.state.removeQuoteImages },
           })
@@ -283,6 +292,8 @@ export default {
       });
     },
     cancelQuoteEditing(context) {
+      context.dispatch('addQuoteImages', { action: 'clear' });
+      context.dispatch('removeQuoteImages', { action: 'clear' });
       context.commit('CANCEL_QUOTE_EDITING');
     },
     // delete quote
