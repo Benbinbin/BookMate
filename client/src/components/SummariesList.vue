@@ -54,6 +54,7 @@
           :summary-chapter.sync="summaryChapter"
           :editor="editor"
           @active-editor="activeEditor(summary)"
+          @share-summary-as-markdown="downloadHandler(summary)"
         >
         </summary-card>
       </div>
@@ -85,7 +86,7 @@
               }}</span>
             </div>
             <div class="flex-shrink-0 flex items-center space-x-0.5">
-              <button
+              <!-- <button
                 class="flex justify-center items-center hover:bg-gray-100 p-1 rounded"
                 :class="{
                   'text-blue-500': chapterPinState(item.summaries),
@@ -103,7 +104,7 @@
                     d="M22.9167 24.7917V35.4167C22.9167 35.9692 23.1362 36.4991 23.5269 36.8898C23.9176 37.2805 24.4475 37.5 25 37.5C25.5525 37.5 26.0824 37.2805 26.4731 36.8898C26.8638 36.4991 27.0833 35.9692 27.0833 35.4167V24.7917C29.6126 24.2754 31.86 22.8384 33.39 20.7592C34.9199 18.68 35.6234 16.1069 35.3639 13.5385C35.1045 10.9702 33.9006 8.58967 31.9857 6.8585C30.0709 5.12732 27.5814 4.16882 25 4.16882C22.4186 4.16882 19.9291 5.12732 18.0143 6.8585C16.0994 8.58967 14.8955 10.9702 14.6361 13.5385C14.3766 16.1069 15.0801 18.68 16.61 20.7592C18.1399 22.8384 20.3874 24.2754 22.9167 24.7917ZM25 8.33336C26.2361 8.33336 27.4445 8.69992 28.4723 9.38668C29.5001 10.0734 30.3012 11.0496 30.7742 12.1916C31.2473 13.3336 31.3711 14.5903 31.1299 15.8027C30.8888 17.0151 30.2935 18.1287 29.4194 19.0028C28.5453 19.8769 27.4317 20.4721 26.2193 20.7133C25.0069 20.9544 23.7503 20.8307 22.6082 20.3576C21.4662 19.8846 20.4901 19.0835 19.8033 18.0557C19.1166 17.0279 18.75 15.8195 18.75 14.5834C18.75 12.9258 19.4085 11.336 20.5806 10.1639C21.7527 8.99184 23.3424 8.33336 25 8.33336ZM33.7708 30.0417C33.4972 29.9842 33.215 29.9812 32.9403 30.0329C32.6655 30.0845 32.4036 30.1897 32.1696 30.3425C31.9355 30.4954 31.7338 30.6928 31.576 30.9236C31.4182 31.1544 31.3075 31.4139 31.25 31.6875C31.1925 31.9611 31.1895 32.2433 31.2412 32.5181C31.2928 32.7928 31.398 33.0547 31.5508 33.2888C31.7037 33.5229 31.9011 33.7246 32.1319 33.8824C32.3627 34.0401 32.6222 34.1509 32.8958 34.2084C37.625 35.1459 39.5833 36.8334 39.5833 37.5C39.5833 38.7084 34.4792 41.6667 25 41.6667C15.5208 41.6667 10.4167 38.7084 10.4167 37.5C10.4167 36.8334 12.375 35.1459 17.1042 34.125C17.3778 34.0676 17.6373 33.9568 17.8681 33.799C18.0989 33.6412 18.2963 33.4396 18.4492 33.2055C18.602 32.9714 18.7072 32.7095 18.7588 32.4348C18.8105 32.16 18.8075 31.8778 18.75 31.6042C18.6925 31.3306 18.5818 31.071 18.424 30.8402C18.2662 30.6095 18.0645 30.412 17.8304 30.2592C17.5964 30.1064 17.3345 30.0011 17.0597 29.9495C16.785 29.8979 16.5028 29.9009 16.2292 29.9584C9.89583 31.4167 6.25 34.1459 6.25 37.5C6.25 42.9792 15.6875 45.8334 25 45.8334C34.3125 45.8334 43.75 42.9792 43.75 37.5C43.75 34.1459 40.1042 31.4167 33.7708 30.0417Z"
                   />
                 </svg>
-              </button>
+              </button> -->
               <button
                 class="flex items-center hover:bg-gray-200 p-1 rounded"
                 :class="{
@@ -148,6 +149,7 @@
               :summary-chapter.sync="summaryChapter"
               :editor="editor"
               @active-editor="activeEditor(summary)"
+              @share-summary-as-markdown="downloadHandler(summary)"
             >
             </summary-card>
           </div>
@@ -166,11 +168,20 @@
         </div>
       </footer>
     </div>
+    <div v-show="false">
+      <summary-to-markdown
+        v-if="shareSummary"
+        ref="shareDom"
+        :summary="shareSummary"
+      ></summary-to-markdown>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import TurndownService from 'turndown';
+import { saveAs } from 'file-saver';
 
 import { Editor } from 'tiptap';
 import {
@@ -200,6 +211,7 @@ import QuoteInline from '@/assets/js/plugins/QuoteInline';
 
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './editor/SummaryEditorMenu.vue';
+import SummaryToMarkdown from './share/SummaryToMarkdown.vue';
 
 export default {
   props: ['category', 'summaries', 'summariesChapters'],
@@ -208,6 +220,7 @@ export default {
     // EditorContent,
     SummaryEditorMenu,
     // Treeselect,
+    SummaryToMarkdown,
   },
   data() {
     return {
@@ -219,6 +232,7 @@ export default {
       newSummary: null,
       convertor: null,
       editor: null,
+      shareSummary: null,
     };
   },
   computed: {
@@ -300,8 +314,8 @@ export default {
     //     children: node.children,
     //   };
     // },
-    chapterPinState() {},
-    chapterPinHandler() {},
+    // chapterPinState() {},
+    // chapterPinHandler() {},
     backToTopHandler() {
       this.$refs.summariesList.scrollTop = 0;
     },
@@ -322,6 +336,26 @@ export default {
     },
     changeMode(mode) {
       this.$store.dispatch('changeDisplayMode', { type: 'summaries', mode });
+    },
+    downloadHandler(summary) {
+      this.shareSummary = summary;
+
+      this.$nextTick(() => {
+        const dom = this.$refs.shareDom.$el;
+
+        const turndownService = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced',
+          fence: '```',
+          emDelimiter: '*',
+        });
+
+        const markdownContent = turndownService.turndown(dom);
+        const blob = new Blob([markdownContent], {
+          type: 'text/plain;charset=utf-8',
+        });
+        saveAs(blob, `《${this.book.metadata.titles[0]}》阅读笔记.md`);
+      });
     },
     activeEditor(summary) {
       if (summary.chapter) this.summaryChapter = summary.chapter;

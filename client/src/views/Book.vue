@@ -86,7 +86,7 @@
       </div>
       <div
         v-show="showPinModal"
-        class="pin-modal px-3 absolute bottom-16 -right-36 z-10 bg-gray-100 rounded shadow-md"
+        class="pin-modal px-3 absolute bottom-4 -right-36 z-10 bg-gray-100 rounded shadow-md"
       >
         <div class="my-4">
           <h3 class="text-sm font-bold my-3">
@@ -129,7 +129,7 @@
             </div>
           </div>
         </div>
-        <div class="my-4">
+        <!-- <div class="my-4">
           <h3 class="text-sm font-bold my-3">
             <span class="highlight"
               >Pin
@@ -148,7 +148,7 @@
               分享
             </button>
           </div>
-        </div>
+        </div> -->
       </div>
     </aside>
     <div
