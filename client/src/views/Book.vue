@@ -247,14 +247,14 @@ export default {
           icon: 'quote',
           active: true,
         },
-        {
-          icon: 'mind-map',
-          active: false,
-        },
-        {
-          icon: 'library',
-          active: false,
-        },
+        // {
+        //   icon: 'mind-map',
+        //   active: false,
+        // },
+        // {
+        //   icon: 'library',
+        //   active: false,
+        // },
       ],
       spliter: null,
       containersArr: ['#split-left', '#split-middle', '#split-right'],

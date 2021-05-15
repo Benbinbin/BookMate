@@ -26,7 +26,7 @@
     </div>
     <div class="help-information-container mx-20 my-4 text-gray-500">
       <button
-        class="mx-auto flex items-center opacity-50 hover:opacity-100 p-1"
+        class="mx-auto flex items-center opacity-60 p-2 hover:bg-gray-100 rounded-md"
         :class="{ 'opacity-100': showHelp }"
         @click="showHelp = !showHelp"
       >

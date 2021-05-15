@@ -514,22 +514,22 @@ export default {
           name: 'kindle',
           img: 'kindle.png',
         },
-        {
-          name: 'duokan',
-          img: 'duokan.png',
-        },
-        {
-          name: 'douban',
-          img: 'douban.png',
-        },
-        {
-          name: 'douban_reading',
-          img: 'douban_reading.png',
-        },
-        {
-          name: 'wechat_reading',
-          img: 'wechat_reading.png',
-        },
+        // {
+        //   name: 'duokan',
+        //   img: 'duokan.png',
+        // },
+        // {
+        //   name: 'douban',
+        //   img: 'douban.png',
+        // },
+        // {
+        //   name: 'douban_reading',
+        //   img: 'douban_reading.png',
+        // },
+        // {
+        //   name: 'wechat_reading',
+        //   img: 'wechat_reading.png',
+        // },
       ],
       importQuotesInitTab: 'kindle-notes-parse',
       showImportQuotesModal: false,

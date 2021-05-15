@@ -125,7 +125,6 @@ export default {
           value: defaultCollectionsClone,
         })
         .then((res) => {
-          console.log(res.data);
           context.commit('TOGGLE_DEFAULT_COLLECTIONS', res.data.value);
         })
         .catch((error) => {

@@ -662,26 +662,26 @@ export default {
           component: 'kindle-notes-parse',
           image: 'kindle.png',
         },
-        {
-          name: '多看阅读',
-          component: 'duokan-notes-parse',
-          image: 'duokan.png',
-        },
-        {
-          name: '豆瓣',
-          component: 'douban-notes-parse',
-          image: 'douban.png',
-        },
-        {
-          name: '豆瓣阅读',
-          component: 'douban-reading-notes-parse',
-          image: 'douban_reading.png',
-        },
-        {
-          name: '微信阅读',
-          component: 'wechat-reading-notes-parse',
-          image: 'wechat_reading.png',
-        },
+        // {
+        //   name: '多看阅读',
+        //   component: 'duokan-notes-parse',
+        //   image: 'duokan.png',
+        // },
+        // {
+        //   name: '豆瓣',
+        //   component: 'douban-notes-parse',
+        //   image: 'douban.png',
+        // },
+        // {
+        //   name: '豆瓣阅读',
+        //   component: 'douban-reading-notes-parse',
+        //   image: 'douban_reading.png',
+        // },
+        // {
+        //   name: '微信阅读',
+        //   component: 'wechat-reading-notes-parse',
+        //   image: 'wechat_reading.png',
+        // },
       ],
       loading: false,
       result: [],

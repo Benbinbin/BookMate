@@ -116,7 +116,7 @@
         class="flex-shrink-0 border-b-2 profile w-full h-20 lg:h-24 px-8 flex items-center justify-between"
       >
         <h1 class="text-5xl">{{ activeTab.name }}</h1>
-        <div class="flex items-center">
+        <!-- <div class="flex items-center">
           <form action="" class="search flex items-center">
             <input
               type="search"
@@ -141,7 +141,7 @@
               class="w-8 h-8"
             />
           </button>
-        </div>
+        </div> -->
       </nav>
       <main class="px-8 overflow-y-auto" ref="main">
         <keep-alive>
@@ -193,21 +193,21 @@ export default {
           name: '书库',
           component: 'Bookshelf',
         },
-        {
-          icon: 'notes',
-          name: '笔记',
-          component: 'NotesList',
-        },
-        {
-          icon: 'mind-map',
-          name: '可视化',
-          component: 'Mindmap',
-        },
-        {
-          icon: 'analysis',
-          name: '分析',
-          component: 'DataAnalysis',
-        },
+        // {
+        //   icon: 'notes',
+        //   name: '笔记',
+        //   component: 'NotesList',
+        // },
+        // {
+        //   icon: 'mind-map',
+        //   name: '可视化',
+        //   component: 'Mindmap',
+        // },
+        // {
+        //   icon: 'analysis',
+        //   name: '分析',
+        //   component: 'DataAnalysis',
+        // },
       ],
       showAddModal: false,
       showModal: '',
