@@ -187,9 +187,9 @@
       <div>
         <div class="mb-6 flex justify-center">
           <button
-            class="p-2 rounded-l-md hover:bg-gray-500 hover:text-white"
+            class="p-2 rounded-l-md hover:bg-gray-300 hover:text-white"
             :class="{
-              'bg-gray-500 text-white': showContent === 'category',
+              'bg-gray-400 text-white': showContent === 'category',
               'bg-gray-100': showContent !== 'category',
             }"
             @click="showContent = 'category'"
@@ -197,9 +197,9 @@
             目录
           </button>
           <button
-            class="p-2 hover:bg-gray-500 hover:text-white"
+            class="p-2 hover:bg-gray-300 hover:text-white"
             :class="{
-              'bg-gray-500 text-white': showContent === 'description',
+              'bg-gray-400 text-white': showContent === 'description',
               'bg-gray-100': showContent !== 'description',
             }"
             @click="showContent = 'description'"
@@ -207,9 +207,9 @@
             简介
           </button>
           <button
-            class="p-2 rounded-r-md hover:bg-gray-500 hover:text-white"
+            class="p-2 rounded-r-md hover:bg-gray-300 hover:text-white"
             :class="{
-              'bg-gray-500 text-white': showContent === 'review',
+              'bg-gray-400 text-white': showContent === 'review',
               'bg-gray-100': showContent !== 'review',
             }"
             @click="showContent = 'review'"

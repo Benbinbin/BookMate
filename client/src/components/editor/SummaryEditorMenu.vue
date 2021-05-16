@@ -53,7 +53,7 @@
             v-show="showHeadingsModal"
           >
             <div
-              class="headings-modal flex flex-col  rounded bg-gray-100 shadow-md"
+              class="headings-modal flex flex-col rounded bg-gray-100 shadow-md"
             >
               <button
                 class="flex-grow flex items-center justify-center hover:bg-gray-200 p-2 rounded"
@@ -192,6 +192,12 @@
         </button>
       </div>
     </editor-menu-bar>
+    <button
+      class="flex items-center justify-center hover:bg-gray-200 p-1.5 rounded"
+      @click="$emit('focus-target')"
+    >
+      <img class="w-6 h-6" src="@/assets/icons/target.svg" alt="target icon" />
+    </button>
     <button
       class="flex items-center justify-center bg-green-500 opacity-60 hover:opacity-100 text-white p-1.5 rounded"
       @click="$emit('inactive-editor', 'save')"

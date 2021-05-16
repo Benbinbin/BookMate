@@ -28,6 +28,7 @@
       <summary-editor-menu
         v-if="summaryEditing"
         :editor="editor"
+        @focus-target="focusTarget"
         @inactive-editor="inactiveEditor"
       ></summary-editor-menu>
     </nav>
@@ -207,6 +208,8 @@ import InsertQuote from '@/assets/js/plugins/InsertQuote';
 import SummaryImage from '@/assets/js/plugins/SummaryImage';
 import QuoteBlock from '@/assets/js/plugins/QuoteBlock';
 import QuoteInline from '@/assets/js/plugins/QuoteInline';
+// import Math from '@/assets/js/plugins/Math';
+// import MathBlock from '@/assets/js/plugins/MathBlock';
 
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './editor/SummaryEditorMenu.vue';
@@ -397,6 +400,13 @@ export default {
 
       this.activeEditor(this.newSummary);
     },
+    focusTarget() {
+      if (this.editingSummary === 'whole_book_new') {
+        this.$refs[this.editingSummary].$el.focus();
+      } else {
+        this.$refs[this.editingSummary][0].$el.focus();
+      }
+    },
     async inactiveEditor(type) {
       this.$store.dispatch('toggleSummaryEditing');
       this.$store.dispatch('toggleSummaryEditingState');
@@ -476,6 +486,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
+        // new Math(),
+        // new MathBlock(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -512,6 +524,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
+        // new Math(),
+        // new MathBlock(),
       ],
       onUpdate: ({ getJSON, transaction }) => {
         this.JSONtemp = getJSON();

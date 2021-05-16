@@ -140,7 +140,7 @@ export default {
 <style lang="scss">
 .floating-menubar {
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   margin-top: 0rem;
   visibility: hidden;
   opacity: 0;
