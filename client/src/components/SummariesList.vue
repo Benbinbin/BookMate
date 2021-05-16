@@ -157,11 +157,10 @@
         </section>
       </div>
       <footer class="my-12 items-center">
-        <hr class="mx-auto w-1/2" />
         <div class="flex justify-center items-center">
           <button
             @click="backToTopHandler"
-            class="text-blue-400 font-bold my-4"
+            class="font-bold my-4 hover:bg-gray-300 text-gray-300  hover:text-white p-3 rounded-md"
           >
             返回顶部
           </button>
