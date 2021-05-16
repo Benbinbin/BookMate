@@ -31,7 +31,7 @@
         class="modal-body w-full"
         style="max-height: calc(100% - 34px)"
       >
-        <div class="tabs-container m-8 flex justify-center ">
+        <div class="tabs-container m-8 flex justify-center">
           <div class="tabs-list py-4 flex space-x-4">
             <button
               v-for="btn of tabList"
@@ -609,7 +609,7 @@
           <div class="flex justify-center items-center">
             <button
               @click="backToTopHandler"
-              class="text-blue-400 font-bold text-sm my-4"
+              class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold text-sm my-4"
             >
               返回顶部
             </button>

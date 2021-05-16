@@ -104,11 +104,10 @@
       </ul>
     </section>
     <footer class="my-24 items-center">
-      <hr class="mx-auto w-1/2" />
       <div class="h-full flex justify-center items-center">
         <button
           @click="$emit('backToTop')"
-          class="text-blue-400 font-bold my-4"
+          class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold my-4"
         >
           返回顶部
         </button>

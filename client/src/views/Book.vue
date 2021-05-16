@@ -442,7 +442,7 @@ export default {
   mounted() {
     this.spliter = Split(this.containersArr, {
       sizes: [20, 50, 30],
-      minSize: [280, 350, 350],
+      minSize: [200, 350, 350],
       expandToMin: true,
       gutterSize: 5,
       snapOffset: 0,

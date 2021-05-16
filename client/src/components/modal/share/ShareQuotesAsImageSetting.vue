@@ -40,7 +40,9 @@
                 <span class="text-xs">{{ quoteWidth }} rem</span>
               </div>
               <div class="grid grid-cols-2">
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteLogo"
@@ -50,7 +52,9 @@
                     >显示 Logo</label
                   >
                 </div>
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteCover"
@@ -60,7 +64,9 @@
                     >显示封面</label
                   >
                 </div>
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteTitle"
@@ -70,33 +76,45 @@
                     >显示书名</label
                   >
                 </div>
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteChapter"
                     v-model="quoteShow.chapter"
                   />
-                  <label class="flex-grow text-sm select-none" for="quoteChapter"
+                  <label
+                    class="flex-grow text-sm select-none"
+                    for="quoteChapter"
                     >显示章节</label
                   >
                 </div>
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteLocation"
                     v-model="quoteShow.location"
                   />
-                  <label class="flex-grow text-sm select-none" for="quoteLocation"
+                  <label
+                    class="flex-grow text-sm select-none"
+                    for="quoteLocation"
                     >显示页码</label
                   >
                 </div>
-                <div class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md">
+                <div
+                  class="p-2 flex justify-start items-center space-x-2 hover:bg-gray-100 rounded-md"
+                >
                   <input
                     type="checkbox"
                     id="quoteComment"
                     v-model="quoteShow.comment"
                   />
-                  <label class="flex-grow text-sm select-none" for="quoteComment"
+                  <label
+                    class="flex-grow text-sm select-none"
+                    for="quoteComment"
                     >显示批注</label
                   >
                 </div>
@@ -158,7 +176,9 @@
                   <p class="py-2 text-sm">布局方式</p>
                 </div>
                 <div>
-                  <div class="ml-4 p-2 flex items-center hover:bg-gray-100 rounded-md">
+                  <div
+                    class="ml-4 p-2 flex items-center hover:bg-gray-100 rounded-md"
+                  >
                     <input
                       type="radio"
                       id="masonry"
@@ -166,11 +186,15 @@
                       value="masonry"
                       v-model="quotesLayout"
                     />
-                    <label class="flex-grow ml-2 text-xs select-none" for="masonry"
+                    <label
+                      class="flex-grow ml-2 text-xs select-none"
+                      for="masonry"
                       >紧凑</label
                     >
                   </div>
-                  <div class="ml-4 p-2 flex items-center hover:bg-gray-100 rounded-md">
+                  <div
+                    class="ml-4 p-2 flex items-center hover:bg-gray-100 rounded-md"
+                  >
                     <input
                       type="radio"
                       id="grid"
@@ -185,13 +209,17 @@
                 </div>
               </div>
               <div>
-                <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                <div
+                  class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                >
                   <input
                     type="checkbox"
                     id="quotesMetadata"
                     v-model="quotesShow.metadata"
                   />
-                  <label class="flex-grow text-sm select-none" for="quotesMetadata"
+                  <label
+                    class="flex-grow text-sm select-none"
+                    for="quotesMetadata"
                     >显示 metadata</label
                   >
                 </div>
@@ -199,84 +227,111 @@
                   class="ml-4 grid grid-cols-3"
                   :class="{ 'opacity-10': !quotesShow.metadata }"
                 >
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesLogo"
                       v-model="quotesShow.logo"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesLogo"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesLogo"
                       >Logo</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesCover"
                       v-model="quotesShow.cover"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesCover"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesCover"
                       >封面</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesTitle"
                       v-model="quotesShow.title"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesTitle"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesTitle"
                       >书名</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesAuthors"
                       v-model="quotesShow.authors"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesAuthors"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesAuthors"
                       >作者</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesTranslators"
                       v-model="quotesShow.translators"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesTranslators"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesTranslators"
                       >译者</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                  >
                     <input
                       type="checkbox"
                       id="quotesIsbn"
                       v-model="quotesShow.isbn"
                     />
-                    <label class="flex-grow text-sm select-none" for="quotesIsbn"
+                    <label
+                      class="flex-grow text-sm select-none"
+                      for="quotesIsbn"
                       >ISBN</label
                     >
                   </div>
                 </div>
               </div>
               <div>
-                <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+                <div
+                  class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+                >
                   <input
                     type="checkbox"
                     id="quotesChapter"
                     v-model="quotesShow.chapter"
                   />
-                  <label class="flex-grow text-sm select-none" for="quotesChapter"
+                  <label
+                    class="flex-grow text-sm select-none"
+                    for="quotesChapter"
                     >显示章节</label
                   >
                 </div>
-                <div
-
-                  :class="{ 'opacity-10': !quotesShow.chapter }"
-                >
-                  <div class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center space-x-2">
+                <div :class="{ 'opacity-10': !quotesShow.chapter }">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center space-x-2"
+                  >
                     <input
                       type="radio"
                       id="chapter-as-heading"
@@ -290,7 +345,9 @@
                       >按章节分类</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center"
+                  >
                     <input
                       type="radio"
                       id="chapter-as-paragraph"
@@ -307,17 +364,23 @@
                 </div>
               </div>
 
-              <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+              <div
+                class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+              >
                 <input
                   type="checkbox"
                   id="quotesLocation"
                   v-model="quotesShow.location"
                 />
-                <label class="flex-grow text-sm select-none" for="quotesLocation"
+                <label
+                  class="flex-grow text-sm select-none"
+                  for="quotesLocation"
                   >显示页码</label
                 >
               </div>
-              <div class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2">
+              <div
+                class="p-2 hover:bg-gray-100 rounded-md flex justify-start items-center space-x-2"
+              >
                 <input
                   type="checkbox"
                   id="quotesComment"
@@ -372,11 +435,10 @@
         </div>
 
         <footer class="mt-8 mb-4 items-center">
-          <hr class="mx-auto" />
           <div class="flex justify-center items-center">
             <button
               @click="backToTopHandler"
-              class="text-blue-400 font-bold text-sm my-4"
+              class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold text-sm my-4"
             >
               返回顶部
             </button>
