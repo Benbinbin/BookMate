@@ -4,6 +4,7 @@ import katex from 'katex';
 function generateMath(content) {
   return katex.renderToString(content, {
     throwOnError: false,
+    output: 'html',
   });
 }
 

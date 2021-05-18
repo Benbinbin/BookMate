@@ -538,6 +538,12 @@ export default {
     }
   },
   mounted() {
+    // this.$nextTick(() => {
+    //   const mathmls = document.getElementsByClassName('katex-mathml');
+    //   mathmls.forEach((node) => {
+    //     node.remove();
+    //   });
+    // });
     hljs.highlightAll();
     // this.$nextTick(() => {
     //   const images = document.getElementsByClassName('cotent-image');

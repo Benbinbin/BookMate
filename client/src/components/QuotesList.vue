@@ -929,6 +929,8 @@ export default {
               fence: '```',
               emDelimiter: '*',
             });
+            turndownService.remove((node) => node.classList.contains('katex-render'));
+            TurndownService.prototype.escape = (string) => string;
             const markdownContent = turndownService.turndown(dom);
             // console.log(markdownContent);
             const blob = new Blob([markdownContent], {
@@ -1021,7 +1023,6 @@ export default {
       // use tiptap editor getHTML() render HTML from JSON content
       this.convertor.setContent(content, true);
       const tempContent = this.HTMLtemp;
-      console.log(this.HTMLtemp);
       this.HTMLtemp = null;
 
       return tempContent;
