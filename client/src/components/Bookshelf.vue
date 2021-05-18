@@ -64,7 +64,7 @@
           <div
             class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
-              backgroundImage: `url(${coverBase}${book.metadata.covers[0]})`,
+              backgroundImage: bookCover(book),
             }"
           ></div>
           <p class="mt-8 text-center font-bold">
@@ -222,6 +222,12 @@ export default {
     changeSelected(val) {
       this.selected = val;
       this.showMoreModal = false;
+    },
+    bookCover(book) {
+      if (book.metadata.covers.length > 0) {
+        return `url(${this.coverBase}${book.metadata.covers[0]})`;
+      }
+      return `url(${require('@/assets/icons/cover.png')})`;
     },
   },
   created() {

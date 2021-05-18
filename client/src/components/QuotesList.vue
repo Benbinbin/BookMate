@@ -508,8 +508,10 @@ import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
 import QuoteImage from '@/assets/js/plugins/QuoteImage';
-// import Math from '@/assets/js/plugins/Math';
-// import MathBlock from '@/assets/js/plugins/MathBlock';
+import MathInline from '@/assets/js/plugins/MathInline';
+import MathInlineShow from '@/assets/js/plugins/MathInlineShow';
+import MathBlock from '@/assets/js/plugins/MathBlock';
+import MathBlockShow from '@/assets/js/plugins/MathBlockShow';
 
 import * as htmlToImage from 'html-to-image';
 import TurndownService from 'turndown';
@@ -1019,23 +1021,50 @@ export default {
       // use tiptap editor getHTML() render HTML from JSON content
       this.convertor.setContent(content, true);
       const tempContent = this.HTMLtemp;
+      console.log(this.HTMLtemp);
       this.HTMLtemp = null;
+
       return tempContent;
     },
     changeMode(mode) {
       this.$store.dispatch('changeDisplayMode', { type: 'quotes', mode });
     },
-    activeEditor(quote) {
-      if (!this.editingQuote) {
-        if (quote.chapter) this.quoteChapter = quote.chapter;
-        if (quote.location) this.quoteLocation = quote.location;
-        this.quoteType = quote.type;
-        this.editor.setContent(quote.content, true);
-        if (quote.comment) {
-          this.commentEditor.setContent(quote.comment, true);
-        }
-        this.$store.dispatch('setEditingQuote', quote._id);
+    addNewQuote(newID, newChapter = '') {
+      if (!newChapter || newChapter === '未分类(NoChapter)') {
+        this.newQuote = {
+          _id: newID,
+          chapter: '',
+          content: null,
+          location: 0,
+          type: 'annotation',
+        };
+      } else {
+        this.newQuote = {
+          _id: newID,
+          chapter: newChapter,
+          content: null,
+          location: 0,
+          type: 'annotation',
+        };
       }
+
+      this.activeEditor(this.newQuote);
+    },
+    activeEditor(quote) {
+      if (this.editingQuote) return;
+      const target = this.quotes.find((item) => item._id === quote._id);
+
+      if (quote.chapter) this.quoteChapter = quote.chapter;
+      if (quote.location) this.quoteLocation = quote.location;
+      this.quoteType = quote.type;
+      this.editor.setContent(target ? target.content : quote.content, true);
+      if (quote.comment) {
+        this.commentEditor.setContent(
+          target ? target.comment : quote.content,
+          true,
+        );
+      }
+      this.$store.dispatch('setEditingQuote', quote._id);
       this.$store.dispatch('toggleQuoteEditing');
 
       this.$nextTick(() => {
@@ -1062,27 +1091,7 @@ export default {
         }, 0);
       });
     },
-    addNewQuote(newID, newChapter = '') {
-      if (!newChapter || newChapter === '未分类(NoChapter)') {
-        this.newQuote = {
-          _id: newID,
-          chapter: '',
-          content: null,
-          location: 0,
-          type: 'annotation',
-        };
-      } else {
-        this.newQuote = {
-          _id: newID,
-          chapter: newChapter,
-          content: null,
-          location: 0,
-          type: 'annotation',
-        };
-      }
 
-      this.activeEditor(this.newQuote);
-    },
     focusTarget() {
       // console.log(this.$refs[this.editingQuote]);
       if (this.editingQuote === 'whole_book_new') {
@@ -1170,8 +1179,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new QuoteImage(),
-        // new Math(),
-        // new MathBlock(),
+        new MathInlineShow(),
+        new MathBlockShow(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -1205,8 +1214,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new QuoteImage(),
-        // new Math(),
-        // new MathBlock(),
+        new MathInline(),
+        new MathBlock(),
       ],
       onUpdate: ({ getJSON }) => {
         this.JSONtemp = getJSON();
@@ -1240,8 +1249,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new QuoteImage(),
-        // new Math(),
-        // new MathBlock(),
+        new MathInline(),
+        new MathBlock(),
       ],
       onUpdate: ({ getJSON }) => {
         this.commentJSONtemp = getJSON();

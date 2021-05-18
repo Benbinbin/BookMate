@@ -298,7 +298,6 @@ export default {
     },
     // delete quote
     deleteQuotes(context, payload) {
-      console.log(payload);
       Vue.axios.delete(`${APIBASE}quotes`, { data: payload })
         .then((res) => {
           context.commit('DELETE_QUOTES', res.data);

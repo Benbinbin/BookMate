@@ -304,7 +304,7 @@ export default {
       if (this.book && this.book.metadata.covers[0]) {
         return `url(${this.coverBase}${this.book.metadata.covers[0]})`;
       }
-      return 'url(@/assets/icons/bookmate.svg)';
+      return `url(${require('@/assets/icons/cover.png')})`;
     },
     // pin quotes and summaries
     pinSum() {
@@ -442,7 +442,7 @@ export default {
   mounted() {
     this.spliter = Split(this.containersArr, {
       sizes: [20, 50, 30],
-      minSize: [200, 350, 350],
+      minSize: [250, 350, 350],
       expandToMin: true,
       gutterSize: 5,
       snapOffset: 0,

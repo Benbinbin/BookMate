@@ -1,7 +1,8 @@
 .card-body,
 .quote-comment,
 .quote-editor-container,
-.comment-editor-container {
+.comment-editor-container,
+.ProseMirror {
     h1 {
         font-size: 2rem;
         font-weight: bold;
@@ -65,92 +66,31 @@
         color: #777777;
     }
 
-    code {
+    & > code {
         font-size: 0.8rem;
         line-height: 1.2rem;
         margin: 0 2px;
         padding: 0 5px;
-        // white-space: nowrap;
         border: 1px solid #d1d5db;
         background-color: #f8f8f8;
         border-radius: 3px;
     }
 
-    pre {
-        // code {
-        //     white-space: pre-wrap;
-        // }
+    & > pre {
         white-space: pre-wrap;
         overflow-x: auto;
-        // word-wrap:break-word;
-        // word-break: break-all;
-        // overflow-wrap: break-word;
         margin: 0.5rem 0;
         padding: 6px 10px;
         background-color: #f8f8f8;
         border: 1px solid #cccccc;
-        // font-size: 13px;
-        // line-height: 19px;
         border-radius: 3px;
 
-        // &::before {
-        //     content: attr(data-language);
-        //     text-transform: uppercase;
-        //     display: block;
-        //     text-align: right;
-        //     font-weight: bold;
-        //     font-size: 0.6rem;
-        // }
         code {
             margin: 0;
             padding: 0;
             white-space: pre;
             border: none;
             background: transparent;
-            // .hljs-comment,
-            // .hljs-quote {
-            //     color: #999999;
-            // }
-            // .hljs-variable,
-            // .hljs-template-variable,
-            // .hljs-attribute,
-            // .hljs-tag,
-            // .hljs-name,
-            // .hljs-regexp,
-            // .hljs-link,
-            // .hljs-name,
-            // .hljs-selector-id,
-            // .hljs-selector-class {
-            //     color: #f2777a;
-            // }
-            // .hljs-number,
-            // .hljs-meta,
-            // .hljs-built_in,
-            // .hljs-builtin-name,
-            // .hljs-literal,
-            // .hljs-type,
-            // .hljs-params {
-            //     color: #f99157;
-            // }
-            // .hljs-string,
-            // .hljs-symbol,
-            // .hljs-bullet {
-            //     color: #99cc99;
-            // }
-            // .hljs-title,
-            // .hljs-section {
-            //     color: #ffcc66;
-            // }
-            // .hljs-keyword,
-            // .hljs-selector-tag {
-            //     color: #6699cc;
-            // }
-            // .hljs-emphasis {
-            //     font-style: italic;
-            // }
-            // .hljs-strong {
-            //     font-weight: 700;
-            // }
         }
     }
 
@@ -161,7 +101,6 @@
     .content-image {
         margin: 1rem auto;
         max-width: 100%;
-        // max-height: 25rem;
     }
 
     .inline-quote {
@@ -185,163 +124,17 @@
     outline-offset: 2px;
 }
 
-// katex math formula style
+.Math {
+    font-family: "Inter", sans-serif;
+    font-size: 0.8rem;
+}
 
-// :root {
-//     --default-back: #000;
-//     --default-font: 0, 0, 0;
-//     --default-gray: #838383;
-//     --default-green: rgb(2, 255, 23);
-// }
-
-// .ProseMirror .Math {
-//   display: contents;
-// }
-
-// .ProseMirror .Math .katex-editor {
-//   display: inline;
-// }
-
-// .ProseMirror .Math .katex-render .katex {
-//   font-size: 1em;
-// }
-
-// .ProseMirror .Math .katex-render .katex-error {
-//   font-family: "Inter", sans-serif;
-//   padding: 0;
-// }
-
-// .ProseMirror .Math .decoration-inline-math {
-//   color: #8e9297;
-// }
-
-// .Math .hidden {
-//   position: absolute;
-
-//   width: 1px;
-//   height: 1px;
-//   margin: -1px;
-//   border: 0;
-//   padding: 0;
-
-//   white-space: nowrap;
-
-//   clip-path: inset(100%);
-//   clip: rect(0 0 0 0);
-//   overflow: hidden;
-// }
-
-// .Math .active {
-//   position: static;
-
-//   width: auto;
-//   height: auto;
-//   margin: 0;
-
-//   clip: auto;
-//   overflow: visible;
-// }
-
-// .ProseMirror .MathBlock pre {
-// //   background: var(--default-back);
-// //   color: rgb(var(--default-font));
-//   font-size: 0.8em;
-//   display: flex;
-//   padding: 1em;
-// }
-
-// .ProseMirror .MathBlock {
-//   display: flex;
-//   flex-wrap: wrap;
-//   margin-block-end: 0.50em;
-//   margin-block-start: 0.50em;
-// }
-
-// .MathBlock .katex-render
-// {
-// //   background-color: var(--default-back);
-//   position: relative;
-//   transition: all 120ms ease-in-out, height 1s ease-in;
-//   cursor: pointer;
-//   border-top-left-radius: 0px;
-//   border-top-right-radius: 0px;
-// }
-
-// .MathBlock .katex-render {
-//   display: flex;
-//   flex: 0 0 100%;
-//   box-sizing: border-box;
-//   overflow-y: overlay;
-// }
-
-// .MathBlock .katex-editor {
-//   border-bottom-left-radius: 0px;
-//   border-bottom-right-radius: 0px;
-//   flex-grow: 1;
-//   margin: 0 auto;
-// }
-
-// .MathBlock .katex-editor.hidden {
-//   position: absolute;
-
-//   width: 1px;
-//   height: 1px;
-//   margin: -1px;
-//   border: 0;
-//   padding: 0;
-
-//   white-space: nowrap;
-
-//   clip-path: inset(100%);
-//   clip: rect(0 0 0 0);
-//   overflow: hidden;
-// }
-
-// .MathBlock .katex-editor.active {
-//   position: static;
-
-//   width: auto;
-//   height: auto;
-//   margin: 0;
-
-//   clip: auto;
-//   overflow: visible;
-// }
-
-// .MathBlock .katex-render .katex-error {
-//   margin: 0 auto;
-//   padding: 1em;
-//   width: 100%;
-//   font-family: "Fira Code", monospace;
-//   font-size: 0.80em;
-// }
-
-// .katex-render .katex-display {
-//   margin: 0 auto;
-//   padding: 1em;
-//   width: 100%;
-//   overflow-x: auto;
-//   overflow-y: hidden;
-// }
-
-// .katex-render .katex
-// {
-//   font-size: 1em;
-// }
-
-// .MathBlock .katex-render * {
-//   user-select: none;
-// }
-
-// .MathBlock.empty-node code::before {
-//   content: "mathblock";
-//   float: left;
-// //   color: var(--default-gray);
-//   pointer-events: none;
-//   height: 0;
-// }
-
-
-// .MathBlock .cm-tag {
-// //   color: var(--default-green);
-// }
+.MathBlock {
+    font-size: 0.8rem;
+    font-family: "Fira Code", monospace;
+    .katex-render {
+        width: 100%;
+        overflow-x: auto;
+        text-align: center;
+    }
+}

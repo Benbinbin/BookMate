@@ -208,8 +208,10 @@ import InsertQuote from '@/assets/js/plugins/InsertQuote';
 import SummaryImage from '@/assets/js/plugins/SummaryImage';
 import QuoteBlock from '@/assets/js/plugins/QuoteBlock';
 import QuoteInline from '@/assets/js/plugins/QuoteInline';
-// import Math from '@/assets/js/plugins/Math';
-// import MathBlock from '@/assets/js/plugins/MathBlock';
+import MathInline from '@/assets/js/plugins/MathInline';
+import MathInlineShow from '@/assets/js/plugins/MathInlineShow';
+import MathBlock from '@/assets/js/plugins/MathBlock';
+import MathBlockShow from '@/assets/js/plugins/MathBlockShow';
 
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './editor/SummaryEditorMenu.vue';
@@ -359,9 +361,30 @@ export default {
         saveAs(blob, `《${this.book.metadata.titles[0]}》阅读笔记.md`);
       });
     },
+    addNewSummary(newID, newChapter = '') {
+      if (!newChapter || newChapter === '整书(whole)') {
+        this.newSummary = {
+          chapter: '',
+          content: null,
+          _id: newID,
+        };
+      } else {
+        this.newSummary = {
+          chapter: newChapter,
+          content: null,
+          _id: newID,
+        };
+      }
+
+      this.activeEditor(this.newSummary);
+    },
     activeEditor(summary) {
+      if (this.editingSummary) return;
+      const target = this.summaries.find((item) => item._id === summary._id);
+
       if (summary.chapter) this.summaryChapter = summary.chapter;
-      this.editor.setContent(summary.content, true);
+      this.editor.setContent(target ? target.content : summary.content, true);
+
       this.$store.dispatch('setEditingSummary', summary._id);
       this.$store.dispatch('toggleSummaryEditing');
 
@@ -382,23 +405,6 @@ export default {
           clearTimeout(delayTimer);
         }, 0);
       });
-    },
-    addNewSummary(newID, newChapter = '') {
-      if (!newChapter || newChapter === '整书(whole)') {
-        this.newSummary = {
-          chapter: '',
-          content: null,
-          _id: newID,
-        };
-      } else {
-        this.newSummary = {
-          chapter: newChapter,
-          content: null,
-          _id: newID,
-        };
-      }
-
-      this.activeEditor(this.newSummary);
     },
     focusTarget() {
       if (this.editingSummary === 'whole_book_new') {
@@ -486,8 +492,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
-        // new Math(),
-        // new MathBlock(),
+        new MathInlineShow(),
+        new MathBlockShow(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -524,8 +530,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
-        // new Math(),
-        // new MathBlock(),
+        new MathInline(),
+        new MathBlock(),
       ],
       onUpdate: ({ getJSON, transaction }) => {
         this.JSONtemp = getJSON();

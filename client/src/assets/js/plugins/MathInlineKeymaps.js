@@ -34,7 +34,7 @@ export const deleteMath = (state, dispatch, view) => {
 
   // Prevent default behavior of partial node-deletion of katex editor.
   const textLength = $cursor ? $cursor.node().textContent.length : 0;
-  if (textLength == 1) {
+  if (textLength === 1) {
     tr.delete($cursor.pos - 1, $cursor.pos);
     dispatch(tr);
     return true;

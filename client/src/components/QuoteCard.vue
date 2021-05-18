@@ -432,6 +432,7 @@
 import { mapState } from 'vuex';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+import 'katex/dist/katex.min.css';
 
 import { EditorContent, EditorMenuBubble } from 'tiptap';
 import QuoteEditorFloatingMenu from './editor/QuoteEditorFloatingMenu.vue';

@@ -1,54 +1,17 @@
+/**
+ * reference: https://gist.github.com/BrianHung/60efde8536f3fa76334f759c33a741e5
+ */
 import { Node } from 'tiptap';
 import { toggleBlockType, setBlockType, textblockTypeInputRule } from 'tiptap-commands';
 
-// import './MathBlock.css'
-import katex from 'katex';
+import MathBlockView from '@/components/editor/MathBlockView.vue';
 import {
   lineIndent, lineUndent, newlineIndent, deleteMathBlock,
 } from './MathBlockKeymaps';
 
-// import "katex/dist/katex.min.css"
-
-/*
- * Defines a ComponentView for MathBlock.
- */
 export default class MathBlock extends Node {
   get name() {
-    return 'mathblock';
-  }
-
-  get view() {
-    return {
-      name: 'mathblock',
-      props: ['node', 'view', 'getPos'],
-      watch: {
-        'node.textContent': function (text) { this.updateKatex(text); },
-      },
-      computed: {
-        visibleClass() {
-          return (this.hasProseMirrorSelection() || true) ? 'active' : 'hidden';
-        },
-      },
-      mounted() {
-        this.updateKatex(this.node.textContent);
-      },
-      methods: {
-        updateKatex(text) {
-          katex.render(/\S/.test(text) ? text : '\\text{MathBlock}', this.$refs.render, {
-            throwOnError: false, displayMode: true,
-          });
-        },
-        hasProseMirrorSelection() {
-          const { anchor } = this.view.state.selection;
-          return this.getPos() <= anchor && anchor < this.node.nodeSize + this.getPos();
-        },
-      },
-      template: `
-        <div class="MathBlock">
-          <div class="katex-render" ref="render" :contenteditable="false"></div>
-          <pre class="katex-editor" v-bind:class="visibleClass" :data-lang="node.attrs.lang"><code ref="content"></code></pre>
-        </div>`,
-    };
+    return 'math_block';
   }
 
   get schema() {
@@ -64,7 +27,7 @@ export default class MathBlock extends Node {
       parseDOM: [{ tag: 'div', class: 'MathBlock' }],
       toDOM: (node) => ['div', { class: 'MathBlock' },
         ['div', { class: 'katex-render', contenteditable: 'false' }],
-        ['pre', { class: 'katex-editor' }, ['code', 0]],
+        ['pre', ['code', 0]],
       ],
     };
   }
@@ -85,7 +48,12 @@ export default class MathBlock extends Node {
 
   inputRules({ type }) {
     return [
-      textblockTypeInputRule(/^\$\$\$$/, type),
+      textblockTypeInputRule(/^\$\$\$\$$/, type),
     ];
+  }
+
+  get view() {
+    // Defines a ComponentView for MathBlock
+    return MathBlockView;
   }
 }
