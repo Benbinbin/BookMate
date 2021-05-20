@@ -9,7 +9,9 @@
           </h3> -->
           <div class="flex flex-col justify-center items-center">
             <div class="mb-4 space-y-2">
-              <div class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2">
+              <div
+                class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2"
+              >
                 <input
                   type="checkbox"
                   id="blockquote"
@@ -19,19 +21,27 @@
                   >显示引用符</label
                 >
               </div>
-              <div class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2">
+              <div
+                class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2"
+              >
                 <input type="checkbox" id="cover" v-model="show.cover" />
-                <label class="flex-grow text-sm select-none" for="cover">显示封面</label>
+                <label class="flex-grow text-sm select-none" for="cover"
+                  >显示封面</label
+                >
               </div>
               <div>
-                <div class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2">
+                <div
+                  class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2"
+                >
                   <input type="checkbox" id="chapter" v-model="show.chapter" />
                   <label class="flex-grow text-sm select-none" for="chapter"
                     >显示章节</label
                   >
                 </div>
-                <div :class="{'opacity-10': !show.chapter}">
-                  <div class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center space-x-2">
+                <div :class="{ 'opacity-10': !show.chapter }">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center space-x-2"
+                  >
                     <input
                       type="radio"
                       id="chapter-as-heading"
@@ -45,7 +55,9 @@
                       >按章节分类</label
                     >
                   </div>
-                  <div class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center">
+                  <div
+                    class="p-2 hover:bg-gray-100 rounded-md ml-4 flex items-center"
+                  >
                     <input
                       type="radio"
                       id="chapter-as-paragraph"
@@ -62,7 +74,9 @@
                 </div>
               </div>
 
-              <div class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2">
+              <div
+                class="p-2 hover:bg-gray-100 rounded-md flex items-center space-x-2"
+              >
                 <input type="checkbox" id="location" v-model="show.location" />
                 <label class="flex-grow text-sm select-none" for="location"
                   >显示页码</label
@@ -96,11 +110,10 @@
         </div>
 
         <footer class="mt-8 mb-4 items-center">
-          <hr class="mx-auto" />
           <div class="flex justify-center items-center">
             <button
               @click="backToTopHandler"
-              class="text-blue-400 font-bold text-sm my-4"
+              class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold text-sm my-4"
             >
               返回顶部
             </button>

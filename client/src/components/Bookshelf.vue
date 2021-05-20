@@ -64,7 +64,7 @@
           <div
             class="cover w-28 h-32 bg-center bg-no-repeat bg-contain transition-all"
             :style="{
-              backgroundImage: `url(${coverBase}${book.metadata.covers[0]})`,
+              backgroundImage: bookCover(book),
             }"
           ></div>
           <p class="mt-8 text-center font-bold">
@@ -104,11 +104,10 @@
       </ul>
     </section>
     <footer class="my-24 items-center">
-      <hr class="mx-auto w-1/2" />
       <div class="h-full flex justify-center items-center">
         <button
           @click="$emit('backToTop')"
-          class="text-blue-400 font-bold my-4"
+          class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold my-4"
         >
           返回顶部
         </button>
@@ -223,6 +222,12 @@ export default {
     changeSelected(val) {
       this.selected = val;
       this.showMoreModal = false;
+    },
+    bookCover(book) {
+      if (book.metadata.covers.length > 0) {
+        return `url(${this.coverBase}${book.metadata.covers[0]})`;
+      }
+      return `url(${require('@/assets/icons/cover.png')})`;
     },
   },
   created() {

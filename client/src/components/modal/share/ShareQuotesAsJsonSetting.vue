@@ -69,11 +69,10 @@
         </div>
 
         <footer class="mt-8 mb-4 items-center">
-          <hr class="mx-auto" />
           <div class="flex justify-center items-center">
             <button
               @click="backToTopHandler"
-              class="text-blue-400 font-bold text-sm my-4"
+              class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold text-sm my-4"
             >
               返回顶部
             </button>

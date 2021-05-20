@@ -28,6 +28,7 @@
       <summary-editor-menu
         v-if="summaryEditing"
         :editor="editor"
+        @focus-target="focusTarget"
         @inactive-editor="inactiveEditor"
       ></summary-editor-menu>
     </nav>
@@ -160,7 +161,7 @@
         <div class="flex justify-center items-center">
           <button
             @click="backToTopHandler"
-            class="font-bold my-4 hover:bg-gray-300 text-gray-300  hover:text-white p-3 rounded-md"
+            class="hover:bg-gray-300 text-gray-300 hover:text-white p-3 rounded-md font-bold my-4"
           >
             返回顶部
           </button>
@@ -207,6 +208,10 @@ import InsertQuote from '@/assets/js/plugins/InsertQuote';
 import SummaryImage from '@/assets/js/plugins/SummaryImage';
 import QuoteBlock from '@/assets/js/plugins/QuoteBlock';
 import QuoteInline from '@/assets/js/plugins/QuoteInline';
+import MathInline from '@/assets/js/plugins/MathInline';
+import MathInlineShow from '@/assets/js/plugins/MathInlineShow';
+import MathBlock from '@/assets/js/plugins/MathBlock';
+import MathBlockShow from '@/assets/js/plugins/MathBlockShow';
 
 import SummaryCard from './SummaryCard.vue';
 import SummaryEditorMenu from './editor/SummaryEditorMenu.vue';
@@ -356,9 +361,30 @@ export default {
         saveAs(blob, `《${this.book.metadata.titles[0]}》阅读笔记.md`);
       });
     },
+    addNewSummary(newID, newChapter = '') {
+      if (!newChapter || newChapter === '整书(whole)') {
+        this.newSummary = {
+          chapter: '',
+          content: null,
+          _id: newID,
+        };
+      } else {
+        this.newSummary = {
+          chapter: newChapter,
+          content: null,
+          _id: newID,
+        };
+      }
+
+      this.activeEditor(this.newSummary);
+    },
     activeEditor(summary) {
+      if (this.editingSummary) return;
+      const target = this.summaries.find((item) => item._id === summary._id);
+
       if (summary.chapter) this.summaryChapter = summary.chapter;
-      this.editor.setContent(summary.content, true);
+      this.editor.setContent(target ? target.content : summary.content, true);
+
       this.$store.dispatch('setEditingSummary', summary._id);
       this.$store.dispatch('toggleSummaryEditing');
 
@@ -380,22 +406,12 @@ export default {
         }, 0);
       });
     },
-    addNewSummary(newID, newChapter = '') {
-      if (!newChapter || newChapter === '整书(whole)') {
-        this.newSummary = {
-          chapter: '',
-          content: null,
-          _id: newID,
-        };
+    focusTarget() {
+      if (this.editingSummary === 'whole_book_new') {
+        this.$refs[this.editingSummary].$el.focus();
       } else {
-        this.newSummary = {
-          chapter: newChapter,
-          content: null,
-          _id: newID,
-        };
+        this.$refs[this.editingSummary][0].$el.focus();
       }
-
-      this.activeEditor(this.newSummary);
     },
     async inactiveEditor(type) {
       this.$store.dispatch('toggleSummaryEditing');
@@ -476,6 +492,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
+        new MathInlineShow(),
+        new MathBlockShow(),
       ],
       onUpdate: ({ getHTML }) => {
         this.HTMLtemp = getHTML();
@@ -512,6 +530,8 @@ export default {
         new TodoItem(),
         new TodoList(),
         new SummaryImage(),
+        new MathInline(),
+        new MathBlock(),
       ],
       onUpdate: ({ getJSON, transaction }) => {
         this.JSONtemp = getJSON();

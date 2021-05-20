@@ -139,6 +139,61 @@
         <quote-editor-floating-menu
           :editor="editor"
         ></quote-editor-floating-menu>
+        <editor-menu-bubble
+          :editor="editor"
+          v-slot="{ commands, isActive, menu }"
+        >
+          <div
+            class="menububble bg-gray-100 rounded-md"
+            :class="{ 'is-active': menu.isActive }"
+            :style="`left: ${menu.left}px; bottom: ${menu.bottom}px;`"
+          >
+            <button
+              class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1.5 rounded-md"
+              :class="{ 'is-active bg-gray-200': isActive.paragraph() }"
+              @click="commands.paragraph"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/editor/paragraph.svg"
+                alt="paragraph icon"
+              />
+            </button>
+            <button
+              class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded-md"
+              :class="{ 'is-active bg-gray-200': isActive.code() }"
+              @click="commands.code"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/editor/code.svg"
+                alt="code icon"
+              />
+            </button>
+            <button
+              class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded-md"
+              :class="{ 'is-active bg-gray-200': isActive.bold() }"
+              @click="commands.bold"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/editor/bold.svg"
+                alt="bold icon"
+              />
+            </button>
+            <button
+              class="flex-grow flex items-center justify-center hover:bg-gray-200 p-1 rounded-md"
+              :class="{ 'is-active bg-gray-200': isActive.italic() }"
+              @click="commands.italic"
+            >
+              <img
+                class="w-5 h-5"
+                src="@/assets/icons/editor/italic.svg"
+                alt="italic icon"
+              />
+            </button>
+          </div>
+        </editor-menu-bubble>
         <editor-content :editor="editor"></editor-content>
       </div>
       <!-- </slot> -->
@@ -377,8 +432,9 @@
 import { mapState } from 'vuex';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+import 'katex/dist/katex.min.css';
 
-import { EditorContent } from 'tiptap';
+import { EditorContent, EditorMenuBubble } from 'tiptap';
 import QuoteEditorFloatingMenu from './editor/QuoteEditorFloatingMenu.vue';
 
 export default {
@@ -393,6 +449,7 @@ export default {
   ],
   components: {
     EditorContent,
+    EditorMenuBubble,
     Treeselect,
     QuoteEditorFloatingMenu,
   },
@@ -559,5 +616,59 @@ export default {
   .card-footer-container {
     min-height: 4rem;
   }
+}
+
+.menububble {
+  position: absolute;
+  display: flex;
+  z-index: 20;
+  // background: #000000;
+  // border-radius: 5px;
+  // padding: 0.3rem;
+  margin-bottom: 0.2rem;
+  transform: translateX(-50%);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s, visibility 0.2s;
+
+  &.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // &__button {
+  //   display: inline-flex;
+  //   background: transparent;
+  //   border: 0;
+  //   color: rgb(255, 255, 255);
+  //   padding: 0.2rem 0.5rem;
+  //   margin-right: 0.2rem;
+  //   border-radius: 3px;
+  //   cursor: pointer;
+
+  //   &:last-child {
+  //     margin-right: 0;
+  //   }
+
+  //   &:hover {
+  //     background-color: rgba(255, 255, 255, 0.1);
+  //   }
+
+  //   &.is-active {
+  //     background-color: rgba(255, 255, 255, 0.2);
+  //   }
+  // }
+
+  // &__form {
+  //   display: flex;
+  //   align-items: center;
+  // }
+
+  // &__input {
+  //   font: inherit;
+  //   border: none;
+  //   background: transparent;
+  //   color: rgb(255, 255, 255);
+  // }
 }
 </style>
