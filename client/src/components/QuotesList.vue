@@ -494,7 +494,7 @@ import {
   Code,
   CodeBlockHighlight,
   Italic,
-  Link,
+  // Link,
   ListItem,
   OrderedList,
   Heading,
@@ -507,6 +507,7 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
+import Link from '@/assets/js/plugins/Link';
 import QuoteImage from '@/assets/js/plugins/QuoteImage';
 import MathInline from '@/assets/js/plugins/MathInline';
 import MathInlineShow from '@/assets/js/plugins/MathInlineShow';

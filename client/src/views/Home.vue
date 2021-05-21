@@ -2,11 +2,19 @@
   <div class="home-container h-screen w-screen flex">
     <aside class="flex flex-col bg-gray-100 min-w-max">
       <div
-        class="profile flex-shrink-0 border-b-2 h-20 lg:h-24 flex justify-center items-center"
+        class="flex-shrink-0 h-20 lg:h-24 flex justify-center items-center border-b-2"
       >
-        <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
-        <p class="text-3xl ml-2">{{ user }}</p>
+        <button
+          class="ring-2 w-12 h-12 rounded-full flex justify-center items-center"
+          :class="{
+            'ring-green-300 hover:bg-green-200': true,
+            'ring-red-300 hover:bg-red-200': false,
+          }"
+        >
+          <img src="logos/BookMate.svg" alt="bookmate logo" class="w-7 h-7" />
+        </button>
       </div>
+
       <div
         class="category flex-grow px-4 xl:px-14 py-12 space-y-6 overflow-y-auto"
       >

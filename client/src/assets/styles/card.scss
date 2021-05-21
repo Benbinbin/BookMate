@@ -58,7 +58,12 @@
     ol li {
         list-style: decimal;
     }
-
+    a {
+        color: #60A5FA;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
     blockquote {
         margin: 0.5rem 0;
         padding: 5px 10px;

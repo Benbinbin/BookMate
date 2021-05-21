@@ -18,6 +18,7 @@ module.exports = {
     "no-unused-vars": 'off',
     "class-methods-use-this": "off",
     "no-underscore-dangle": 'off',
-    "camelcase": "off"
+    "camelcase": "off",
+    "import/prefer-default-export": "off"
   },
 };
