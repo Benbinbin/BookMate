@@ -7,11 +7,7 @@
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
       </div> -->
       <button
-        class="back-to-home flex-shrink-0 p-2 my-4 flex justify-center items-center ring-2 rounded-full"
-        :class="{
-          'ring-green-300 hover:bg-green-200': true,
-          'ring-red-300 hover:bg-red-200': false,
-        }"
+        class="back-to-home flex-shrink-0 p-2 my-4 flex justify-center items-center hover:bg-gray-200 rounded-full"
         @click="$router.push({ name: 'Home' })"
       >
         <img

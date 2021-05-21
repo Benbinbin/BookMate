@@ -5,13 +5,10 @@
         class="flex-shrink-0 h-20 lg:h-24 flex justify-center items-center border-b-2"
       >
         <button
-          class="ring-2 w-12 h-12 rounded-full flex justify-center items-center"
-          :class="{
-            'ring-green-300 hover:bg-green-200': true,
-            'ring-red-300 hover:bg-red-200': false,
-          }"
+          class="w-14 h-14 flex justify-center items-center bg-gray-200 rounded-full"
+          disabled
         >
-          <img src="logos/BookMate.svg" alt="bookmate logo" class="w-7 h-7" />
+          <img src="logos/BookMate.svg" alt="bookmate logo" class="w-8 h-8" />
         </button>
       </div>
 
