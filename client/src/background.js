@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, protocol, Menu, BrowserWindow } from 'electron';
+import { app, shell, protocol, Menu, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 
@@ -46,6 +46,24 @@ async function createWindow() {
 
 // custom menu
 const template = [
+  {
+    label: 'Back',
+    accelerator: 'Alt+Left',
+    click() {
+      if (win.webContents.canGoBack()) {
+        win.webContents.goBack();
+      }
+    }
+  },
+  {
+    label: 'Forward',
+    accelerator: 'Alt+Right',
+    click() {
+      if (win.webContents.canGoForward()) {
+        win.webContents.goForward();
+      }
+    }
+  },
   {
     label: 'Refresh',
     accelerator: 'F5',
@@ -121,22 +139,19 @@ const applicationMenu = Menu.buildFromTemplate(template);
 // custom protocol
 function setDefaultProtocol() {
   const agreement = 'bookmate' // 自定义协议名
-  let isSet = false // 是否注册成功
+  let isSet = app.isDefaultProtocolClient(agreement) // 是否注册成功
 
-  app.removeAsDefaultProtocolClient(agreement) // 每次运行都删除自定义协议 然后再重新注册
-  console.log(process.env.NODE_ENV)
-  console.log(process.platform);
-  console.log(process.execPath);
-  // 开发模式下在window运行需要做兼容
-  // if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
-  //   // 设置electron.exe 和 app的路径
-  //   isSet = app.setAsDefaultProtocolClient(agreement, process.execPath, [
-  //     path.resolve(process.argv[1]),
-  //   ])
-  // } else {
-  //   isSet = app.setAsDefaultProtocolClient(agreement)
-  // }
-  console.log('是否注册成功', isSet)
+  console.log(`${agreement} protocol register: `, isSet)
+  if (isSet) return
+  if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
+    // 开发模式下在window运行需要做兼容
+    // 设置electron.exe 和 app 的路径
+    isSet = app.setAsDefaultProtocolClient(agreement, process.execPath, [
+      path.resolve(process.argv[1]),
+    ])
+  } else {
+    isSet = app.setAsDefaultProtocolClient(agreement)
+  }
 }
 
 // Quit when all windows are closed.
@@ -177,8 +192,13 @@ app.on('ready', async () => {
     if (win.webContents.zoomFactor !== 1.0) {
       win.setTitle(`BookMate-${Math.round(win.webContents.zoomFactor * 100)}%`)
     }
-  })
+  });
 
+  // open hyper link by system default browser with attribute type="_blank"
+  win.webContents.on("new-window", function (event, url) {
+    event.preventDefault();
+    shell.openExternal(url);
+  });
 });
 
 // Exit cleanly on request from parent process in development mode.

@@ -232,7 +232,7 @@ export default {
         }
 
         if (context.state.removeQuoteImages.length > 0) {
-          console.log(`remove images: ${context.state.removeQuoteImages}`);
+          // console.log(`remove images: ${context.state.removeQuoteImages}`);
           Vue.axios.delete(`${APIBASE}images/quote`, {
             data: { removeImages: context.state.removeQuoteImages },
           })

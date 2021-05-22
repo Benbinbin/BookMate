@@ -14,11 +14,11 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'max-len': 'off',
-    'global-require': 'off',
-    'no-unused-vars': 'off',
-    'class-methods-use-this': 'off',
-    'no-underscore-dangle': 'off',
-    camelcase: 'off',
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    "global-require": 'off',
+    "no-unused-vars": 'off',
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": 'off',
+    "camelcase": "off",
+    "import/prefer-default-export": "off"
   },
 };

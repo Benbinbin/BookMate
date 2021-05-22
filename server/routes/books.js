@@ -44,8 +44,8 @@ router.post('/', async (req, res) => {
   try {
     const saveBook = await book.save();
     res.send(`${saveBook._id} saved`)
-  } catch (e) {
-    console.log(e);
+  } catch (err) {
+    // console.log(e);
     res.send(`Oops, can't add new book. ${err}`)
   }
 });

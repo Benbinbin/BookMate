@@ -7,7 +7,7 @@
         <img :src="avatar" alt="avatar" class="rounded-full w-10 h-10" />
       </div> -->
       <button
-        class="back-to-home flex-shrink-0 p-2 my-4 flex justify-center items-center hover:bg-gray-200 rounded-md"
+        class="back-to-home flex-shrink-0 p-2 my-4 flex justify-center items-center hover:bg-gray-200 rounded-full"
         @click="$router.push({ name: 'Home' })"
       >
         <img
@@ -42,7 +42,11 @@
       </div>
       <div class="flex-shrink-0 space-y-4 pb-4">
         <button
-          class="pin relative text-gray-500 w-9 h-9 flex justify-center items-center rounded-full bg-gray-200 hover:bg-gray-300"
+          class="pin relative w-9 h-9 flex justify-center items-center rounded-full"
+          :class="{
+            'text-gray-500 bg-gray-200 hover:bg-blue-100 hover:text-blue-500': !showPinModal,
+            'text-blue-500 bg-blue-100': showPinModal,
+          }"
           @click="showPinModal = !showPinModal"
         >
           <svg

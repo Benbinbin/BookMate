@@ -32,7 +32,7 @@ export default {
           state.pinQuotesSet = unionSet;
         }
       } else {
-        console.log('clear pin quotes');
+        // console.log('clear pin quotes');
         state.pinQuotesSet.clear();
       }
       state.pinQuotesSetTracker = !state.pinQuotesSetTracker;

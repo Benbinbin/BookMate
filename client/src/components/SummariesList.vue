@@ -191,7 +191,7 @@ import {
   Code,
   CodeBlockHighlight,
   Italic,
-  Link,
+  // Link,
   ListItem,
   OrderedList,
   Heading,
@@ -204,6 +204,7 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import hljs from 'highlight.js';
+import Link from '@/assets/js/plugins/Link';
 import InsertQuote from '@/assets/js/plugins/InsertQuote';
 import SummaryImage from '@/assets/js/plugins/SummaryImage';
 import QuoteBlock from '@/assets/js/plugins/QuoteBlock';

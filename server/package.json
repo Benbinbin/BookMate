@@ -8,9 +8,9 @@
     "server": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build-win",
-    "build-mac": "electron-packager . --platform=\"darwin\" --out=\"build\" --overwrite --icon=\"public/logos/server.icns\"",
-    "build-win": "electron-packager . --platform=\"win32\" --out=\"build\" --overwrite --icon=\"public/logos/server.ico\"",
-    "build-linux": "electron-packager . --platform=\"linux\" --out=\"build\" --overwrite --icon=\"public/logos/server.png\""
+    "build-mac": "electron-packager . --platform=\"darwin\" --out=\"build\" --overwrite --icon=\"public/logos/server.icns\" --asar",
+    "build-win": "electron-packager . --platform=\"win32\" --out=\"build\" --overwrite --icon=\"public/logos/server.ico\" --asar",
+    "build-linux": "electron-packager . --platform=\"linux\" --out=\"build\" --overwrite --icon=\"public/logos/server.png\" --asar"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
