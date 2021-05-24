@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const APIBASE = 'http://localhost:3000/api/';
+const APIBASE = process.env.VUE_APP_API_BASE;
 
 export default {
   state: {
@@ -15,6 +15,16 @@ export default {
   },
   getters: {},
   mutations: {
+    RESET_QUOTES(state) {
+      state.quotes = [];
+      state.quoteEditing = false;
+      state.quoteEditingState = false;
+      state.editingQuote = null;
+      state.addingCommentQuote = null;
+      state.addQuoteImages = [];
+      state.removeQuoteImages = [];
+      state.changeQuoteImagesSrc = false;
+    },
     SET_QUOTES(state, payload) {
       state.quotes = payload;
     },
@@ -23,9 +33,9 @@ export default {
       state.editingQuote = null;
       state.addingCommentQuote = null;
     },
-    CLEAR_QUOTES(state) {
-      state.quotes = [];
-    },
+    // CLEAR_QUOTES(state) {
+    //   state.quotes = [];
+    // },
     // import quote
     SET_CONTENT_ORIGIN(state, payload) {
       const book = state.booksList.find((item) => item.metadata.titles[0] === payload.bookTitle);
@@ -94,6 +104,10 @@ export default {
     },
   },
   actions: {
+    // reset quotes state before book component destroy
+    resetQuotes(context) {
+      context.commit('RESET_QUOTES');
+    },
     // get quote(s)
     getQuotes(context, payload) {
       return new Promise((resolve, reject) => {
@@ -128,9 +142,9 @@ export default {
       context.commit('ADD_QUOTES', payload);
     },
     // clear current quotes list before the book component destroy
-    clearQuotes(context) {
-      context.commit('CLEAR_QUOTES');
-    },
+    // clearQuotes(context) {
+    //   context.commit('CLEAR_QUOTES');
+    // },
     // import quote(s)
     // get match book information (metadata, quotes)
     // quotes will "import" to this match book
@@ -298,10 +312,15 @@ export default {
     },
     // delete quote
     deleteQuotes(context, payload) {
-      Vue.axios.delete(`${APIBASE}quotes`, { data: payload })
-        .then((res) => {
-          context.commit('DELETE_QUOTES', res.data);
-        });
+      return new Promise((resolve, reject) => {
+        Vue.axios.delete(`${APIBASE}quotes`, { data: payload })
+          .then((res) => {
+            if (Array.isArray(res.data)) {
+              context.commit('DELETE_QUOTES', res.data);
+              resolve(`${res.data} quote(s) deleted.`);
+            }
+          });
+      });
     },
 
   },

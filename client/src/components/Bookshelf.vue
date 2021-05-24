@@ -150,7 +150,7 @@ export default {
   data() {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
-      selected: 'readingBooks',
+      selected: 'allBooks',
       showMoreModal: false,
       moreModalList: [
         {

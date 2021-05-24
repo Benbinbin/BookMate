@@ -1,5 +1,8 @@
 const express = require('express');
 const BookModel = require('../models/book');
+const QuoteModel = require('../models/quote');
+const SummaryModel = require('../models/summary');
+
 
 const router = express.Router();
 
@@ -73,6 +76,18 @@ router.put('/:id/metadata', async (req, res) => {
         })
       }
     })
+})
+
+// delete book(s)
+router.delete('/', async (req, res) => {
+  await BookModel.deleteMany({ _id: { $in: req.body.book_ids } }, async (err, removed) => {
+    if (err) {
+      console.log(err);
+      res.send(`Oops, can't delete book(s). ${err}`)
+    } else {
+      res.send(req.body.book_ids)
+    }
+  })
 })
 
 module.exports = router;

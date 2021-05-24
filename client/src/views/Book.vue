@@ -1,5 +1,5 @@
 <template>
-  <div class="book-container h-screen w-screen flex">
+  <div class="book-container h-screen w-screen flex relative">
     <aside
       class="w-16 flex-shrink-0 flex flex-col justify-center items-center relative bg-gray-100"
     >
@@ -17,11 +17,16 @@
         />
       </button>
       <div
-        class="book-cover w-14 h-16 bg-center bg-no-repeat bg-contain"
+        class="book-cover w-14 h-16 relative bg-center bg-no-repeat bg-contain transform transition-transform hover:scale-105"
         :style="{
           backgroundImage: bookCover,
         }"
-      ></div>
+      >
+        <button
+          class="w-full absolute inset-0 z-10"
+          @click="showBookCoverModal = !showBookCoverModal"
+        ></button>
+      </div>
       <div class="menu flex-grow py-4 space-y-4 overflow-y-auto">
         <button
           v-for="item of menuButtons"
@@ -88,6 +93,45 @@
           />
         </button> -->
       </div>
+
+      <div
+        v-show="showBookCoverModal"
+        class="px-3 absolute top-20 -right-32 z-10 bg-gray-100 rounded shadow-md"
+      >
+        <div class="my-4">
+          <div class="flex flex-col space-y-2">
+            <button
+              class="p-2 bg-gray-200 hover:bg-gray-300 text-xs rounded"
+              @click="setDeleteAllType('book')"
+            >
+              <span class="px-1 mr-1 text-white text-bold rounded bg-red-400"
+                >删除</span
+              >书籍
+            </button>
+            <button
+              class="p-2 bg-gray-200 hover:bg-gray-300 text-xs rounded"
+              :class="{ 'opacity-10': summaries.length === 0 }"
+              :disabled="summaries.length === 0"
+              @click="setDeleteAllType('summaries')"
+            >
+              <span class="px-1 mr-1 text-white text-bold rounded bg-red-400"
+                >删除</span
+              >所有概述
+            </button>
+            <button
+              class="p-2 bg-gray-200 hover:bg-gray-300 text-xs rounded"
+              :class="{ 'opacity-10': quotes.length === 0 }"
+              :disabled="quotes.length === 0"
+              @click="setDeleteAllType('quotes')"
+            >
+              <span class="px-1 mr-1 text-white text-bold rounded bg-red-400"
+                >删除</span
+              >所有书摘
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div
         v-show="showPinModal"
         class="pin-modal px-3 absolute bottom-4 -right-36 z-10 bg-gray-100 rounded shadow-md"
@@ -95,22 +139,28 @@
         <div class="my-4">
           <h3 class="text-sm font-bold my-3">
             <span class="highlight"
-              >Pin
-              <span class="text-blue-500">{{ pinQuotesSet.size }}</span>
-              篇书摘</span
+              >Pin<span class="mx-1 text-blue-500">{{ pinQuotesSet.size }}</span
+              >篇书摘</span
             >
           </h3>
           <div class="flex flex-col space-y-2">
             <button
               class="px-2 py-1 bg-gray-200 hover:bg-gray-300 text-xs rounded"
+              @click="showPinContent('Quotes')"
             >
-              查看所有 <span class="text-blue-500">Pin</span> 书摘
+              <span class="px-1 mr-1 text-white text-bold rounded bg-green-500"
+                >显示</span
+              >所有<span v-show="!showPinQuotes" class="mx-1 text-blue-500"
+                >Pin</span
+              >书摘
             </button>
             <button
               class="px-2 py-1 bg-gray-200 hover:bg-gray-300 text-xs rounded"
               @click="clearPinContent('Quotes')"
             >
-              取消所有 <span class="text-blue-500">Pin</span> 书摘
+              <span class="px-1 mr-1 text-white text-bold rounded bg-red-400"
+                >取消</span
+              >所有<span class="mx-1 text-blue-500">Pin</span>书摘
             </button>
 
             <div class="grid grid-cols-3 gap-1">
@@ -180,7 +230,7 @@
         <summaries-list
           v-if="book"
           :category="
-            book.metadata.category ? book.metadata.category.children : []
+            book.metadata.category.children ? book.metadata.category.children : []
           "
           :summaries="summaries"
           :summaries-chapters="flattenChaptersWithSummaries"
@@ -195,11 +245,44 @@
         <quotes-list
           v-if="book"
           :category="
-            book.metadata.category ? book.metadata.category.children : []
+            book.metadata.category.children ? book.metadata.category.children : []
           "
           :quotes="quotes"
           :quotes-chapters="flattenChaptersWithQuotes"
         ></quotes-list>
+      </div>
+    </div>
+    <div
+      v-show="showDeleteModal"
+      class="absolute inset-0 flex justify-center items-center bg-opacity-50 bg-gray-500"
+    >
+      <div
+        class="delete-modal w-1/2 h-1/2 bg-opacity-90 bg-gray-200 flex flex-col justify-center items-center rounded-xl border-2 border-red-400"
+      >
+        <p class="text-gray-700 text-lg font-bold">
+          是否删除<span class="highlight p-1 mx-1">{{
+            deleteAllType === "book"
+              ? "该书籍（包括概述和书摘）"
+              : deleteAllType === "quotes"
+              ? "（该书籍）所有书摘"
+              : "（该书籍）所有概述"
+          }}</span
+          >？
+        </p>
+        <div class="flex mt-6 space-x-4">
+          <button
+            class="p-2 text-lg rounded-lg bg-red-400 hover:bg-red-500 text-white"
+            @click="deleteHandler(true)"
+          >
+            确定
+          </button>
+          <button
+            class="p-2 text-lg rounded-lg bg-gray-400 hover:bg-gray-500 text-white"
+            @click="deleteHandler(false)"
+          >
+            取消
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -262,6 +345,7 @@ export default {
       ],
       spliter: null,
       containersArr: ['#split-left', '#split-middle', '#split-right'],
+      showBookCoverModal: false,
       showPinModal: false,
       shareFormatList: [
         {
@@ -285,6 +369,8 @@ export default {
         //   image: 'word.png',
         // },
       ],
+      deleteAllType: '',
+      showDeleteModal: false,
     };
   },
   computed: {
@@ -292,6 +378,7 @@ export default {
       book: (state) => state.book.book,
       quotes: (state) => state.quote.quotes,
       summaries: (state) => state.summary.summaries,
+      showPinQuotes: (state) => state.pin.showPinQuotes,
       pinQuotesSet: (state) => state.pin.pinQuotesSet,
       pinSummariesSet: (state) => state.pin.pinSummariesSet,
       pinQuotesSetTracker: (state) => state.pin.pinQuotesSetTracker,
@@ -430,6 +517,39 @@ export default {
 
       return chaptersSorted;
     },
+    setDeleteAllType(val) {
+      this.deleteAllType = val;
+      this.showBookCoverModal = false;
+      this.showDeleteModal = true;
+    },
+    deleteHandler(val) {
+      if (val) {
+        const id = this.book._id;
+        if (this.deleteAllType === 'quotes') {
+          this.$store.dispatch('deleteQuotes', {
+            book_id: id,
+          });
+        } else if (this.deleteAllType === 'summaries') {
+          this.$store.dispatch('deleteSummaries', {
+            book_id: id,
+          });
+        } else if (this.deleteAllType === 'book') {
+          this.$store
+            .dispatch('deleteBooks', {
+              book_ids: [id],
+            })
+            .then(() => {
+              this.$router.push({ name: 'Home' });
+            });
+        }
+      }
+      this.showDeleteModal = false;
+      this.deleteAllType = '';
+    },
+    showPinContent(val) {
+      this.$store.dispatch(`showPin${val}`);
+      this.showPinModal = false;
+    },
     clearPinContent(val) {
       this.$store.dispatch(`setPin${val}`);
       this.showPinModal = false;
@@ -459,8 +579,9 @@ export default {
   destroyed() {
     // clear the data when leave the page
     this.$store.dispatch('clearBook');
-    this.$store.dispatch('clearQuotes');
-    this.$store.dispatch('clearSummaries');
+    this.$store.dispatch('resetPin');
+    this.$store.dispatch('resetQuotes');
+    this.$store.dispatch('resetSummaries');
   },
 };
 </script>
