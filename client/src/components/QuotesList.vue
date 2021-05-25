@@ -150,9 +150,7 @@
               :disabled="pinQuotesSet.size === 0"
               class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
               :class="{ 'opacity-10': pinQuotesSet.size === 0 }"
-              @click="
-                $store.dispatch('toggleSharePinQuotes', item.name);
-              "
+              @click="$store.dispatch('toggleSharePinQuotes', item.name)"
             >
               <img
                 class="w-10"
@@ -514,7 +512,7 @@
     ></share-quotes-setting-modal>
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
-      class="share-quotes-container w-screen h-screen fixed inset-0 bg-gray-500 bg-opacity-50"
+      class="share-quotes-container w-screen h-screen fixed inset-0 z-20 bg-gray-500 bg-opacity-50"
       :class="{ 'flex justify-center items-center': shareQuoteContent }"
     >
       <component

@@ -125,7 +125,7 @@
     <!-- multiple quotes -->
     <div
       v-if="quotes.length > 0"
-      class="p-20"
+      class="p-20 mx-auto"
       :class="{
         'bg-gray-50': quotesType === 'default',
         'bg-gray-500': quotesType === 'defaultDark',
