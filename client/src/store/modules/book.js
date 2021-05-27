@@ -224,7 +224,7 @@ export default {
         }
       });
     },
-    // delete quote
+    // delete book (include quotes and summaries) of the book)
     deleteBooks(context, payload) {
       return new Promise((resolve, reject) => {
         payload.book_ids.forEach((id) => {

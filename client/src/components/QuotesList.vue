@@ -308,6 +308,24 @@
             </button>
           </div>
         </div>
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">删除书摘</span>
+          </h3>
+          <div class="flex space-x-2 mt-2">
+            <button
+              title="删除所有书摘"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              @click="deleteHandler"
+            >
+              <img
+                class="w-6"
+                src="@/assets/icons/delete.svg"
+                alt="delete icon"
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
     <div
@@ -512,23 +530,26 @@
     ></share-quotes-setting-modal>
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
-      class="share-quotes-container w-screen h-screen fixed inset-0 z-20 bg-gray-500 bg-opacity-50"
+      class="share-quotes-bg w-screen h-screen fixed inset-0 z-20 p-32 bg-gray-500 bg-opacity-50"
       :class="{ 'flex justify-center items-center': shareQuoteContent }"
     >
-      <component
-        :style="shareQuotesStyle"
-        v-if="shareQuotesComponent"
-        :is="shareQuotesComponent"
-        ref="shareDom"
-        :quote="shareQuoteContent"
-        :quotes="shareQuotesContent"
-        :cover="shareQuotesCover"
-        :title="shareQuotesTitle"
-        :authors="shareQuotesAuthors"
-        :translators="shareQuotesTranslators"
-        :isbn="shareQuotesIsbn"
-      ></component>
-
+      <div
+        class="share-quotes-container mx-auto"
+        style="width: fit-content"
+      >
+        <component
+          v-if="shareQuotesComponent"
+          :is="shareQuotesComponent"
+          ref="shareDom"
+          :quote="shareQuoteContent"
+          :quotes="shareQuotesContent"
+          :cover="shareQuotesCover"
+          :title="shareQuotesTitle"
+          :authors="shareQuotesAuthors"
+          :translators="shareQuotesTranslators"
+          :isbn="shareQuotesIsbn"
+        ></component>
+      </div>
       <div
         class="btns w-full pl-2 py-2 fixed top-0 right-2 z-10 flex justify-center space-x-4"
       >
@@ -813,12 +834,12 @@ export default {
       }
       return 'space-y-3';
     },
-    shareQuotesStyle() {
-      if (this.shareQuotesContent.length > 0) {
-        return 'padding: 10rem; margin: auto; width: fit-content';
-      }
-      return '';
-    },
+    // shareQuotesStyle() {
+    //   if (this.shareQuotesContent.length > 0) {
+    //     return '';
+    //   }
+    //   return 'width: fit-content';
+    // },
   },
   watch: {
     classifyByChapter() {
@@ -1222,6 +1243,10 @@ export default {
       this.quoteLocation = 0;
       this.newQuote = null;
     },
+    deleteHandler() {
+      this.$emit('delete-quotes');
+      this.showMoreModal = false;
+    },
   },
   created() {
     this.classifyByChapter = this.quotesListMode === 'chapter';
@@ -1363,7 +1388,7 @@ export default {
   }
 }
 
-.share-quotes-container {
+.share-quotes-bg {
   overflow: auto;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(31, 41, 55, 0.6);

@@ -1,7 +1,7 @@
 const express = require('express');
 const BookModel = require('../models/book');
-const QuoteModel = require('../models/quote');
-const SummaryModel = require('../models/summary');
+// const QuoteModel = require('../models/quote');
+// const SummaryModel = require('../models/summary');
 
 
 const router = express.Router();

@@ -22,9 +22,13 @@
           backgroundImage: bookCover,
         }"
       >
-        <button
+        <!-- <button
           class="w-full absolute inset-0 z-10"
           @click="showBookCoverModal = !showBookCoverModal"
+        ></button> -->
+        <button
+          class="w-full absolute inset-0 z-10"
+          @click="toggle(bookInfo)"
         ></button>
       </div>
       <div class="menu flex-grow py-4 space-y-4 overflow-y-auto">
@@ -93,8 +97,7 @@
           />
         </button> -->
       </div>
-
-      <div
+      <!-- <div
         v-show="showBookCoverModal"
         class="px-3 absolute top-20 -right-32 z-10 bg-gray-100 rounded shadow-md"
       >
@@ -130,8 +133,7 @@
             </button>
           </div>
         </div>
-      </div>
-
+      </div> -->
       <div
         v-show="showPinModal"
         class="pin-modal px-3 absolute bottom-4 -right-36 z-10 bg-gray-100 rounded shadow-md"
@@ -210,16 +212,17 @@
       style="max-width: calc(100% - 4rem)"
     >
       <div
-        v-show="menuButtons.find((item) => item.icon === 'info').active"
+        v-show="bookInfo.active"
         id="split-left"
         class="border-gray-200 flex-grow flex flex-col"
       >
         <book-info
           v-if="book"
+          class="flex-grow"
           :metadata="book.metadata"
           :quotes-chapters="flattenChaptersWithQuotes"
           :summaries-chapters="flattenChaptersWithSummaries"
-          class="flex-grow"
+          @delete-book="setDeleteAllType('book')"
         ></book-info>
       </div>
       <div
@@ -229,12 +232,15 @@
       >
         <summaries-list
           v-if="book"
+          class="flex-grow"
           :category="
-            book.metadata.category.children ? book.metadata.category.children : []
+            book.metadata.category.children
+              ? book.metadata.category.children
+              : []
           "
           :summaries="summaries"
           :summaries-chapters="flattenChaptersWithSummaries"
-          class="flex-grow"
+          @delete-summaries="setDeleteAllType('summaries')"
         ></summaries-list>
       </div>
       <div
@@ -245,10 +251,13 @@
         <quotes-list
           v-if="book"
           :category="
-            book.metadata.category.children ? book.metadata.category.children : []
+            book.metadata.category.children
+              ? book.metadata.category.children
+              : []
           "
           :quotes="quotes"
           :quotes-chapters="flattenChaptersWithQuotes"
+          @delete-quotes="setDeleteAllType('quotes')"
         ></quotes-list>
       </div>
     </div>
@@ -321,11 +330,15 @@ export default {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
       avatar: require('@/assets/profile.png'),
+      bookInfo: {
+        icon: 'info',
+        active: true,
+      },
       menuButtons: [
-        {
-          icon: 'info',
-          active: true,
-        },
+        // {
+        //   icon: 'info',
+        //   active: true,
+        // },
         {
           icon: 'notes',
           active: true,
@@ -448,12 +461,18 @@ export default {
       if (this.containersArr.length > 1) {
         this.spliter.destroy(true);
       }
-
-      this.menuButtons.find((item) => item === btn).active = !btn.active;
+      if (btn.icon === 'info') {
+        this.bookInfo.active = !this.bookInfo.active;
+      } else {
+        this.menuButtons.find((item) => item === btn).active = !btn.active;
+      }
 
       // set the split containers
       this.containersArr = [];
-      this.menuButtons.slice(0, 3).forEach((item) => {
+      if (btn.icon === 'info' && this.bookInfo.active) {
+        this.containersArr.push(selectorsMap[btn.icon]);
+      }
+      this.menuButtons.slice(0, 2).forEach((item) => {
         if (item.active) {
           this.containersArr.push(selectorsMap[item.icon]);
         }
