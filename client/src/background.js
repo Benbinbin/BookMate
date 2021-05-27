@@ -1,4 +1,6 @@
 import path from 'path';
+// import fs from 'fs';
+// import child_process from 'child_process';
 import { app, shell, protocol, Menu, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
@@ -9,6 +11,24 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
+
+// launch BookMate Server
+// the server file default location is ../bookmate-server/bookmate-server.exe
+// const serverPath = path.join(__dirname, './bookmate-server/bookmate-server.exe')
+// const serverPath = path.join(process.cwd(), '../bookmate-server/bookmate-server.exe')
+// console.log(serverPath)
+// fs.access(serverPath, fs.F_OK, (err) => {
+//   if (err) {
+//     console.log(`${serverPath} doesn't exist`);
+//   } else {
+//     child_process.execFile(serverPath, (error, stdout, stderr) => {
+//       if (error) {
+//         throw error;
+//       }
+//       console.log(stdout);
+//     });
+//   }
+// })
 
 let win = null;
 async function createWindow() {
@@ -137,22 +157,22 @@ const template = [
 const applicationMenu = Menu.buildFromTemplate(template);
 
 // custom protocol
-function setDefaultProtocol() {
-  const agreement = 'bookmate' // 自定义协议名
-  let isSet = app.isDefaultProtocolClient(agreement) // 是否注册成功
+// function setDefaultProtocol() {
+//   const agreement = 'bookmate' // 自定义协议名
+//   let isSet = app.isDefaultProtocolClient(agreement) // 是否注册成功
 
-  console.log(`${agreement} protocol register: `, isSet)
-  if (isSet) return
-  if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
-    // 开发模式下在window运行需要做兼容
-    // 设置electron.exe 和 app 的路径
-    isSet = app.setAsDefaultProtocolClient(agreement, process.execPath, [
-      path.resolve(process.argv[1]),
-    ])
-  } else {
-    isSet = app.setAsDefaultProtocolClient(agreement)
-  }
-}
+//   console.log(`${agreement} protocol register: `, isSet)
+//   if (isSet) return
+//   if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
+//     // 开发模式下在window运行需要做兼容
+//     // 设置electron.exe 和 app 的路径
+//     isSet = app.setAsDefaultProtocolClient(agreement, process.execPath, [
+//       path.resolve(process.argv[1]),
+//     ])
+//   } else {
+//     isSet = app.setAsDefaultProtocolClient(agreement)
+//   }
+// }
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -181,7 +201,7 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString());
     }
   }
-  setDefaultProtocol();
+  // setDefaultProtocol();
 
   createWindow();
 

@@ -11,7 +11,7 @@
       <div
         class="card-header pt-4 px-4 flex-grow hidden justify-between items-start"
       >
-        <div class="left">
+        <!-- <div class="left">
           <button class="opacity-60 flex items-center hover:bg-gray-100 p-1 rounded">
             <img
               src="@/assets/icons/bookmark.svg"
@@ -20,7 +20,7 @@
             />
             <span class="text-sm font-bold">2</span>
           </button>
-        </div>
+        </div> -->
         <!-- <div class="right flex items-center space-x-1.5">
           <button class="opacity-30 hover:opacity-80">
             <img
@@ -79,6 +79,7 @@
               >章节：</label
             >
             <treeselect
+              v-if="category.length > 0"
               class="w-4/5 z-10"
               v-model="summaryChapterTemp"
               placeholder="请选择章节"
@@ -91,6 +92,7 @@
               :default-expand-level="1"
               :max-height="150"
             />
+            <p v-else class="opacity-30">请先为该书籍添加目录</p>
           </div>
           <!-- </slot> -->
         </div>
@@ -123,7 +125,10 @@
               class="w-5 h-5"
             />
           </button> -->
-          <button class="opacity-60 hover:bg-gray-100 p-1 rounded" @click="$emit('share-summary-as-markdown')">
+          <button
+            class="opacity-60 hover:bg-gray-100 p-1 rounded"
+            @click="$emit('share-summary-as-markdown')"
+          >
             <img
               src="@/assets/icons/export.svg"
               alt="export icon"
@@ -131,7 +136,7 @@
             />
           </button>
           <button
-          class="hover:bg-gray-100 p-1 rounded"
+            class="hover:bg-gray-100 p-1 rounded"
             :class="{
               'opacity-10': summaryEditing,
             }"

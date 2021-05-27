@@ -1,14 +1,15 @@
 <template>
-  <div class="max-w-full flex-grow flex flex-col">
+  <div class="max-w-full flex-grow flex flex-col relative">
     <nav class="flex-shrink-0 h-16 px-6 relative border-b-2 border-gray-100">
       <div
         v-if="!quoteEditing"
         class="default w-full h-full flex justify-between items-center"
       >
         <button
+          v-show="!showPinQuotes"
           class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
           title="新增书摘"
-          :disabled="quoteEditing"
+          :disabled="quoteEditing || showPinQuotes"
           @click="addNewQuote('whole_book_new')"
         >
           <img
@@ -17,7 +18,27 @@
             alt="add quote icon"
           />
         </button>
-        <h2 class="text-xl font-bold">书摘</h2>
+        <button
+          v-show="showPinQuotes"
+          class="flex items-center p-1 text-blue-500 bg-blue-100 rounded-md hover:text-red-400 hover:bg-red-100"
+          title="新增书摘"
+          :disabled="quoteEditing"
+          @click="$store.dispatch('showPinQuotes')"
+        >
+          <svg
+            class="w-6 h-6"
+            viewBox="0 0 50 50"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M22.9167 24.7917V35.4167C22.9167 35.9692 23.1362 36.4991 23.5269 36.8898C23.9176 37.2805 24.4475 37.5 25 37.5C25.5525 37.5 26.0824 37.2805 26.4731 36.8898C26.8638 36.4991 27.0833 35.9692 27.0833 35.4167V24.7917C29.6126 24.2754 31.86 22.8384 33.39 20.7592C34.9199 18.68 35.6234 16.1069 35.3639 13.5385C35.1045 10.9702 33.9006 8.58967 31.9857 6.8585C30.0709 5.12732 27.5814 4.16882 25 4.16882C22.4186 4.16882 19.9291 5.12732 18.0143 6.8585C16.0994 8.58967 14.8955 10.9702 14.6361 13.5385C14.3766 16.1069 15.0801 18.68 16.61 20.7592C18.1399 22.8384 20.3874 24.2754 22.9167 24.7917ZM25 8.33336C26.2361 8.33336 27.4445 8.69992 28.4723 9.38668C29.5001 10.0734 30.3012 11.0496 30.7742 12.1916C31.2473 13.3336 31.3711 14.5903 31.1299 15.8027C30.8888 17.0151 30.2935 18.1287 29.4194 19.0028C28.5453 19.8769 27.4317 20.4721 26.2193 20.7133C25.0069 20.9544 23.7503 20.8307 22.6082 20.3576C21.4662 19.8846 20.4901 19.0835 19.8033 18.0557C19.1166 17.0279 18.75 15.8195 18.75 14.5834C18.75 12.9258 19.4085 11.336 20.5806 10.1639C21.7527 8.99184 23.3424 8.33336 25 8.33336ZM33.7708 30.0417C33.4972 29.9842 33.215 29.9812 32.9403 30.0329C32.6655 30.0845 32.4036 30.1897 32.1696 30.3425C31.9355 30.4954 31.7338 30.6928 31.576 30.9236C31.4182 31.1544 31.3075 31.4139 31.25 31.6875C31.1925 31.9611 31.1895 32.2433 31.2412 32.5181C31.2928 32.7928 31.398 33.0547 31.5508 33.2888C31.7037 33.5229 31.9011 33.7246 32.1319 33.8824C32.3627 34.0401 32.6222 34.1509 32.8958 34.2084C37.625 35.1459 39.5833 36.8334 39.5833 37.5C39.5833 38.7084 34.4792 41.6667 25 41.6667C15.5208 41.6667 10.4167 38.7084 10.4167 37.5C10.4167 36.8334 12.375 35.1459 17.1042 34.125C17.3778 34.0676 17.6373 33.9568 17.8681 33.799C18.0989 33.6412 18.2963 33.4396 18.4492 33.2055C18.602 32.9714 18.7072 32.7095 18.7588 32.4348C18.8105 32.16 18.8075 31.8778 18.75 31.6042C18.6925 31.3306 18.5818 31.071 18.424 30.8402C18.2662 30.6095 18.0645 30.412 17.8304 30.2592C17.5964 30.1064 17.3345 30.0011 17.0597 29.9495C16.785 29.8979 16.5028 29.9009 16.2292 29.9584C9.89583 31.4167 6.25 34.1459 6.25 37.5C6.25 42.9792 15.6875 45.8334 25 45.8334C34.3125 45.8334 43.75 42.9792 43.75 37.5C43.75 34.1459 40.1042 31.4167 33.7708 30.0417Z"
+            />
+          </svg>
+        </button>
+        <h2 class="text-xl font-bold">
+          <span v-show="showPinQuotes" class="mx-1 text-blue-500">Pin</span>书摘
+        </h2>
         <button
           v-show="!showMoreModal"
           class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
@@ -99,6 +120,46 @@
         v-show="showMoreModal"
         class="more-modal p-4 absolute top-12 right-6 z-10 flex flex-col rounded bg-gray-100 shadow-md"
       >
+        <div v-show="showPinQuotes" class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight"
+              >分享 Pin<span class="mx-1 text-blue-500">{{
+                pinQuotesSet.size
+              }}</span
+              >篇书摘</span
+            >
+          </h3>
+          <div class="flex space-x-3 justify-start">
+            <!-- <button
+              v-for="app of importAppList"
+              :key="app.name"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              @click="showImportQuotesModalHandler(app.name)"
+            >
+              <img
+                class="w-10"
+                :src="`apps/${app.img}`"
+                :alt="`${app.name} logo`"
+              />
+            </button> -->
+
+            <button
+              v-for="item of shareAppList"
+              :key="item.name"
+              :title="item.name"
+              :disabled="pinQuotesSet.size === 0"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              :class="{ 'opacity-10': pinQuotesSet.size === 0 }"
+              @click="$store.dispatch('toggleSharePinQuotes', item.name)"
+            >
+              <img
+                class="w-10"
+                :src="`apps/${item.img}`"
+                :alt="`${item.name} icon`"
+              />
+            </button>
+          </div>
+        </div>
         <div class="mb-4">
           <h3 class="font-bold my-4">
             <span class="highlight">批量导入书摘</span>
@@ -151,7 +212,7 @@
                 class="w-11 text-sm mx-1 pl-1 border-2 rounded-md"
                 type="number"
                 name="cols"
-                v-model.number="cols"
+                v-model="cols"
                 min="1"
                 max="5"
                 @input="colsInputHandler"
@@ -247,6 +308,24 @@
             </button>
           </div>
         </div>
+        <div class="mb-4">
+          <h3 class="font-bold my-4">
+            <span class="highlight">删除书摘</span>
+          </h3>
+          <div class="flex space-x-2 mt-2">
+            <button
+              title="删除所有书摘"
+              class="p-2 bg-gray-200 hover:bg-gray-300 rounded"
+              @click="deleteHandler"
+            >
+              <img
+                class="w-6"
+                src="@/assets/icons/delete.svg"
+                alt="delete icon"
+              />
+            </button>
+          </div>
+        </div>
       </div>
     </nav>
     <div
@@ -281,6 +360,9 @@
           class="quote-card-container"
         >
           <quote-card
+            v-show="
+              !showPinQuotes || (showPinQuotes && pinQuotesSet.has(quote._id))
+            "
             :ref="quote._id"
             :category="category"
             :quote="quote"
@@ -309,10 +391,10 @@
               <button
                 class="flex justify-center items-center hover:bg-gray-200 p-1 rounded"
                 :class="{
-                  'opacity-50': !quoteEditing,
-                  'opacity-10': quoteEditing,
+                  'opacity-50': !quoteEditing && !showPinQuotes,
+                  'opacity-10': quoteEditing || showPinQuotes,
                 }"
-                :disabled="quoteEditing"
+                :disabled="quoteEditing || showPinQuotes"
                 @click="addNewQuote(`${item.name}_new`, item.name)"
               >
                 <img
@@ -396,6 +478,10 @@
               class="quote-card-container"
             >
               <quote-card
+                v-show="
+                  !showPinQuotes ||
+                  (showPinQuotes && pinQuotesSet.has(quote._id))
+                "
                 :ref="quote._id"
                 :category="category"
                 :quote="quote"
@@ -444,23 +530,26 @@
     ></share-quotes-setting-modal>
     <div
       v-show="shareQuotesComponent === 'quotes-to-image'"
-      class="share-quotes-container w-screen h-screen fixed inset-0 bg-gray-500 bg-opacity-50"
+      class="share-quotes-bg w-screen h-screen fixed inset-0 z-20 p-32 bg-gray-500 bg-opacity-50"
       :class="{ 'flex justify-center items-center': shareQuoteContent }"
     >
-      <component
-        :style="shareQuotesStyle"
-        v-if="shareQuotesComponent"
-        :is="shareQuotesComponent"
-        ref="shareDom"
-        :quote="shareQuoteContent"
-        :quotes="shareQuotesContent"
-        :cover="shareQuotesCover"
-        :title="shareQuotesTitle"
-        :authors="shareQuotesAuthors"
-        :translators="shareQuotesTranslators"
-        :isbn="shareQuotesIsbn"
-      ></component>
-
+      <div
+        class="share-quotes-container mx-auto"
+        style="width: fit-content"
+      >
+        <component
+          v-if="shareQuotesComponent"
+          :is="shareQuotesComponent"
+          ref="shareDom"
+          :quote="shareQuoteContent"
+          :quotes="shareQuotesContent"
+          :cover="shareQuotesCover"
+          :title="shareQuotesTitle"
+          :authors="shareQuotesAuthors"
+          :translators="shareQuotesTranslators"
+          :isbn="shareQuotesIsbn"
+        ></component>
+      </div>
       <div
         class="btns w-full pl-2 py-2 fixed top-0 right-2 z-10 flex justify-center space-x-4"
       >
@@ -745,12 +834,12 @@ export default {
       }
       return 'space-y-3';
     },
-    shareQuotesStyle() {
-      if (this.shareQuotesContent.length > 0) {
-        return 'padding: 10rem; margin: auto; width: fit-content';
-      }
-      return '';
-    },
+    // shareQuotesStyle() {
+    //   if (this.shareQuotesContent.length > 0) {
+    //     return '';
+    //   }
+    //   return 'width: fit-content';
+    // },
   },
   watch: {
     classifyByChapter() {
@@ -1154,6 +1243,10 @@ export default {
       this.quoteLocation = 0;
       this.newQuote = null;
     },
+    deleteHandler() {
+      this.$emit('delete-quotes');
+      this.showMoreModal = false;
+    },
   },
   created() {
     this.classifyByChapter = this.quotesListMode === 'chapter';
@@ -1295,7 +1388,7 @@ export default {
   }
 }
 
-.share-quotes-container {
+.share-quotes-bg {
   overflow: auto;
   &::-webkit-scrollbar-thumb {
     background-color: rgba(31, 41, 55, 0.6);

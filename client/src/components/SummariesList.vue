@@ -20,9 +20,10 @@
         <h2 class="text-xl font-bold">概述</h2>
         <button
           class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
-          title="更多选项"
+          title="删除选项"
+          @click="$emit('delete-summaries')"
         >
-          <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
+          <img class="w-6 h-6" src="@/assets/icons/delete.svg" alt="delete icon" />
         </button>
       </div>
       <summary-editor-menu
@@ -460,7 +461,7 @@ export default {
     },
     insert() {
       this.editor.commands.insertHTML(this.candidateQuote);
-      this.$store.dispatch('clearQuote');
+      this.$store.dispatch('clearInsertQuote');
     },
   },
   mounted() {

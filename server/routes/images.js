@@ -26,7 +26,7 @@ router.post('/:type', upload.array('image'), (req, res) => {
   res.json('uploaded')
 })
 
-router.delete('/:type', upload.array('image'), (req, res) => {
+router.delete('/:type', (req, res) => {
   req.body.removeImages.forEach(image => {
     const filePath = path.join(__dirname, `../public/images/${req.params.type}/${image}`)
     fs.access(filePath, fs.F_OK, (err) => {

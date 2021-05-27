@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Qs from 'qs';
 
-const APIBASE = 'http://localhost:3000/api/';
+const APIBASE = process.env.VUE_APP_API_BASE;
 
 export default {
   state: {
@@ -94,14 +94,20 @@ export default {
               },
             }).then(() => {
               // refresh the bookList
-              context.dispatch('getBooksList', { metadata: ['titles', 'covers', 'default_collections', 'collections'] });
+              context.dispatch('getBooksList', { metadata: ['titles', 'covers', 'default_collections', 'collections'] })
+                .then((books) => {
+                  context.dispatch('setBooksList', books);
+                });
             })
               .catch((error) => {
                 console.log(error);
               });
           } else {
             // refresh the bookList
-            context.dispatch('getBooksList', { metadata: ['titles', 'covers', 'default_collections', 'collections'] });
+            context.dispatch('getBooksList', { metadata: ['titles', 'covers', 'default_collections', 'collections'] })
+              .then((books) => {
+                context.dispatch('setBooksList', books);
+              });
           }
         })
         .catch((error) => {
@@ -216,6 +222,25 @@ export default {
               console.log(error);
             });
         }
+      });
+    },
+    // delete quote
+    deleteBooks(context, payload) {
+      return new Promise((resolve, reject) => {
+        payload.book_ids.forEach((id) => {
+          context.dispatch('deleteQuotes', {
+            book_id: id,
+          });
+          context.dispatch('deleteSummaries', {
+            book_id: id,
+          });
+        });
+        Vue.axios.delete(`${APIBASE}books`, {
+          data: payload,
+        })
+          .then((res) => {
+            resolve(res.data);
+          });
       });
     },
   },

@@ -47,7 +47,7 @@
                 />
               </svg>
             </button>
-            <button
+            <!-- <button
               class="notes-link hover:bg-gray-100 p-1 rounded opacity-60 hidden items-center"
             >
               <img
@@ -56,7 +56,7 @@
                 class="w-5 h-5"
               />
               <span class="text-sm font-bold">2</span>
-            </button>
+            </button> -->
           </div>
           <div class="right hidden items-center space-x-0.5">
             <button class="hover:bg-gray-100 p-1 rounded opacity-60">
@@ -336,6 +336,7 @@
                   >章节：</label
                 >
                 <treeselect
+                  v-if="category.length > 0"
                   class="w-4/5 z-10"
                   v-model="quoteChapterTemp"
                   placeholder="请选择章节"
@@ -348,6 +349,7 @@
                   :default-expand-level="1"
                   :max-height="150"
                 />
+                <p v-else class="opacity-30">请先为该书籍添加目录</p>
               </div>
               <div class="flex items-center">
                 <label class="flex-shrink-0 opacity-30" for="quote-location">
@@ -357,7 +359,7 @@
                   class="w-4/5"
                   id="quote-location"
                   type="number"
-                  v-model="quoteLocationTemp"
+                  v-model.number="quoteLocationTemp"
                   placeholder="请输入页码"
                 />
               </div>
@@ -469,8 +471,8 @@
     <!-- </slot> -->
 
     <div
-      class="delete-modal absolute inset-0 flex-col justify-center items-center rounded-lg bg-opacity-90 bg-gray-200"
-      :class="{ hidden: !showDeleteModal, flex: showDeleteModal }"
+      v-show="showDeleteModal"
+      class="delete-modal absolute inset-0 flex flex-col justify-center items-center rounded-lg bg-opacity-90 bg-gray-200 border-2 border-red-400"
     >
       <p class="text-gray-700 font-bold">是否删除该书摘？</p>
       <div class="flex mt-4 space-x-4">
@@ -626,7 +628,7 @@ export default {
     insertQuote(quote) {
       this.setCandidateQuote(quote);
       this.$store.dispatch('insertQuote').then(() => {
-        this.$store.dispatch('clearQuote');
+        this.$store.dispatch('clearInsertQuote');
       });
     },
     pinHandler() {

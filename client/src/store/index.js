@@ -9,7 +9,7 @@ import pin from './modules/pin';
 
 import initLocalStorage from './initLocalStorage';
 
-const APIBASE = 'http://localhost:3000/api/';
+const APIBASE = process.env.VUE_APP_API_BASE;
 
 initLocalStorage();
 

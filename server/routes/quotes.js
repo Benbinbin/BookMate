@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
             }
           }
         },
-        {new: true},
+        { new: true },
         (err, data) => {
           if (err) {
             console.log(err);
@@ -134,10 +134,23 @@ router.put('/:quote_id/:field', async (req, res) => {
 
 // delete quote(s)
 router.delete('/', async (req, res) => {
-  await QuoteModel.deleteMany({ _id: { $in: req.body.quote_ids } }, async (err, removed) => {
+  let ids = [];
+  if (req.body.quote_ids) {
+    ids = req.body.quote_ids;
+  } else if (req.body.book_id) {
+    await BookModel.findById(req.body.book_id, (err, book) => {
+      if (err) {
+        console.log(err);
+      } else {
+        ids = book.quote_ids;
+      }
+    })
+  }
+  console.log(ids);
+  await QuoteModel.deleteMany({ _id: { $in: ids } }, async (err, removed) => {
     if (err) {
       console.log(err);
-      res.send(`Oops, can't delete summaries. ${err}`)
+      res.send(`Oops, can't delete quote(s). ${err}`)
     } else {
       // let doc_ids = [];
       // removed.forEach(doc => {
@@ -145,10 +158,10 @@ router.delete('/', async (req, res) => {
       // })
       await BookModel.findByIdAndUpdate(req.body.book_id, {
         $pullAll: {
-          quote_ids: req.body.quote_ids
+          quote_ids: ids
         }
       })
-      res.send(req.body.quote_ids)
+      res.send(ids)
     }
   })
 })

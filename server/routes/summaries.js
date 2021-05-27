@@ -112,10 +112,23 @@ router.put('/:summary_id', async (req, res) => {
 
 // delete summary (summaries)
 router.delete('/', async (req, res) => {
-  await SummaryModel.deleteMany({ _id: { $in: req.body.summary_ids } }, async (err, removed) => {
+  let ids = [];
+  if (req.body.summary_ids) {
+    ids = req.body.summary_ids
+  } else if (req.body.book_id) {
+    await BookModel.findById(req.body.book_id, (err, book) => {
+      if (err) {
+        console.log(err);
+      } else {
+        ids = book.summary_ids;
+      }
+    })
+  }
+
+  await SummaryModel.deleteMany({ _id: { $in: ids } }, async (err, removed) => {
     if (err) {
       console.log(err);
-      res.send(`Oops, can't delete summaries. ${err}`)
+      res.send(`Oops, can't delete summary (summaries). ${err}`)
     } else {
       // let doc_ids = [];
       // removed.forEach(doc => {
@@ -123,10 +136,10 @@ router.delete('/', async (req, res) => {
       // })
       await BookModel.findByIdAndUpdate(req.body.book_id, {
         $pullAll: {
-          summary_ids: req.body.summary_ids
+          summary_ids: ids
         }
       })
-      res.send(req.body.summary_ids)
+      res.send(ids)
     }
   })
 });

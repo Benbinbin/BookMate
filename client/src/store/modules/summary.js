@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const APIBASE = 'http://localhost:3000/api/';
+const APIBASE = process.env.VUE_APP_API_BASE;
 
 export default {
   state: {
@@ -16,6 +16,17 @@ export default {
   },
   getters: {},
   mutations: {
+    RESET_SUMMARIES(state) {
+      state.summaries = [];
+      state.summaryEditing = false;
+      state.summaryEditingState = false;
+      state.editingSummary = null;
+      state.candidateQuote = null;
+      state.insertQuote = false;
+      state.addSummaryImages = [];
+      state.removeSummaryImages = [];
+      state.changeSummaryImagesSrc = false;
+    },
     SET_SUMMARIES(state, payload) {
       state.summaries = payload;
     },
@@ -23,9 +34,9 @@ export default {
       state.summaries.push(...payload);
       state.editingSummary = null;
     },
-    CLEAR_SUMMARIES(state) {
-      state.summaries = [];
-    },
+    // CLEAR_SUMMARIES(state) {
+    //   state.summaries = [];
+    // },
     // editing summary
     TOGGLE_SUMMARY_EDITING(state) {
       state.summaryEditing = !state.summaryEditing;
@@ -84,6 +95,10 @@ export default {
     },
   },
   actions: {
+    // reset summaries state before book component destroy
+    resetSummaries(context) {
+      context.commit('RESET_SUMMARIES');
+    },
     // get summary (summaries)
     getSummaries(context, payload) {
       return new Promise((resolve, reject) => {
@@ -118,9 +133,9 @@ export default {
       context.commit('ADD_SUMMARIES', payload);
     },
     // clear current summaries list before the book component destroy
-    clearSummaries(context) {
-      context.commit('CLEAR_SUMMARIES');
-    },
+    // clearSummaries(context) {
+    //   context.commit('CLEAR_SUMMARIES');
+    // },
     // edit summary
     toggleSummaryEditing(context) {
       context.commit('TOGGLE_SUMMARY_EDITING');
@@ -221,7 +236,7 @@ export default {
         resolve('inserted');
       });
     },
-    clearQuote(context) {
+    clearInsertQuote(context) {
       context.commit('CLEAR_INSERT_QUOTE');
     },
     cancelSummaryEditing(context) {
@@ -231,10 +246,13 @@ export default {
     },
     // delete summary
     deleteSummaries(context, payload) {
-      Vue.axios.delete(`${APIBASE}summaries`, { data: payload })
-        .then((res) => {
-          context.commit('DELETE_SUMMARIES', res.data);
-        });
+      return new Promise((resolve, reject) => {
+        Vue.axios.delete(`${APIBASE}summaries`, { data: payload })
+          .then((res) => {
+            context.commit('DELETE_SUMMARIES', res.data);
+            resolve(`${res.data} summary (summaries) deleted.`);
+          });
+      });
     },
   },
 };

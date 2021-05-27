@@ -263,7 +263,7 @@
                   </button>
                 </div>
                 <vue-tags-input
-                  v-model="title"
+                  v-model.trim="title"
                   placeholder="添加书名"
                   :tags="titles"
                   :add-on-blur="false"
@@ -277,7 +277,7 @@
                   <span class="highlight pr-2 text-lg font-bold">作者</span>
                 </h2>
                 <vue-tags-input
-                  v-model="author"
+                  v-model.trim="author"
                   placeholder="添加作者"
                   :tags="authors"
                   :add-on-blur="false"
@@ -303,7 +303,7 @@
                   <span class="highlight pr-2 text-lg font-bold">译者</span>
                 </h2>
                 <vue-tags-input
-                  v-model="translator"
+                  v-model.trim="translator"
                   placeholder="添加译者"
                   :tags="translators"
                   :add-on-blur="false"
@@ -334,7 +334,7 @@
                   >
                 </h2>
                 <vue-tags-input
-                  v-model="collection"
+                  v-model.trim="collection"
                   placeholder="添加收藏夹"
                   :tags="collections"
                   :autocomplete-items="suggestionCollections"
@@ -368,7 +368,7 @@
                   >
                 </h2>
                 <vue-tags-input
-                  v-model="tag"
+                  v-model.trim="tag"
                   placeholder="添加标签"
                   :tags="tags"
                   :add-on-blur="false"
@@ -401,7 +401,7 @@
                   <span class="highlight pr-2 text-lg font-bold">相关链接</span>
                 </h2>
                 <vue-tags-input
-                  v-model="link"
+                  v-model.trim="link"
                   placeholder="添加链接"
                   :tags="links"
                   :add-on-blur="false"

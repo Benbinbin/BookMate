@@ -4,14 +4,14 @@
       class="flex-shrink-0 h-16 px-3 flex items-center justify-between border-b-2 border-gray-100"
     >
       <button
-        class="flex items-center opacity-30 hover:opacity-80"
+        class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md"
         @click="showBookMetadataModal = true"
       >
         <img class="w-6 h-6" src="@/assets/icons/edit.svg" alt="edit icon" />
       </button>
       <h2 class="text-xl font-bold">简介</h2>
-      <button class="flex items-center opacity-30 hover:opacity-80">
-        <img class="w-6 h-6" src="@/assets/icons/menu.svg" alt="menu icon" />
+      <button class="flex items-center p-1 hover:bg-gray-100 opacity-30 hover:opacity-100 rounded-md" @click="$emit('delete-book')">
+        <img class="w-6 h-6" src="@/assets/icons/delete.svg" alt="delete icon" />
       </button>
     </nav>
     <div
