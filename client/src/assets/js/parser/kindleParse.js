@@ -128,9 +128,10 @@ function getNotes(dom) {
 
     // location
     let location = 0;
-    const result = heading.textContent.trim().match(/\s(\d*)$/i);
+    const locationRegexp = /\s(\d*)(\s.)?$/i;
+    const result = heading.textContent.trim().match(locationRegexp);
     if (result) {
-      location = result[0].trim();
+      location = result[1].trim();
     }
     // console.log(location);
 
