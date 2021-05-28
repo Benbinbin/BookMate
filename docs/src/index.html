@@ -8,17 +8,154 @@
   <title>BookMate</title>
   <link rel="bookmate icon" href="./images/favicon.ico">
   <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50">
   <header class="my-32 flex flex-col justify-center items-center">
     <div class="container">
-      <img class="w-1/2 mx-auto" src="./images/BookMate-logo-font.svg" alt="BookMate logo">
+      <img class="w-2/5 mx-auto" src="./images/logos/BookMate-logo-font.svg" alt="BookMate logo">
     </div>
-    <h2 class="my-16 md:my-16 text-center text-xl md:text-2xl lg:text-3xl text-gray-600">一款书摘管理软件</h2>
+    <h2 class="my-16 md:my-16 text-center text-xl md:text-xl lg:text-2xl text-gray-600">一款开源的书摘管理软件</h2>
     <button class="py-4 px-8 bg-green-400 hover:bg-green-500 text-white text-lg font-bold rounded-lg">下载</button>
-
   </header>
+  <div class="container mx-auto my-16">
+    <img class="w-4/5 mx-auto my-36" src="./images/screenshots/homepage.png" alt="homepage screenshot">
+    <div class="w-4/5 mx-auto my-16 flex justify-between">
+      <div class="flex flex-col md:flex-row items-center space-x-4 space-y-4">
+        <div
+          class="flex-shrink-0 bg-gray-200 w-10 h-10  sm:w-20 sm:h-20 flex justify-center items-center  rounded-full">
+          <img class="h-6 sm:h-10" src="./images/logos/BookMate.png" alt="bookmate logo">
+        </div>
+        <div class="font-bold text-gray-500">
+          <h3 class="text-sm sm:text-base md:text-lg"><span style="color: #F69893">B</span>ook<span
+              style="color:#70C4FD">M</span>ate-<span style="color:#70C4FD">Client</span></h3>
+          <p class="text-sm">交互界面</p>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row items-center space-x-4 space-y-4">
+        <div class="flex-shrink-0 bg-gray-200 w-10 h-10 sm:w-20 sm:h-20 flex justify-center items-center  rounded-full">
+          <img class="h-6 sm:h-10" src="./images/logos/BookMate-Server.png" alt="bookmate server logo">
+        </div>
+        <div class="font-bold text-gray-500">
+          <h3 class=" text-sm sm:text-base md:text-lg"><span style="color: #F69893">B</span>ook<span
+              style="color:#70C4FD">M</span>ate-<span style="color:#70C4FD">Server</span></h3>
+          <p class="text-sm">服务端</p>
+        </div>
+
+      </div>
+      <div class="flex flex-col md:flex-row items-center space-x-4 space-y-4">
+        <div class="flex-shrink-0 bg-gray-200 w-10 h-10 sm:w-20 sm:h-20 flex justify-center items-center  rounded-full">
+          <img class="h-6 sm:h-10" src="./images/logos/mongodb-original.svg" alt="mongodb logo">
+        </div>
+        <div class="font-bold text-gray-500">
+          <h3 class=" text-sm sm:text-base md:text-lg"><span style="color: #439934">MongoDB</span></h3>
+          <p class="text-sm">数据库</p>
+        </div>
+      </div>
+    </div>
+    <img class="w-4/5 mx-auto my-8" src="./images/screenshots/BookMate-Client-Server-MongoDB.png"
+      alt="BookMate App Illustration">
+    <div class="w-4/5 mx-auto leading-7 text-gray-500">
+      <p>BookMate 采用前后端分离设计，由 3 部分组成：<span class="p-1 text-sm text-white bg-blue-500 rounded">BookMate-Client</span>
+        客户端作为交互界面，<span class="p-1 text-sm text-white bg-blue-500 rounded">BookMate-Server</span> 服务端作为中间桥梁，<span
+          class="p-1 text-sm text-white underline bg-blue-500 rounded"><a href="https://www.mongodb.com/"
+            target="_blank">MongoDB</a></span> 数据库作为资料存储中心。</p>
+      <p class="mt-2">BookMate 将所有数据储存在本地，用户<span class="highlight">对数据有完全的掌控权</span>，可以采用喜欢的方式备份数据；而且 BookMate
+        不断完善<span class="highlight">数据导出、分享功能</span>，可以将原始数据转换为你喜欢的格式。</p>
+      <div class="my-6 flex items-center">
+        <svg class="flex-shrink-0 w-3 text-yellow-300 mr-1" viewBox="0 0 42 42" fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20.8333 4.16667C16.4131 4.16667 12.1738 5.92261 9.04822 9.04822C5.92261 12.1738 4.16667 16.4131 4.16667 20.8333C4.16667 25.2536 5.92261 29.4928 9.04822 32.6184C12.1738 35.7441 16.4131 37.5 20.8333 37.5C25.2536 37.5 29.4928 35.7441 32.6184 32.6184C35.7441 29.4928 37.5 25.2536 37.5 20.8333C37.5 16.4131 35.7441 12.1738 32.6184 9.04822C29.4928 5.92261 25.2536 4.16667 20.8333 4.16667V4.16667ZM0 20.8333C0 9.32708 9.32708 0 20.8333 0C32.3396 0 41.6667 9.32708 41.6667 20.8333C41.6667 32.3396 32.3396 41.6667 20.8333 41.6667C9.32708 41.6667 0 32.3396 0 20.8333Z" />
+          <path
+            d="M20.8333 16.6666C21.3859 16.6666 21.9158 16.8861 22.3065 17.2768C22.6972 17.6675 22.9167 18.1974 22.9167 18.75V31.25C22.9167 31.8025 22.6972 32.3324 22.3065 32.7231C21.9158 33.1138 21.3859 33.3333 20.8333 33.3333C20.2808 33.3333 19.7509 33.1138 19.3602 32.7231C18.9695 32.3324 18.75 31.8025 18.75 31.25V18.75C18.75 18.1974 18.9695 17.6675 19.3602 17.2768C19.7509 16.8861 20.2808 16.6666 20.8333 16.6666V16.6666ZM23.9583 11.4583C23.9583 12.2871 23.6291 13.082 23.0431 13.668C22.457 14.2541 21.6621 14.5833 20.8333 14.5833C20.0045 14.5833 19.2097 14.2541 18.6236 13.668C18.0376 13.082 17.7083 12.2871 17.7083 11.4583C17.7083 10.6295 18.0376 9.83466 18.6236 9.2486C19.2097 8.66255 20.0045 8.33331 20.8333 8.33331C21.6621 8.33331 22.457 8.66255 23.0431 9.2486C23.6291 9.83466 23.9583 10.6295 23.9583 11.4583V11.4583Z" />
+        </svg>
+        <p class="text-xs text-gray-400 ">当前提供的 BookMate 版本运行在本地，你可以修改<a class="text-blue-500 underline"
+            href="https://github.com/Benbinbin/BookMate" target="_blank">源码</a> 将它部署在任何地方。
+        </p>
+      </div>
+
+    </div>
+  </div>
+  <section class="container w-4/5 mx-auto my-20 flex flex-col md:flex-row justify-between space-x-6 space-y-6">
+    <div>
+      <h3 class="font-bold text-xl"> <span class='px-1 highlight-blue'>添加书籍</span> </h3>
+      <p class="my-4">添加书籍时可以录入多种元数据，其中必须的只有书名。</p>
+      <ul class="list-disc mx-6 text-sm text-gray-500">
+        <li>书名（必须）</li>
+        <li>目录</li>
+        <li>作者</li>
+        <li>ISBN</li>
+        <li>封面</li>
+        <li>...</li>
+      </ul>
+    </div>
+    <img class="w-full md:w-3/4" src="./images/screenshots/metadata.png" alt="book metadata">
+  </section>
+  <section
+    class="container w-4/5 mx-auto my-20 flex flex-col md:flex-row-reverse justify-between md:items-center space-x-8 space-x-reverse space-y-6">
+    <div>
+      <h3 class="font-bold text-xl"> <span class='px-1 highlight-blue'>添加书摘</span></h3>
+      <p class="my-4">提供两种方式为书籍添加书摘。可以将 Kindle 等阅读应用生成的书摘文件导入；也可以手动添加。</p>
+      <p  class="my-4">导入的书摘也可以进行修改，书摘可以是常见的富文本内容，编辑器支持快捷键。</p>
+      <div class="flex space-x-4">
+        <div>
+          <p class="my-4">批量导入</p>
+          <ul class="list-disc mx-6 text-sm text-gray-500">
+            <li>Kindle</li>
+            <li class="text-gray-300">豆瓣</li>
+            <li class="text-gray-300">多看阅读</li>
+            <li>...</li>
+          </ul>
+        </div>
+        <div>
+          <p class="my-4">手动输入</p>
+          <ul class="list-disc mx-6 text-sm text-gray-500">
+            <li>标题</li>
+            <li>链接</li>
+            <li>图片</li>
+            <li>数学公式</li>
+            <li>...</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+    <div class="flex-shrink-0 w-full md:w-3/5 space-y-4">
+      <img class="w-full" src="./images/screenshots/import-quotes.png" alt="book metadata">
+      <img class="w-1/2 md:ml-auto " src="./images/screenshots/input-quote.png" alt="book metadata">
+    </div>
+  </section>
+  <section class="container w-4/5 mx-auto my-20 flex flex-col md:flex-row justify-between space-x-6 space-y-6">
+    <div>
+      <h3 class="font-bold text-xl"> <span class='px-1 highlight-blue'>概述笔记</span> </h3>
+      <p class="my-4">读书要从薄到厚，再从厚到薄。</p>
+      <p class="my-4">基于书摘为书籍、章节梳理概述，便于对书籍有整体的掌握。</p>
+      <p class="my-4">也可以针对阅读遇到的问题，将研究过程整理成笔记，便于深入理解书籍。</p>
+      <ul class="list-disc mx-6 text-sm text-gray-500">
+        <li>拖拽插入书摘</li>
+        <li>标题</li>
+        <li>链接</li>
+        <li>图片</li>
+        <li>数学公式</li>
+        <li>...</li>
+      </ul>
+    </div>
+    <img class="w-full md:w-3/4" src="./images/screenshots/summary.png" alt="book metadata">
+  </section>
+  <section class="container w-4/5 mx-auto my-20 flex flex-col md:flex-row-reverse justify-between space-x-6 space-x-reverse space-y-6">
+    <div>
+      <h3 class="font-bold text-xl"> <span class='px-1 highlight-blue'>分享书摘</span> </h3>
+      <p class="my-4">分享功能可以将单篇或多篇书摘的原始数据转换为你喜欢的格式。</p>
+      <ul class="list-disc mx-6 text-sm text-gray-500">
+        <li>图片</li>
+        <li>Markdown 文档</li>
+        <li>JSON 文档</li>
+      </ul>
+    </div>
+    <img class="w-full md:w-3/5" src="./images/screenshots/share.png" alt="book metadata">
+  </section>
 </body>
 
 </html>
