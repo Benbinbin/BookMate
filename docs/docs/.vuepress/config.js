@@ -30,7 +30,14 @@ module.exports = {
           text: '使用指南',
           children: [
             '/user/introduction.md',
-            '/user/install.md'
+            '/user/install.md',
+            '/user/interface.md',
+            '/user/book.md',
+            '/user/quote.md',
+            '/user/summary.md',
+            '/user/share.md',
+            '/user/pin.md',
+            '/user/backup.md'
           ]
         }
       ],

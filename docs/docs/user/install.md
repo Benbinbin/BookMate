@@ -28,11 +28,11 @@
 由于 BookMate 采用前后端分离的设计，因此需要依此启动 **MongoDB**、**BookMate-Server**、**BookMate-Client** 程序。
 
 * MongoDB 程序启动方法参考[官方文档](https://docs.mongodb.com/guides/server/install/#run-mongodb)
-
+    ![run mongodb](/images/screenshots/run_mongodb.png)
     :bulb: [安装](#安装程序) MongoDB 时如果选择 `Run service as Network Service user`，则 MongoDB 会在开机时自动运行，不需要每次手动开启
 * BookMate-Server：运行 :floppy_disk: **`bookmate-server` 程序**启动服务端
     ![run bookmate-server](/images/screenshots/run_bookmate_server.png)
 * BookMate-Client：运行 :floppy_disk: **`bookmate-client` 程序**启动客户端
     ![run bookmate-client](/images/screenshots/run_bookmate_client.png)
 
-:bulb: 如果客户端界面无法加载数据，可以按 `F5` 快捷键刷新页面；如果刷新后仍未成功加载数据，可以尝试重启 :floppy_disk: **`bookmate-server` 程序**，再按 `F5` 快捷键刷新客户端
+:bulb: 如果客户端界面无法加载数据，可以按 `F5` 快捷键刷新页面；如果刷新后仍未成功加载数据，在开启数据库 MongoDB 的前提下，可以尝试重启 :floppy_disk: **`bookmate-server` 程序**，再按 `F5` 快捷键刷新客户端
