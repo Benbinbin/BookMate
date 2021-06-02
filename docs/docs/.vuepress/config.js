@@ -7,6 +7,14 @@ module.exports = {
   bundler: '@vuepress/vite',
   bundlerConfig: {
     // vite 打包工具的选项
+    postcss: {
+      postcssOptions: {
+        plugins: [
+          require('tailwindcss'),
+          require('autoprefixer')
+        ]
+      },
+    },
   },
   theme: '@vuepress/default',
   themeConfig: {
