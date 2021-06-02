@@ -3,7 +3,7 @@
 ## 添加书籍 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120364728-2b7f0500-c340-11eb-92f1-b05f62f65a32.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=3)
 点击 「书架页面」 左下角 「+ 添加书籍」 按钮，可以在弹出框中录入新书籍的信息：
 
-![bookshelf 2](/images/screenshots/bookshelf-2.png)
+![bookshelf 2](../assets/images/screenshots/bookshelf-2.png)
 
 * 书名（**必须**）：可以输入多个（针对具有中英文书名的书籍），但在书架页面和书籍页面只显示第一个
 * 封面：点击 「+」 或拖拽图片添加，可以添加多张，但在书架页面和书籍页面只显示第一个
@@ -24,9 +24,9 @@
 ## 修改书籍信息
 在 「书籍页面」 中，点击 「简介」 栏目左上角的编辑图标按钮，在弹出框中可以修改当前书籍的信息。
 
-![edit book metadata](/images/screenshots/edit_metadata.png)
+![edit book metadata](../assets/images/screenshots/edit_metadata.png)
 
 ## 删除书籍
 在 「书籍页面」 中，点击 「简介」 栏目右上角的红色删除图标按钮，会弹出框询问是否删除当前书籍。如果确定删除该书籍，**则该书籍的信息、所有概述、所有书摘会被删除**，然后跳转到 「书架页面」
 
-![delete book](/images/screenshots/delete_book.png)
+![delete book](../assets/images/screenshots/delete_book.png)

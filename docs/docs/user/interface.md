@@ -3,7 +3,7 @@
 ## 书架页面
 「书架页面」 用以展示数据库中保存的书籍。
 
-![bookshelf](/images/screenshots/interface_bookshelf.png)
+![bookshelf](../assets/images/screenshots/interface_bookshelf.png)
 
 * 点击书籍封面可以进入相应的 「[书籍页面](#书籍页面)」
 * 点击左下角 「+ 添加书籍」 按钮会弹出一个输入框，用以录入新书籍
@@ -14,7 +14,7 @@
 ## 书籍页面
 「书籍页面」 用以展示相应书籍的数据。
 
-![book](/images/screenshots/interface_book.png)
+![book](../assets/images/screenshots/interface_book.png)
 
 * 点击左侧栏的图标可以显示或隐藏特定的栏目 「简介」、「概述」、「书摘」
 * 拖拽栏目之间的分割线，可以调整相应栏目的宽度

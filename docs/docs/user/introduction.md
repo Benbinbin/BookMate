@@ -8,6 +8,6 @@ BookMate 采用前后端分离设计，由以下 3 部分组成：
 * **BookMate-Server** 服务端作为中间桥梁
 * **MongoDB** 数据库作为资料存储中心
 
-![BookMate Components](/images/screenshots/BookMate-Client-Server-MongoDB.png)
+![BookMate Components](../assets/images/screenshots/BookMate-Client-Server-MongoDB.png)
 
-因此你需要[下载](#download)并[安装](/user/install.html)以上相应的 3 部分程序才可以使用 BookMate。由于 BookMate 在本地运行并将所有数据储存在本地，所以用户对数据有完全的掌控权，可以采用喜欢的方式备份数据。
+因此你需要[下载](https://benbinbin.github.io/BookMate/#download)并[安装](./install.md#安装程序)以上相应的 3 部分程序才可以使用 BookMate。由于 BookMate 在本地运行并将所有数据储存在本地，所以用户对数据有完全的掌控权，可以采用喜欢的方式备份数据。
