@@ -28,10 +28,38 @@
         ></button> -->
         <button
           class="w-full absolute inset-0 z-10"
-          @click="toggle(bookInfo)"
+          @click="toggleSplitContainers('info')"
         ></button>
       </div>
       <div class="menu flex-grow py-4 space-y-4 overflow-y-auto">
+        <button
+          class="w-9 h-9 flex-shrink-0 flex justify-center items-center rounded-full"
+          :class="{
+            'bg-gray-200 hover:bg-gray-300': !cols.summaries,
+            'bg-white hover:bg-gray-300': cols.summaries,
+          }"
+          @click="toggleSplitContainers('summaries')"
+        >
+          <img
+            src="@/assets/icons/notes.svg"
+            alt="summary icon"
+            class="w-5 h-5"
+          />
+        </button>
+        <button
+          class="w-9 h-9 flex-shrink-0 flex justify-center items-center rounded-full"
+          :class="{
+            'bg-gray-200 hover:bg-gray-300': !cols.quotes,
+            'bg-white hover:bg-gray-300': cols.quotes,
+          }"
+          @click="toggleSplitContainers('quotes')"
+        >
+          <img
+            src="@/assets/icons/quote.svg"
+            alt="quote icon"
+            class="w-5 h-5"
+          />
+        </button>
         <button
           v-for="item of menuButtons"
           :key="item.icon"
@@ -40,7 +68,6 @@
             'bg-gray-200 hover:bg-gray-300': !item.active,
             'bg-white hover:bg-gray-300': item.active,
           }"
-          @click="toggle(item)"
         >
           <img
             :src="require(`@/assets/icons/${item.icon}.svg`)"
@@ -212,7 +239,7 @@
       style="max-width: calc(100% - 4rem)"
     >
       <div
-        v-show="bookInfo.active"
+        v-show="cols.info"
         id="split-left"
         class="border-gray-200 flex-grow flex flex-col"
       >
@@ -226,7 +253,7 @@
         ></book-info>
       </div>
       <div
-        v-show="menuButtons.find((item) => item.icon === 'notes').active"
+        v-show="cols.summaries"
         id="split-middle"
         class="border-gray-200 flex-grow h-full flex"
       >
@@ -244,7 +271,7 @@
         ></summaries-list>
       </div>
       <div
-        v-show="menuButtons.find((item) => item.icon === 'quote').active"
+        v-show="cols.quotes"
         id="split-right"
         class="border-gray-200 flex-grow h-full flex"
       >
@@ -330,23 +357,12 @@ export default {
     return {
       coverBase: process.env.VUE_APP_COVER_BASE,
       avatar: require('@/assets/profile.png'),
-      bookInfo: {
-        icon: 'info',
-        active: true,
+      cols: {
+        info: true,
+        summaries: true,
+        quotes: true,
       },
       menuButtons: [
-        // {
-        //   icon: 'info',
-        //   active: true,
-        // },
-        {
-          icon: 'notes',
-          active: true,
-        },
-        {
-          icon: 'quote',
-          active: true,
-        },
         // {
         //   icon: 'mind-map',
         //   active: false,
@@ -442,41 +458,29 @@ export default {
         }
       });
     },
-    toggle(btn) {
-      // toggle the btn to show/hidde particular column
-      const arr = ['info', 'notes', 'quote'];
-      if (arr.includes(btn.icon)) {
-        this.toggleSplitContainers(btn);
-      } else {
-        this.menuButtons.find((item) => item === btn).active = !btn.active;
-      }
-    },
     toggleSplitContainers(btn) {
       const selectorsMap = {
         info: '#split-left',
-        notes: '#split-middle',
-        quote: '#split-right',
+        summaries: '#split-middle',
+        quotes: '#split-right',
       };
 
       if (this.containersArr.length > 1) {
         this.spliter.destroy(true);
       }
-      if (btn.icon === 'info') {
-        this.bookInfo.active = !this.bookInfo.active;
-      } else {
-        this.menuButtons.find((item) => item === btn).active = !btn.active;
-      }
+
+      this.cols[btn] = !this.cols[btn];
 
       // set the split containers
       this.containersArr = [];
-      if (btn.icon === 'info' && this.bookInfo.active) {
-        this.containersArr.push(selectorsMap[btn.icon]);
-      }
-      this.menuButtons.slice(0, 2).forEach((item) => {
-        if (item.active) {
-          this.containersArr.push(selectorsMap[item.icon]);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key in this.cols) {
+        if (Object.prototype.hasOwnProperty.call(this.cols, key)) {
+          if (this.cols[key]) {
+            this.containersArr.push(selectorsMap[key]);
+          }
         }
-      });
+      }
 
       if (this.containersArr.length > 1) {
         // set containers size
