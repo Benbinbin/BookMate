@@ -1,6 +1,6 @@
 # 分享
 
-## 书摘分享
+## 书摘分享 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120365061-929cb980-c340-11eb-8c2d-f0e8cceaf464.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=9)
 可以将单篇/多篇书摘分享为**图片**、**Markdown 文件**、**JSON 文件**
 
 * 单篇书摘分享：点击书摘卡片右下加的分享图标按钮，选择希望分享的格式

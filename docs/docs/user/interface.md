@@ -18,3 +18,13 @@
 
 * 点击左侧栏的图标可以显示或隐藏特定的栏目 「简介」、「概述」、「书摘」
 * 拖拽栏目之间的分割线，可以调整相应栏目的宽度
+
+## 快捷键 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120362049-35ebcf80-c33d-11eb-9622-2f348e616b15.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=2)
+BookMate-Client 全局支持部分快捷键
+
+* `F5` 刷新
+* `Ctrl+Shift+=` 放大
+* `Ctrl+Shift+-` 缩小
+* `Ctrl+0` 重置窗口大小
+* `F11` 全屏
+* `F12` 开发者工具

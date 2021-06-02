@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/',
+  base: '/bookmate/',
   lang: 'zh-CN',
   title: 'BookMate',
   description: 'BookMate 说明文档',

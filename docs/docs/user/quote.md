@@ -2,7 +2,7 @@
 
 ## 添加书摘
 
-### 批量导入
+### 批量导入 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120364983-7a2c9f00-c340-11eb-86c6-b5d432b869c8.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=5)
 从相应的阅读应用中批量导入书摘
 
 1. 在阅读应用中导出书摘
@@ -20,13 +20,13 @@
 * **覆盖**：用（相似的）待导入的书摘替换已导入的书摘
 * **导入**：直接导入（相似的）待导入的书摘
 
-### 手动添加
+### 手动添加 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120364997-7e58bc80-c340-11eb-9810-70268a1b173a.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=6)
 * 在 「书籍页面」 中点击 「书摘」 栏目左上角的 「+」 按钮可以添加一篇书摘
 * 如果当前书摘的 「书摘展示模式」 是 「按章节分类书摘」，则在 「书摘」 栏目章节左侧会有加号按钮，也可以用来新增书摘
 
 ![add quote](/images/screenshots/add_quote.png)
 
-## 浏览书摘
+## 浏览书摘 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120365048-8fa1c900-c340-11eb-9a34-8d989dc4f23b.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=7)
 书摘的浏览和展示有几种模式，可以点击 「书摘」 栏目右上角的汉堡菜单（三等号）按钮，在弹出框中进行设置
 
 * **按照章节分类书摘**：在该模式下，如果书籍有目录数据，可以作为书摘分类导航
@@ -69,7 +69,7 @@
 * `$$$$` 触发行间数学公式输入框
 * `![图片标题](图片链接)`
 
-## 删除书摘
+## 删除书摘 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120365078-9597aa00-c340-11eb-979c-6a282f429ac6.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=8)
 * **删除单篇书摘**：点击书摘卡片右上角的红色删除图标，会弹出框询问是否删除当前书摘。
 * **删除当前书籍的全部书摘**：点击 「书摘」 栏目右上角的汉堡菜单（三等号）按钮，在弹出框中 「删除书摘」 条目下，点击红色删除图标，会弹出框询问是否删除当前所有书摘。
 

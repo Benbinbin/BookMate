@@ -24,7 +24,7 @@
     ![install mongodb setup step 2](/images/screenshots/install_mongodb_2.png)
     ![install mongodb setup step 3](/images/screenshots/install_mongodb_3.png)
 
-## 运行程序
+## 运行程序 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120360732-aa257380-c33b-11eb-9e44-81bf8854c167.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE)
 由于 BookMate 采用前后端分离的设计，因此需要依此启动 **MongoDB**、**BookMate-Server**、**BookMate-Client** 程序。
 
 * MongoDB 程序启动方法参考[官方文档](https://docs.mongodb.com/guides/server/install/#run-mongodb)

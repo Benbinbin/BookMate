@@ -1,6 +1,6 @@
 # 书籍
 
-## 添加书籍
+## 添加书籍 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120364728-2b7f0500-c340-11eb-92f1-b05f62f65a32.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=3)
 点击 「书架页面」 左下角 「+ 添加书籍」 按钮，可以在弹出框中录入新书籍的信息：
 
 ![bookshelf 2](/images/screenshots/bookshelf-2.png)
@@ -19,7 +19,7 @@
 * 相关链接
 * 简介
 * 短评
-* **目录**：作为书摘和概述的分类依据
+* **目录**：作为书摘和概述的分类依据 [:movie_camera:](https://user-images.githubusercontent.com/40909550/120364948-6ed97380-c340-11eb-8f9b-e24650936c4f.mp4) [:tv:](https://www.bilibili.com/video/BV1sv411V7tE?p=4)
 
 ## 修改书籍信息
 在 「书籍页面」 中，点击 「简介」 栏目左上角的编辑图标按钮，在弹出框中可以修改当前书籍的信息。
