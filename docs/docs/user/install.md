@@ -1,7 +1,7 @@
 # 安装
 
 ## 下载程序
-* 在[官网](https://benbinbin.github.io/BookMate/)下载 :package: **BookMate 压缩包**（如果从 Github 下载速度较慢，可以切换 `Gitee` 或 `坚果云` 下载源）
+* 在[主页](https://benbinbin.github.io/BookMate/)下载 :package: **BookMate 压缩包**（如果从 Github 下载速度较慢，可以切换 `Gitee` 或 `坚果云` 下载源）
 ![download source](../assets/images/screenshots/download_source.png)
 * 在 [MongoDB 官网](https://www.mongodb.com/try/download/community)下载安装包
 ![download mongodb](../assets/images/screenshots/download_mongodb.png)

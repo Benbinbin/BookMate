@@ -1,9 +1,16 @@
-# Introduction
-BookMate is a web app to manage book excerpts and take notes.
+<div style="display: flex; justify-content: center;margin: 1rem;">
+<img src="BookMate-logo-font.svg" style="width: 80%">
+</div>
 
-## Design
-* Desktop [UI Design](https://dribbble.com/shots/14805148-MapDown-Laptop) | [Interaction Demo](https://www.figma.com/proto/QSAKQLMvNcrrzuUucUHAC7/MapDown?node-id=184%3A900)
-* Mobile [UI Design](https://dribbble.com/shots/14805111-MapDown-Phone) | [Interaction Demo](https://www.figma.com/proto/QSAKQLMvNcrrzuUucUHAC7/MapDown?node-id=277%3A1502)
+<div style="margin: 5rem 0; display: flex; justify-content: center;align-items: center; font-weight:bold; font-size: 1.5rem; color:#6B7280">
+BookMate is a web app to manage book excerpts and take notes.
+</div>
+
+
+<div style="margin: 5rem 0;display: flex; justify-content: center;align-items: center;">
+    <a style="padding: 1rem;background:#10B981;color:white; font-weight:bold;border-radius: 0.25rem; text-decoration: none; cursor: pointer;" href="https://benbinbin.github.io/BookMate/#download" target="_blank">Download</a>
+    <a style="margin-left:1rem; padding: 1rem; background:#3B82F6; color:white; font-weight:bold;border-radius: 0.25rem; text-decoration: none; cursor: pointer;" href="./user/introduction.html">Document</a>
+</div>
 
 ## License
 [MIT](LICENSE)

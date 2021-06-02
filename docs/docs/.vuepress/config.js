@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/bookmate-document/',
+  base: '/BookMate-Document/',
   lang: 'zh-CN',
   title: 'BookMate',
   description: 'BookMate 说明文档',
@@ -29,7 +29,7 @@ module.exports = {
         link: '/dev/introduction.md'
       }
     ],
-    repo: 'https://github.com/Benbinbin',
+    repo: 'https://github.com/Benbinbin/BookMate',
     repoLabel: 'Github',
     sidebar: {
       '/user/': [
