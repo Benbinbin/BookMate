@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BookMate</title>
   <link rel="bookmate icon" href="./images/favicon.ico">
-  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="tailwind.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -53,7 +53,8 @@
     <h2 class="my-16 md:my-16 text-center text-xl md:text-xl lg:text-2xl text-gray-500">一款<a
         class="text-blue-500 underline" href="#license">开源</a>的书摘管理软件</h2>
     <div class="flex justify-center space-x-2">
-      <a class="py-4 px-8 bg-green-400 hover:bg-green-500 text-white text-lg font-bold rounded-lg" href="#download">下载</a>
+      <a class="py-4 px-8 bg-green-400 hover:bg-green-500 text-white text-lg font-bold rounded-lg"
+        href="#download">下载</a>
       <a class="py-4 px-8 bg-blue-400 hover:bg-blue-500 text-white text-lg font-bold rounded-lg" href="#">文档</a>
     </div>
 
@@ -203,8 +204,19 @@
 
   <div class="my-20">
     <h2 id="download" class="text-3xl font-bold text-center"><span class="highlight px-2">下载</span></h2>
-    <p class="my-8 text-sm font-bold text-gray-400 text-center">版本<span
+    <p class="my-4 text-sm font-bold text-gray-400 text-center">版本<span
         class="px-2 py-1 mx-1 bg-blue-500 text-white rounded text-xs">V0.1.0-alpha</span>请选择合适的平台和下载源</p>
+    <div class="flex justify-center items-center">
+      <svg class="flex-shrink-0 w-4 text-yellow-300 mr-1" viewBox="0 0 42 42" fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M20.8333 4.16667C16.4131 4.16667 12.1738 5.92261 9.04822 9.04822C5.92261 12.1738 4.16667 16.4131 4.16667 20.8333C4.16667 25.2536 5.92261 29.4928 9.04822 32.6184C12.1738 35.7441 16.4131 37.5 20.8333 37.5C25.2536 37.5 29.4928 35.7441 32.6184 32.6184C35.7441 29.4928 37.5 25.2536 37.5 20.8333C37.5 16.4131 35.7441 12.1738 32.6184 9.04822C29.4928 5.92261 25.2536 4.16667 20.8333 4.16667V4.16667ZM0 20.8333C0 9.32708 9.32708 0 20.8333 0C32.3396 0 41.6667 9.32708 41.6667 20.8333C41.6667 32.3396 32.3396 41.6667 20.8333 41.6667C9.32708 41.6667 0 32.3396 0 20.8333Z" />
+        <path
+          d="M20.8333 16.6666C21.3859 16.6666 21.9158 16.8861 22.3065 17.2768C22.6972 17.6675 22.9167 18.1974 22.9167 18.75V31.25C22.9167 31.8025 22.6972 32.3324 22.3065 32.7231C21.9158 33.1138 21.3859 33.3333 20.8333 33.3333C20.2808 33.3333 19.7509 33.1138 19.3602 32.7231C18.9695 32.3324 18.75 31.8025 18.75 31.25V18.75C18.75 18.1974 18.9695 17.6675 19.3602 17.2768C19.7509 16.8861 20.2808 16.6666 20.8333 16.6666V16.6666ZM23.9583 11.4583C23.9583 12.2871 23.6291 13.082 23.0431 13.668C22.457 14.2541 21.6621 14.5833 20.8333 14.5833C20.0045 14.5833 19.2097 14.2541 18.6236 13.668C18.0376 13.082 17.7083 12.2871 17.7083 11.4583C17.7083 10.6295 18.0376 9.83466 18.6236 9.2486C19.2097 8.66255 20.0045 8.33331 20.8333 8.33331C21.6621 8.33331 22.457 8.66255 23.0431 9.2486C23.6291 9.83466 23.9583 10.6295 23.9583 11.4583V11.4583Z" />
+      </svg>
+      <p class="text-gray-400 text-sm">当前为 alpha 版，可能存在大量 Bugs，可以将遇到的问题提交到 Github <a class="text-blue-500 underline" href="https://github.com/Benbinbin/BookMate/issues" target="_blank">Issues</a> 中。</a>
+      </p>
+    </div>
     <div class="container w-4/5 mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:divide-x divide-gray-300">
       <div class="my-10">
         <h3 class="text-2xl text-center font-bold"><span style="color: #F69893">B</span>ook<span
